@@ -20,6 +20,7 @@ export default function StudentCoursesPage() {
 
     const fetchEnrollments = async () => {
         try {
+            if (!user?._id) return;
             const response = await enrollmentAPI.getStudentEnrollments(user._id);
             setEnrollments((response as any).data || []);
         } catch (error: any) {
