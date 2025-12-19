@@ -3,11 +3,14 @@
 # -------------------------------------------------
 
 [build]
-  # Command that Netlify will run on its CI server
+  # Base directory where package.json is located
+  base = "frontend"
+  
+  # Command that Netlify will run
   command = "npm run build"
 
-  # Folder that contains the final static assets
-  publish = "build"   # ← change to your actual output folder (dist/, out/, etc.)
+  # Folder that contains the final assets (relative to base)
+  publish = ".next"
 
 # Optional: redirect all unknown routes to index.html (SPA)
 [[redirects]]
