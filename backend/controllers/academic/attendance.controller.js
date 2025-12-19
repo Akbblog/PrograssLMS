@@ -1,4 +1,4 @@
-const Attendance = require("../../models/Academic/attendance.model");
+const Attendance = require("../../models/Academic/Attendance.model");
 const Student = require("../../models/Students/students.model");
 const Admin = require("../../models/Staff/admin.model");
 const Teacher = require("../../models/Staff/teachers.model");
