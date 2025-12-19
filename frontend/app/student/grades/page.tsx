@@ -16,14 +16,16 @@ export default function StudentGradesPage() {
 
     useEffect(() => {
         if (user?._id) {
-            fetchGrades();
+            fetchGrades(user._id);
+        } else {
+            setLoading(false);
         }
     }, [user]);
 
-    const fetchGrades = async () => {
+    const fetchGrades = async (userId?: string) => {
         try {
-            if (!user?._id) return;
-            const response = await gradeAPI.getStudentGrades(user._id);
+            if (!userId) return;
+            const response = await gradeAPI.getStudentGrades(userId);
             setGradesData((response as any).data);
         } catch (error: any) {
             toast.error(error.message || "Failed to load grades");

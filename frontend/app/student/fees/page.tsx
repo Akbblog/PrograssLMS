@@ -20,7 +20,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, DollarSign, CreditCard } from "lucide-react";
+import { Loader2, DollarSign, CreditCard, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function StudentFeesPage() {
@@ -31,16 +31,18 @@ export default function StudentFeesPage() {
 
     useEffect(() => {
         if (user?._id) {
-            fetchFees();
+            fetchFees(user._id);
+        } else {
+            setLoading(false);
         }
-    }, [user?._id]);
+    }, [user]);
 
-    const fetchFees = async () => {
+    const fetchFees = async (userId?: string) => {
         try {
-            if (!user?._id) return;
+            if (!userId) return;
             const [due, history] = await Promise.all([
-                financeAPI.getDueFees(user._id),
-                financeAPI.getStudentPayments(user._id),
+                financeAPI.getDueFees(userId),
+                financeAPI.getStudentPayments(userId),
             ]);
             setDueFees((due as any).data || []);
             setPayments((history as any).data || []);
@@ -162,4 +164,4 @@ export default function StudentFeesPage() {
     );
 }
 
-import { CheckCircle2 } from "lucide-react";
+ 

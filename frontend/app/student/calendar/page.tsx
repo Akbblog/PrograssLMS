@@ -15,16 +15,18 @@ export default function StudentCalendarPage() {
 
     useEffect(() => {
         if (user?._id) {
-            fetchData();
+            fetchData(user._id);
+        } else {
+            setLoading(false);
         }
     }, [user]);
 
-    const fetchData = async () => {
+    const fetchData = async (userId?: string) => {
         try {
-            if (!user?._id) return;
+            if (!userId) return;
             const [assignmentsRes, attendanceRes] = await Promise.all([
-                assignmentAPI.getAssignments({ studentId: user._id }),
-                attendanceAPI.getStudentAttendance(user._id),
+                assignmentAPI.getAssignments({ studentId: userId }),
+                attendanceAPI.getStudentAttendance(userId),
             ]);
 
             setAssignments((assignmentsRes as any).data || []);

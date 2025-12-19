@@ -109,14 +109,24 @@ export const useAuthStore = create<AuthState>()(
                     if (typeof window !== 'undefined' && window.localStorage) {
                         return localStorage;
                     }
-                    return sessionStorage; // Fallback to session storage if available
+
+                    // If sessionStorage is available in the browser, use it; otherwise
+                    // return an in-memory dummy storage to avoid ReferenceError during SSR.
+                    if (typeof window !== 'undefined' && window.sessionStorage) {
+                        return sessionStorage;
+                    }
+
+                    return {
+                        getItem: (_: string) => null,
+                        setItem: (_: string, __: string) => { },
+                        removeItem: (_: string) => { },
+                    };
                 } catch (e) {
                     console.warn("AuthStore: LocalStorage access blocked, falling back to memory storage", e);
-                    // Dummy storage implementation to prevent crashes
                     return {
-                        getItem: () => null,
-                        setItem: () => { },
-                        removeItem: () => { },
+                        getItem: (_: string) => null,
+                        setItem: (_: string, __: string) => { },
+                        removeItem: (_: string) => { },
                     };
                 }
             }),

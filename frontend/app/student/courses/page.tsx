@@ -14,14 +14,16 @@ export default function StudentCoursesPage() {
 
     useEffect(() => {
         if (user?._id) {
-            fetchEnrollments();
+            fetchEnrollments(user._id);
+        } else {
+            setLoading(false);
         }
     }, [user]);
 
-    const fetchEnrollments = async () => {
+    const fetchEnrollments = async (userId?: string) => {
         try {
-            if (!user?._id) return;
-            const response = await enrollmentAPI.getStudentEnrollments(user._id);
+            if (!userId) return;
+            const response = await enrollmentAPI.getStudentEnrollments(userId);
             setEnrollments((response as any).data || []);
         } catch (error: any) {
             toast.error(error.message || "Failed to load courses");

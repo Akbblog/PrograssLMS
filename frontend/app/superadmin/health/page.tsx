@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Activity, Server, Database, ShieldCheck, AlertTriangle, RefreshCw, Cpu, HardDrive } from "lucide-react";
 import { toast } from "sonner";
 import Icon from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 
 export default function SystemHealthPage() {
     const [loading, setLoading] = useState(true);

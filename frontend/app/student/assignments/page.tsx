@@ -19,14 +19,16 @@ export default function StudentAssignmentsPage() {
 
     useEffect(() => {
         if (user?._id) {
-            fetchAssignments();
+            fetchAssignments(user._id);
+        } else {
+            setLoading(false);
         }
     }, [user]);
 
-    const fetchAssignments = async () => {
+    const fetchAssignments = async (userId?: string) => {
         try {
-            if (!user?._id) return;
-            const response = await assignmentAPI.getAssignments({ studentId: user._id });
+            if (!userId) return;
+            const response = await assignmentAPI.getAssignments({ studentId: userId });
             setAssignments((response as any).data || []);
         } catch (error: any) {
             toast.error(error.message || "Failed to load assignments");
