@@ -1,0 +1,16 @@
+# -------------------------------------------------
+# Netlify configuration – version‑controlled
+# -------------------------------------------------
+
+[build]
+  # Command that Netlify will run on its CI server
+  command = "npm run build"
+
+  # Folder that contains the final static assets
+  publish = "build"   # ← change to your actual output folder (dist/, out/, etc.)
+
+# Optional: redirect all unknown routes to index.html (SPA)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
