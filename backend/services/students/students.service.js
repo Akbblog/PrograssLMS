@@ -7,8 +7,9 @@ const Student = require("../../models/Students/students.model");
 const Exam = require("../../models/Academic/exams.model");
 const Results = require("../../models/Academic/results.model");
 const generateToken = require("../../utils/tokenGenerator");
-const responseStatus = require("../../handlers/responseStatus.handler");
 const { resultCalculate } = require("../../functions/result-calculate");
+const eventBus = require("../../utils/eventBus");
+const EVENTS = require("../../utils/events");
 
 /**
  * Admin registration service for creating a new student.
@@ -88,6 +89,9 @@ exports.adminRegisterStudentService = async (data, adminId, res) => {
   // Saving to admin
   admin.students.push(studentRegistered._id);
   await admin.save();
+
+  // Dispatch Event
+  eventBus.dispatch(EVENTS.STUDENT.REGISTERED, studentRegistered);
 
   return responseStatus(res, 201, "success", studentRegistered);
 };
@@ -337,8 +341,12 @@ exports.studentWriteExamService = async (data, studentId, examId, res) => {
     academicYear: findExam.academicYear,
   });
   // updating student's total scores and number of attempts
-  Student.examResults.push(createResult._id);
-  await Student.save();
+  student.examResults.push(createResult._id);
+  await student.save();
+
+  // Dispatch Event
+  eventBus.dispatch(EVENTS.STUDENT.EXAM_COMPLETED, { student, result: createResult });
+
   return responseStatus(res, 200, "success", "Answer Submitted");
 };
 

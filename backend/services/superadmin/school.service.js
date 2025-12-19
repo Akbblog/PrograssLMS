@@ -2,6 +2,8 @@ const School = require("../../models/School.model");
 const Admin = require("../../models/Staff/admin.model");
 const bcrypt = require("bcryptjs");
 const responseStatus = require("../../handlers/responseStatus.handler");
+const eventBus = require("../../utils/eventBus");
+const EVENTS = require("../../utils/events");
 
 /**
  * Create a school and primary admin
@@ -47,6 +49,9 @@ exports.createSchool = async (data, creatorId, res) => {
 
     school.primaryAdmin = admin._id;
     await school.save();
+
+    // Dispatch Event
+    eventBus.dispatch(EVENTS.SCHOOL.CREATED, school);
 
     return responseStatus(res, 201, "success", { school, admin: { _id: admin._id, name: admin.name, email: admin.email } });
   } catch (error) {

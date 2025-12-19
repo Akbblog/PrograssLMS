@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress LMS | Education Management Simplified</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e293b;
+            --bg-light: #f8fafc;
+            --text-dark: #334155;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --font-main: 'IBM Plex Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            font-family: var(--font-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Utility */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 4rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 2rem;
+            color: var(--secondary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #64748b;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero-image {
+            margin-top: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: white;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Features */
+        .feature-section {
+            padding: 6rem 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .feature-row {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            margin-bottom: 6rem;
+        }
+
+        .feature-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-row:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-content h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-content p {
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .feature-visual {
+            flex: 1.5;
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-visual img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: #94a3b8;
+            padding: 4rem 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .feature-row,
+            .feature-row:nth-child(even) {
+                flex-direction: column;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="container">
+            <span class="logo">Progress LMS</span>
+            <div>
+                <a href="#" class="nav-link">Platform</a>
+                <a href="#" class="nav-link">Features</a>
+                <a href="#" class="btn-primary" style="margin-left: 2rem;">Request Demo</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Complete Control Over Your<br>Educational Institution</h1>
+            <p>A comprehensive management system that gives school administrators full autonomy. Manage students,
+                teachers, and academics from a single, intuitive interface.</p>
+            <div class="hero-image">
+                <img src="assets/real_dashboard.png" alt="Progress LMS Dashboard Interface">
+            </div>
+        </div>
+    </header>
+
+    <section class="feature-section">
+        <div class="container">
+            <!-- Feature 1 -->
+            <div class="feature-row">
+                <div class="feature-content">
+                    <h3>Efficient Student Management</h3>
+                    <p>Maintain detailed records for every student. From enrollment data to class assignments, access
+                        everything you need in seconds. Our system ensures data integrity and ease of access for
+                        administrators.</p>
+                </div>
+                <div class="feature-visual">
+                    <img src="assets/real_students.png" alt="Student Management List">
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-row">
+                <div class="feature-content">
+                    <h3>Empower Your Faculty</h3>
+                    <p>Manage teacher profiles, subject assignments, and schedules effectively. Give your staff the
+                        digital infrastructure they need to focus on what matters most: education.</p>
+                </div>
+                <div class="feature-visual">
+                    <img src="assets/real_teachers.png" alt="Teacher Management Interface">
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-row">
+                <div class="feature-content">
+                    <h3>Academic Structure Control</h3>
+                    <p>Define academic years, terms, and subject allocations with precision. Progress LMS adapts to your
+                        school's unique curriculum and scheduling requirements.</p>
+                </div>
+                <div class="feature-visual">
+                    <img src="assets/real_academics.png" alt="Academic Year Configuration">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container footer-content">
+            <div>
+                <span class="logo" style="color: white; display: block; margin-bottom: 0.5rem;">Progress LMS</span>
+                <p>The operating system for modern education.</p>
+            </div>
+            <div>
+                &copy; 2025 Progress LMS. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

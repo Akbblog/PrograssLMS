@@ -143,6 +143,7 @@ const seedDatabase = async () => {
                 manageUsers: true,
                 manageFees: true,
                 viewReports: true,
+                manageAcademics: true,
             },
         });
         console.log("✅ Admin created - Email: admin@school.com, Password: admin123");

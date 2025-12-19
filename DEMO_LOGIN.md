@@ -2,28 +2,24 @@
 
 This file contains demo credentials for quick local testing of the LMS.
 
-## Super Admin
-- Email: SA@progresslms.com
-- Password: Superpass
-- Role: super_admin
-- Login URL: http://localhost:3000/login
+
 
 ## Admin (School Admin)
-- Email: admin@majschool.com
-- Password: maj1234
+- Email: admin@school.com
+- Password: admin123
 - Role: admin
 - Permissions: `manageUsers`, `manageTeachers`, `manageStudents`, `manageFees`, `viewReports`
 - Login URL: http://localhost:3000/login
 
 ## Teacher
-- Email: ahsan.raza@majschool.com
+- Email: teacher1@progress.edu
 - Password: teacher123
 - Role: teacher
 - Login URL: http://localhost:3000/login
 
 ## Student
-- Email: test.student@majschool.com
-- Password: test.student
+- Email: student1@prog ress.edu
+- Password: student123
 - Login URL: http://localhost:3000/login
 
 ---

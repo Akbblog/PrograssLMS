@@ -1,4 +1,5 @@
 const express = require("express");
+require("colors");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
@@ -9,6 +10,11 @@ const limiter = require("../middlewares/rateLimiter");
 // Initialize the Express application
 const app = express();
 
+// Initialize Event-Driven Architecture
+const eventBus = require("../utils/eventBus");
+const listeners = require("../listeners");
+eventBus.init(listeners);
+
 // Security Middleware
 app.use(helmet());
 app.use(compression());
@@ -18,8 +24,23 @@ app.use(express.json({ limit: '10mb' }));
 app.use(morgan("dev"));
 
 // Initialize cors 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://progresslms.netlify.app"
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || "*",
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 

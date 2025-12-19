@@ -6,6 +6,8 @@ const {
 const responseStatus = require("../../handlers/responseStatus.handler");
 const Admin = require("../../models/Staff/admin.model");
 const generateToken = require("../../utils/tokenGenerator");
+const eventBus = require("../../utils/eventBus");
+const EVENTS = require("../../utils/events");
 
 /**
  * Register admin service.
@@ -26,11 +28,15 @@ exports.registerAdminService = async (data, res) => {
     return responseStatus(res, 401, "failed", "Email Already in use");
   } else {
     // Create a new admin
-    await Admin.create({
+    const admin = await Admin.create({
       name,
       email,
       password: await hashPassword(password),
     });
+
+    // Dispatch Event
+    eventBus.dispatch(EVENTS.ADMIN.REGISTERED, admin);
+
     return responseStatus(res, 201, "success", "Registration Successful!");
   }
 };
@@ -77,6 +83,9 @@ exports.loginAdminService = async (data, res) => {
       },
       token,
     };
+    // Dispatch Event
+    eventBus.dispatch(EVENTS.ADMIN.LOGIN, user);
+
     // Return user, token, and verification status
     return responseStatus(res, 200, "success", result);
   } else {
