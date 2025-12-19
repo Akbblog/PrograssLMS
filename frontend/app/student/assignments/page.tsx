@@ -25,6 +25,7 @@ export default function StudentAssignmentsPage() {
 
     const fetchAssignments = async () => {
         try {
+            if (!user?._id) return;
             const response = await assignmentAPI.getAssignments({ studentId: user._id });
             setAssignments((response as any).data || []);
         } catch (error: any) {
