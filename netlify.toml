@@ -1,22 +1,29 @@
 # -------------------------------------------------
-# Netlify configuration – version‑controlled
+# Netlify configuration – Monorepo / Functions
 # -------------------------------------------------
 
 [build]
-  # Base directory where package.json is located
-  base = "frontend"
-  
-  # Command that Netlify will run
-  command = "npm run build"
+  # We build from the root
+  base = "."
+  # Build command: Install backend deps, then build frontend
+  command = "cd backend && npm install && cd ../frontend && npm install && npm run build"
+  # Where to publish the static site
+  publish = "frontend/.next"
 
-  # Folder that contains the final assets (relative to base)
-  # For Next.js on Netlify, the plugin will handle routing and functions.
-  # Keep publish as `.next` (relative to `base`) so plugin can find build output.
-  publish = ".next"
+[functions]
+  # Point to the backend functions directory so dependencies load correctly
+  directory = "backend/functions"
+  # Let Netlify bundle dependencies (removed external_node_modules)
+  node_bundler = "esbuild" 
 
-# Use Netlify's Next.js plugin to correctly deploy Next.js apps (handles SSR, image, and functions)
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Note: do NOT add a catch-all SPA redirect to /index.html for Next.js sites.
-# Netlify's plugin will generate the correct routing rules during deploy.
+# Redirect API calls to the Netlify Function
+# Important: We redirect /api/v1/* to the 'api' function.
+# Netlify Function path is /.netlify/functions/<function_name>
+[[redirects]]
+  from = "/api/v1/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
