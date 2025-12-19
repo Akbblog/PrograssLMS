@@ -21,6 +21,7 @@ export default function StudentCalendarPage() {
 
     const fetchData = async () => {
         try {
+            if (!user?._id) return;
             const [assignmentsRes, attendanceRes] = await Promise.all([
                 assignmentAPI.getAssignments({ studentId: user._id }),
                 attendanceAPI.getStudentAttendance(user._id),
