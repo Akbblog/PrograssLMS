@@ -220,7 +220,8 @@ const seedDatabase = async () => {
                 createdBy: admin._id,
                 academicYear: academicYear.name,
                 academicTerm: terms[0].name,
-                classLevel: classes[0].name,
+                // `classLevel` is stored as an ObjectId (ref ClassLevel)
+                classLevel: classes[0]._id,
             });
             teachers.push({ ...teacher.toObject(), subjectName: data.subject });
             console.log(`✅ Teacher created: ${teacher.name} - Email: ${data.email}`);
