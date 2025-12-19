@@ -1,51 +1,36 @@
-# Deployment Guide for ProgressLMS
+# Deployment Guide (Netlify Only)
 
-## 1. Deploying the Backend (API)
+Great news! We have configured your project to be a **Monorepo** on Netlify. 
+This means you can deploy **both** your Frontend (Next.js) and your Backend (Express/Node.js) to a single Netlify site. No need for Render or any other host.
 
-Your backend is a Node.js/Express application located in the `backend/` folder. We have prepared a `render.yaml` file to make deployment easy on [Render.com](https://render.com).
+## How it works
+- Your backend code has been wrapped in a **Netlify Function** (`netlify/functions/api.js`).
+- We configured `netlify.toml` to build your frontend and headers, while bundling the backend logic into a serverless function.
+- All requests to `/api/v1/*` are automatically redirected to this function.
 
-### Steps:
-1.  **Push your code to GitHub.** Ensure your latest changes are committed and pushed to your repository.
-2.  **Sign up/Log in to Render.** Go to [dashboard.render.com](https://dashboard.render.com).
-3.  **Create a New Blueprint Instance.**
-    *   Click "New +" -> "Blueprint".
-    *   Connect your GitHub repository.
-    *   Render will automatically detect the `render.yaml` file.
-    *   Click "Apply".
-4.  **Configure Environment Variables.**
-    *   The build might fail initially or the service might not start because the Database URL is missing.
-    *   Go to your new Service in the Dashboard -> "Environment".
-    *   Add a new variable:
-        *   **Key:** `DB`
-        *   **Value:** `mongodb+srv://...` (Your MongoDB Atlas connection string)
-5.  **Get your Backend URL.**
-    *   Once deployed, Render will verify you a URL like: `https://progress-lms-backend.onrender.com`
-    *   Copy this URL.
+## 1. Environment Variables (Netlify)
+You need to set up your environment variables in Netlify > Site Settings > Environment Variables.
 
-## 2. Connecting Frontend to Backend
+### Required Variables:
+*   `DB`: Your MongoDB Connection String. (e.g., `mongodb+srv://...`)
+    *   *Note:* Ensure your MongoDB Atlas Network Access allows `0.0.0.0/0` (Anywhere), as Netlify IPs change.
+*   `JWT_SECRET`: A random string for security.
+*   `CLIENT_URL`: `https://progresslms.netlify.app` (Or your specific Netlify URL).
+*   `NEXT_PUBLIC_API_URL`: `https://progresslms.netlify.app/api/v1`
+    *   **Important:** This points to the *same* site now, specifically the `/api/v1` path which Netlify redirects to your backend function.
 
-Now that your backend is live, you need to tell your Netlify frontend where to find it.
+## 2. Deploying
+1.  **Push your changes** to GitHub.
+    *   `git add .`
+    *   `git commit -m "Configure for Netlify Only deployment"`
+    *   `git push`
+2.  Netlify should detect the change and build.
+    *   Build Command: `cd backend && npm install && cd ../frontend && npm install && npm run build`
+    *   Publish directory: `frontend/.next`
+    *   Functions directory: `netlify/functions`
 
-1.  **Go to Netlify Dashboard.**
-2.  Select your site (`progresslms`).
-3.  Go to **Site configuration** -> **Environment variables**.
-4.  Add a new variable:
-    *   **Key:** `NEXT_PUBLIC_API_URL`
-    *   **Value:** `https://progress-lms-backend.onrender.com/api/v1`
-    *   *(Make sure to append `/api/v1` if your routes are prefixed with it, which they seem to be based on your logs)*.
-5.  **Trigger a new Deploy.**
-    *   Go to "Deploys" -> "Trigger deploy" -> "Clear cache and deploy site" just to be safe.
-
-## 3. Verification
-
-Once the frontend finishes redeploying:
-1.  Open your Netlify URL (`https://progresslms.netlify.app`).
-2.  Open the Network tab in Developer Tools (F12).
-3.  Try to Log In.
-4.  You should see requests going to your **new Render URL** instead of the Netlify URL.
-
-## Troubleshooting
-
-- **CORS Errors:** If you see CORS errors in the browser console, you may need to update your backend's CORS configuration to allow `https://progresslms.netlify.app`.
-    - Check `backend/app/app.js` or `server.js` for `cors()` settings.
-- **Database Connection:** Check the Render Logs if the backend fails to start. It usually means the `DB` environment variable is incorrect or the IP is blocked (allow `0.0.0.0/0` in MongoDB Atlas Network Access for Render dynamic IPs).
+## 3. Troubleshooting
+*   **Database Connection:** If login fails, check Netlify Function Logs.
+    *   Go to Netlify Dashboard > "Logs" > "Functions" > "api".
+    *   Look for "Database connected!" or connection errors.
+*   **Cold Starts:** The first request after a while might take a few seconds (~5s). This is normal for serverless functions.

@@ -2,7 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
-const routeSync = require("../handlers/routeSync.handler");
+// const routeSync = require("../handlers/routeSync.handler"); // Deprecated for Netlify functions
 const cors = require('cors');
 const limiter = require("../middlewares/rateLimiter");
 
@@ -10,12 +10,12 @@ const limiter = require("../middlewares/rateLimiter");
 const app = express();
 
 // Security Middleware
-app.use(helmet()); // Sets various HTTP headers for security
-app.use(compression()); // Compress all responses
+app.use(helmet());
+app.use(compression());
 
 // Middleware
-app.use(express.json({ limit: '10mb' })); // Increase limit for potentially large payloads
-app.use(morgan("dev")); // Log requests to the console
+app.use(express.json({ limit: '10mb' }));
+app.use(morgan("dev"));
 
 // Initialize cors 
 app.use(cors({
@@ -27,38 +27,60 @@ app.use(cors({
 app.use(limiter);
 
 try {
-  // Initialize super admin route
-  const superAdminRouter = require("../routes/v1/superadmin/school.router");
-  app.use("/api/v1/superadmin", superAdminRouter);
+  // --- Static Route Imports for Serverless Compatibility ---
 
-  // Initialize contact route
-  const contactRouter = require("../routes/v1/contact.router");
-  app.use("/api/v1/contact", contactRouter);
+  // Superadmin
+  app.use("/api/v1/superadmin", require("../routes/v1/superadmin/school.router"));
 
-  // Initialize staff route
-  routeSync(app, "staff");
-  // initialize academic route
-  routeSync(app, "academic");
-  // initialize student route
-  routeSync(app, "students");
-  // initialize finance route
-  routeSync(app, "finance");
-  // initialize communication route
-  routeSync(app, "communication");
+  // Contact
+  app.use("/api/v1/contact", require("../routes/v1/contact.router"));
+
+  // Staff
+  app.use("/api/v1", require("../routes/v1/staff/admin.router"));
+  app.use("/api/v1", require("../routes/v1/staff/role.router"));
+  app.use("/api/v1", require("../routes/v1/staff/teachers.router"));
+
+  // Academic
+  app.use("/api/v1", require("../routes/v1/academic/academicTerm.router"));
+  app.use("/api/v1", require("../routes/v1/academic/academicYear.router"));
+  app.use("/api/v1", require("../routes/v1/academic/assessmentType.router"));
+  app.use("/api/v1", require("../routes/v1/academic/assignment.router"));
+  app.use("/api/v1", require("../routes/v1/academic/attendance.router"));
+  app.use("/api/v1", require("../routes/v1/academic/class.router"));
+  app.use("/api/v1", require("../routes/v1/academic/course.router"));
+  app.use("/api/v1", require("../routes/v1/academic/enrollment.router"));
+  app.use("/api/v1", require("../routes/v1/academic/exams.router"));
+  app.use("/api/v1", require("../routes/v1/academic/grade.router"));
+  app.use("/api/v1", require("../routes/v1/academic/program.router"));
+  app.use("/api/v1", require("../routes/v1/academic/question.router"));
+  app.use("/api/v1", require("../routes/v1/academic/results.router"));
+  app.use("/api/v1", require("../routes/v1/academic/subject.router"));
+  app.use("/api/v1", require("../routes/v1/academic/teacherAttendance.router"));
+  app.use("/api/v1", require("../routes/v1/academic/yearGroup.router"));
+
+  // Students
+  app.use("/api/v1", require("../routes/v1/students/students.router"));
+
+  // Finance
+  app.use("/api/v1", require("../routes/v1/finance/fee.router"));
+
+  // Communication
+  app.use("/api/v1", require("../routes/v1/communication/chat.router"));
+
 } catch (err) {
   console.error("Error during route initialization:", err.message);
   console.error(err.stack);
-  process.exit(1);
+  // Do not exit process in lambda, just log
 }
 
-// Define a default route
+// Default route
 app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
 // Handle invalid routes
 app.all("*", (req, res) => {
-  res.send("Invalid Route");
+  res.status(404).json({ message: "Route Not Found" });
 });
 
 module.exports = app;
