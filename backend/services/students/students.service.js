@@ -8,7 +8,7 @@ const Exam = require("../../models/Academic/exams.model");
 const Results = require("../../models/Academic/results.model");
 const generateToken = require("../../utils/tokenGenerator");
 const responseStatus = require("../../handlers/responseStatus.handler");
-const { resultCalculate } = require("../../functions/resultCalculate.function");
+const { resultCalculate } = require("../../functions/result-calculate");
 
 /**
  * Admin registration service for creating a new student.
