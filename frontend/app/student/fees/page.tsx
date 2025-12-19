@@ -37,9 +37,10 @@ export default function StudentFeesPage() {
 
     const fetchFees = async () => {
         try {
+            if (!user?._id) return;
             const [due, history] = await Promise.all([
-                financeAPI.getDueFees(user!._id),
-                financeAPI.getStudentPayments(user!._id),
+                financeAPI.getDueFees(user._id),
+                financeAPI.getStudentPayments(user._id),
             ]);
             setDueFees((due as any).data || []);
             setPayments((history as any).data || []);

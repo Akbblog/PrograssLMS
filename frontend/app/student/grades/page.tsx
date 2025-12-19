@@ -22,6 +22,7 @@ export default function StudentGradesPage() {
 
     const fetchGrades = async () => {
         try {
+            if (!user?._id) return;
             const response = await gradeAPI.getStudentGrades(user._id);
             setGradesData((response as any).data);
         } catch (error: any) {
