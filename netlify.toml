@@ -10,10 +10,13 @@
   command = "npm run build"
 
   # Folder that contains the final assets (relative to base)
+  # For Next.js on Netlify, the plugin will handle routing and functions.
+  # Keep publish as `.next` (relative to `base`) so plugin can find build output.
   publish = ".next"
 
-# Optional: redirect all unknown routes to index.html (SPA)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Use Netlify's Next.js plugin to correctly deploy Next.js apps (handles SSR, image, and functions)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Note: do NOT add a catch-all SPA redirect to /index.html for Next.js sites.
+# Netlify's plugin will generate the correct routing rules during deploy.
