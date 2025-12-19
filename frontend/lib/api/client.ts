@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5130/api/v1";
+// Prefer explicit NEXT_PUBLIC_API_URL during development; use relative path
+// in production so no client-side localhost defaults remain.
+const baseURL = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
 
 const apiClient = axios.create({
     baseURL,

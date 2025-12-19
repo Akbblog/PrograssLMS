@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5130/api/v1';
+// Use environment-provided API host in dev/preview; default to relative path in
+// production so the frontend talks to the same origin (avoids hard-coded localhost)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
