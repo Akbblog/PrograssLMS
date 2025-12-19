@@ -16,9 +16,14 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     (config) => {
         if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+            try {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+            } catch (e) {
+                // Access to storage might be blocked in some contexts (e.g., restricted iframes)
+                console.warn('Could not access localStorage for auth token', e);
             }
         }
         return config;
@@ -50,14 +55,18 @@ apiClient.interceptors.response.use(
                 console.warn('🔒 Session expired or invalid token, redirecting to login');
 
                 if (typeof window !== 'undefined') {
-                    // Clear auth data
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    localStorage.removeItem('auth-storage');
+                    try {
+                        // Clear auth data
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('auth-storage');
 
-                    // Redirect to login if not already there
-                    if (!window.location.pathname.includes('/login')) {
-                        window.location.href = '/login';
+                        // Redirect to login if not already there
+                        if (!window.location.pathname.includes('/login')) {
+                            window.location.href = '/login';
+                        }
+                    } catch (e) {
+                        console.warn('Could not clear localStorage', e);
                     }
                 }
             }

@@ -6,7 +6,6 @@ This file lists the credentials created by `seed-comprehensive.js` (destructive 
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **Super Admin** | `superadmin@school.com` | `superadmin123` |
 | **School Admin** | `admin@school.com` | `admin123` |
 
 ## 👨‍🏫 Teachers (7 Created)
@@ -46,3 +45,5 @@ All students use the password `student123`.
 | Ethan Jones | `ethan.jones14@student.school.com` | Grade 5 |
 
 > Note: This seed run also created enrollments, grades, assignments, attendance records, fee structures and payments for testing. Use the above credentials to log in and verify data.
+
+> **Super admin credentials are intentionally not included here.** The super-admin account is configured via the backend environment file (`backend/.env`) and should remain secret. Do not publish or commit that file.
