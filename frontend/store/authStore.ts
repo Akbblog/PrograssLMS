@@ -8,6 +8,16 @@ interface User {
     email: string
     role: string
     schoolId?: string
+    // Student-specific fields
+    studentId?: string
+    currentClassLevel?: string
+    academicYear?: string
+    // Teacher-specific fields
+    teacherId?: string
+    program?: string
+    subject?: string[]
+    // Common fields
+    createdAt?: string
     features?: {
         onlineExams?: boolean
         attendance?: boolean

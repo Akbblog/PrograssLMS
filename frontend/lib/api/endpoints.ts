@@ -215,6 +215,18 @@ export const academicAPI = {
   getAcademicTerms: () => api.get('/academic-term'),
 };
 
+// Student Profile endpoints
+export const studentAPI = {
+  getProfile: () => api.get('/students/profile'),
+  updateProfile: (data: any) => api.patch('/update', data),
+};
+
+// Teacher Profile endpoints
+export const teacherAPI = {
+  getProfile: (teacherId: string) => api.get(`/teacher/${teacherId}/profile`),
+  updateProfile: (data: any) => api.patch('/teacher/update-profile', data),
+};
+
 // Assignment endpoints
 export const assignmentAPI = {
   getAssignments: (params?: any) => api.get('/academic/assignments', { params }),
