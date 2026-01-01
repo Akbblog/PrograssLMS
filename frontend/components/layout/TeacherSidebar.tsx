@@ -45,6 +45,11 @@ const sidebarItems = [
         href: "/teacher/materials",
         icon: "lucide:book-open"
     },
+    {
+        label: "My Profile",
+        href: "/teacher/profile",
+        icon: "lucide:user"
+    },
 ]
 
 interface TeacherSidebarProps {
