@@ -102,6 +102,6 @@ This presentation is ideal for:
 
 ---
 
-**Created:** December 31, 2025  
-**Last Updated:** December 31, 2025  
+**Created:** January 1, 2026  
+**Last Updated:** January 1, 2026  
 **Version:** 1.0
