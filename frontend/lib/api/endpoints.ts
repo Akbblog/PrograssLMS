@@ -218,7 +218,7 @@ export const academicAPI = {
 // Student Profile endpoints
 export const studentAPI = {
   getProfile: () => api.get('/students/profile'),
-  updateProfile: (data: any) => api.patch('/update', data),
+  updateProfile: (data: any) => api.patch('/students/update', data),
 };
 
 // Teacher Profile endpoints

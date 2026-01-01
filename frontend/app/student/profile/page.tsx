@@ -214,7 +214,9 @@ export default function StudentProfilePage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-slate-600">Academic Year</Label>
-                                    <p className="text-sm font-medium text-slate-900">{user?.academicYear || "2024-2025"}</p>
+                                    <p className="text-sm font-medium text-slate-900">
+                                        {user?.academicYear || new Date().getFullYear() + "-" + (new Date().getFullYear() + 1)}
+                                    </p>
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-slate-600">Enrollment Date</Label>
