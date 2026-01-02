@@ -18,7 +18,7 @@ import {
 import Link from "next/link"
 import { useAuthStore } from "@/store/authStore"
 import { useEffect, useState } from "react"
-import { apiClient } from "@/lib/api/client"
+import apiClient from "@/lib/api/client"
 
 interface DashboardStats {
     totalStudents: number
