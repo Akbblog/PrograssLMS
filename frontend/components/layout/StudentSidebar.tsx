@@ -25,6 +25,7 @@ export default function StudentSidebar() {
         { icon: "lucide:file-text", label: "Assignments", href: "/student/assignments" },
         { icon: "lucide:clipboard-list", label: "Attendance", href: "/student/attendance" },
         { icon: "lucide:message-square", label: "Communication", href: "/student/communication" },
+        { icon: "lucide:shield-check", label: "Conduct", href: "/student/behavior" },
         { icon: "lucide:dollar-sign", label: "Fees", href: "/student/fees" },
         { icon: "lucide:calendar", label: "Calendar", href: "/student/calendar" },
     ];
@@ -50,14 +51,30 @@ export default function StudentSidebar() {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
+                                "group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 relative overflow-hidden",
                                 isActive
-                                    ? "bg-indigo-50 text-indigo-700 font-medium"
-                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-100"
+                                    : "text-slate-600 hover:bg-slate-50 hover:text-indigo-600"
                             )}
                         >
-                            <Icon name={item.icon} className={cn("h-5 w-5", isActive ? "text-indigo-600" : "")} />
-                            <span className="text-sm">{item.label}</span>
+                            {/* Active Glow Effect */}
+                            {isActive && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-transparent animate-pulse pointer-events-none"></div>
+                            )}
+
+                            <Icon
+                                name={item.icon}
+                                className={cn(
+                                    "h-5 w-5 transition-transform duration-300 group-hover:scale-110",
+                                    isActive ? "text-white" : "group-hover:text-indigo-600"
+                                )}
+                            />
+                            <span className="text-sm font-medium relative z-10">{item.label}</span>
+
+                            {/* Active Indicator */}
+                            {isActive && (
+                                <div className="absolute right-2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_white]"></div>
+                            )}
                         </Link>
                     );
                 })}

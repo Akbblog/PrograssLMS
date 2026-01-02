@@ -29,7 +29,7 @@ teachersRouter
     createTeacherController
   );
 // teacher login
-teachersRouter.route("/teacher/login").post(teacherLoginController);
+teachersRouter.route("/teachers/login").post(teacherLoginController);
 //get all teachers
 // get all teachers - requires manageTeachers
 teachersRouter

@@ -3,7 +3,22 @@ const Grade = require("../../models/Academic/Grade.model");
 // Create Grade
 exports.createGrade = async (req, res) => {
     try {
-        const { student, subject, classLevel, academicYear, academicTerm, examType, examName, score, maxScore, remarks } = req.body;
+        const {
+            student,
+            subject,
+            classLevel,
+            academicYear,
+            academicTerm,
+            assessmentType, // Changed from examType
+            examName,
+            score,
+            maxScore,
+            remarks,
+            weight,
+            isLate,
+            latePenalty,
+            attemptNumber
+        } = req.body;
         const schoolId = req.schoolId;
         const teacher = req.userId;
 
@@ -13,13 +28,17 @@ exports.createGrade = async (req, res) => {
             classLevel,
             academicYear,
             academicTerm,
-            examType,
+            assessmentType,
             examName,
             score,
             maxScore: maxScore || 100,
             remarks,
             teacher,
             schoolId,
+            weight,
+            isLate,
+            latePenalty,
+            attemptNumber
         });
 
         res.status(201).json({

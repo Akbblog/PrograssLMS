@@ -35,10 +35,13 @@ export default function TeacherGradesPage() {
         classLevel: "",
         academicYear: "",
         academicTerm: "",
-        examType: "quiz",
+        assessmentType: "quiz",
         examName: "",
         score: "",
         maxScore: "100",
+        weight: "",
+        isLate: false,
+        latePenalty: "0",
         remarks: "",
     });
 
@@ -106,19 +109,19 @@ export default function TeacherGradesPage() {
                 ...formData,
                 score: parseFloat(formData.score),
                 maxScore: parseFloat(formData.maxScore),
+                weight: formData.weight ? parseFloat(formData.weight) : undefined,
+                latePenalty: parseFloat(formData.latePenalty),
             });
             toast.success("Grade added successfully");
             setIsDialogOpen(false);
             setFormData(prev => ({
+                ...prev,
                 student: "",
-                subject: prev.subject,
-                classLevel: prev.classLevel,
-                academicYear: prev.academicYear,
-                academicTerm: prev.academicTerm,
-                examType: "quiz",
                 examName: "",
                 score: "",
-                maxScore: "100",
+                weight: "",
+                isLate: false,
+                latePenalty: "0",
                 remarks: "",
             }));
             if (selectedClass && selectedSubject) {
@@ -142,7 +145,7 @@ export default function TeacherGradesPage() {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Grades</h1>
-                    <p className="text-muted-foreground">Enter and manage student grades</p>
+                    <p className="text-muted-foreground">Enter and manage student grades with weighted calculations</p>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
@@ -199,23 +202,23 @@ export default function TeacherGradesPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label>Exam Type</Label>
-                                        <Select value={formData.examType} onValueChange={(value) => setFormData({ ...formData, examType: value })}>
+                                        <Label>Assessment Type</Label>
+                                        <Select value={formData.assessmentType} onValueChange={(value) => setFormData({ ...formData, assessmentType: value })}>
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
+                                                <SelectItem value="homework">Homework</SelectItem>
                                                 <SelectItem value="quiz">Quiz</SelectItem>
-                                                <SelectItem value="midterm">Midterm</SelectItem>
-                                                <SelectItem value="final">Final Exam</SelectItem>
-                                                <SelectItem value="assignment">Assignment</SelectItem>
+                                                <SelectItem value="exam">Exam</SelectItem>
                                                 <SelectItem value="project">Project</SelectItem>
+                                                <SelectItem value="participation">Participation</SelectItem>
                                                 <SelectItem value="other">Other</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label>Exam Name</Label>
+                                        <Label>Assessment Name</Label>
                                         <Input
                                             required
                                             value={formData.examName}
@@ -224,7 +227,7 @@ export default function TeacherGradesPage() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-3 gap-4">
                                     <div className="grid gap-2">
                                         <Label>Score</Label>
                                         <Input
@@ -243,6 +246,40 @@ export default function TeacherGradesPage() {
                                             onChange={(e) => setFormData({ ...formData, maxScore: e.target.value })}
                                         />
                                     </div>
+                                    <div className="grid gap-2">
+                                        <Label>Weight (%)</Label>
+                                        <Input
+                                            type="number"
+                                            value={formData.weight}
+                                            onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                                            placeholder="Default used if empty"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid gap-2">
+                                        <Label>Late Submission?</Label>
+                                        <div className="flex items-center space-x-2 mt-2">
+                                            <input
+                                                type="checkbox"
+                                                id="isLate"
+                                                checked={formData.isLate}
+                                                onChange={(e) => setFormData({ ...formData, isLate: e.target.checked })}
+                                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                            />
+                                            <Label htmlFor="isLate" className="font-normal cursor-pointer">Yes, student submitted late</Label>
+                                        </div>
+                                    </div>
+                                    {formData.isLate && (
+                                        <div className="grid gap-2">
+                                            <Label>Late Penalty (%)</Label>
+                                            <Input
+                                                type="number"
+                                                value={formData.latePenalty}
+                                                onChange={(e) => setFormData({ ...formData, latePenalty: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
@@ -281,7 +318,7 @@ export default function TeacherGradesPage() {
                                     />
                                 </div>
                             </div>
-                            <Button type="submit" className="w-full">Add Grade</Button>
+                            <Button type="submit" className="w-full">Save Grade</Button>
                         </form>
                     </DialogContent>
                 </Dialog>
@@ -337,12 +374,13 @@ export default function TeacherGradesPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Student</TableHead>
-                                        <TableHead>Exam</TableHead>
+                                        <TableHead>Assessment</TableHead>
                                         <TableHead>Type</TableHead>
-                                        <TableHead>Score</TableHead>
+                                        <TableHead>Raw Score</TableHead>
+                                        <TableHead>Weighted</TableHead>
                                         <TableHead>Grade</TableHead>
+                                        <TableHead>Status</TableHead>
                                         <TableHead>Date</TableHead>
-                                        <TableHead>Remarks</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -350,11 +388,18 @@ export default function TeacherGradesPage() {
                                         <TableRow key={grade._id}>
                                             <TableCell className="font-medium">{grade.student?.name}</TableCell>
                                             <TableCell>{grade.examName}</TableCell>
-                                            <TableCell className="capitalize">{grade.examType}</TableCell>
-                                            <TableCell>{grade.score}/{grade.maxScore}</TableCell>
+                                            <TableCell className="capitalize">{grade.assessmentType}</TableCell>
+                                            <TableCell>{grade.score}/{grade.maxScore} ({grade.percentage?.toFixed(1)}%)</TableCell>
+                                            <TableCell>{grade.weightedScore?.toFixed(2)} / {grade.weight}</TableCell>
                                             <TableCell className="font-bold">{grade.letterGrade}</TableCell>
-                                            <TableCell>{new Date(grade.gradedAt).toLocaleDateString()}</TableCell>
-                                            <TableCell className="text-sm text-muted-foreground">{grade.remarks || "-"}</TableCell>
+                                            <TableCell>
+                                                {grade.isLate ? (
+                                                    <span className="text-destructive text-xs font-semibold px-2 py-1 rounded-full bg-destructive/10">Late (-{grade.latePenalty}%)</span>
+                                                ) : (
+                                                    <span className="text-green-600 text-xs font-semibold px-2 py-1 rounded-full bg-green-100">On Time</span>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-sm text-muted-foreground">{new Date(grade.gradedAt).toLocaleDateString()}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -362,6 +407,7 @@ export default function TeacherGradesPage() {
                         )}
                     </CardContent>
                 </Card>
+
             ) : (
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12">

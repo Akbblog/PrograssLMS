@@ -45,9 +45,11 @@ const sidebarItems = [
             { title: "Subjects", href: "/admin/academic/subjects" },
             { title: "Academic Years", href: "/admin/academic/years" },
             { title: "Academic Terms", href: "/admin/academic/terms" },
+            { title: "Grading Policy", href: "/admin/academic/grading-policy" },
             { title: "Question Bank", href: "/admin/academic/questions" },
             { title: "Assessment Types", href: "/admin/academic/assessments" },
             { title: "Learning Courses", href: "/admin/academic/learning-courses" },
+            { title: "Behavior Tracking", href: "/admin/academic/behavior" },
         ]
     },
     { title: "Teachers", href: "/admin/teachers", icon: Users },
@@ -105,7 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     return (
         <ProtectedRoute requiredRoles={['admin']}>
-            <div className="flex h-screen bg-slate-50 overflow-hidden">
+            <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
                 {/* Mobile Overlay */}
                 {sidebarOpen && (
                     <div
@@ -116,27 +118,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 {/* Sidebar */}
                 <div className={cn(
-                    "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+                    "fixed inset-y-0 left-0 z-50 w-[270px] max-w-[90vw] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
                     sidebarOpen ? "translate-x-0" : "-translate-x-full"
                 )}>
                     {/* Logo */}
-                    <div className="h-16 border-b border-slate-200 flex items-center justify-between px-4 lg:px-6">
-                        <Link href="/admin/dashboard" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                    <div className="h-20 flex items-center justify-between px-6">
+                        <Link href="/admin/dashboard" className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
                                 <GraduationCap className="h-6 w-6 text-white" />
                             </div>
-                            <span className="font-bold text-lg text-slate-900">Progress LMS</span>
+                            <span className="font-bold text-xl text-slate-900 dark:text-white tracking-tight truncate">Progress <span className="text-primary">LMS</span></span>
                         </Link>
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="lg:hidden p-2 rounded-lg hover:bg-slate-100"
+                            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 flex-shrink-0"
                         >
-                            <X className="w-5 h-5 text-slate-600" />
+                            <X className="w-5 h-5 text-slate-500" />
                         </button>
                     </div>
 
-                    {/* Navigation */}
-                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                    <nav className="flex-1 px-4 pb-4 space-y-1 overflow-y-auto">
                         {sidebarItems.map((item) => {
                             // Feature Toggle Logic
                             if (item.title === "Teachers" && user?.features?.canManageTeachers === false) return null;
@@ -149,6 +150,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             if (item.title === "Reports" && user?.features?.canViewReports === false) return null;
                             if (item.title === "Roles & Permissions" && user?.features?.canManageRoles === false) return null;
 
+                            const active = isActive(item.href);
+
                             return (
                                 <div key={item.href}>
                                     {item.subItems ? (
@@ -156,32 +159,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                             <button
                                                 onClick={() => toggleExpanded(item.title)}
                                                 className={cn(
-                                                    "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-all",
-                                                    isActive(item.href)
-                                                        ? "bg-indigo-50 text-indigo-700 font-medium"
-                                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                                    "w-full group flex items-center justify-between gap-3 px-3.5 py-3 rounded-lg transition-all duration-200",
+                                                    active
+                                                        ? "bg-primary text-white shadow-md shadow-primary/25"
+                                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-primary"
                                                 )}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <item.icon className={cn("h-5 w-5", isActive(item.href) ? "text-indigo-600" : "")} />
-                                                    <span className="text-sm">{item.title}</span>
+                                                <div className="flex items-center gap-3 min-w-0">
+                                                    <item.icon className={cn("h-[22px] w-[22px] flex-shrink-0 transition-transform", active ? "text-white" : "group-hover:text-primary")} />
+                                                    <span className="text-sm font-medium truncate">{item.title}</span>
                                                 </div>
                                                 <ChevronRight className={cn(
-                                                    "h-4 w-4 transition-transform",
+                                                    "h-4 w-4 transition-transform flex-shrink-0 opacity-50",
                                                     expandedItems.includes(item.title) && "rotate-90"
                                                 )} />
                                             </button>
                                             {expandedItems.includes(item.title) && (
-                                                <div className="ml-8 mt-1 space-y-1">
+                                                <div className="ml-4 mt-1 space-y-1 pl-4 border-l border-slate-100 dark:border-slate-700">
                                                     {item.subItems.map((subItem) => (
                                                         <Link
                                                             key={subItem.href}
                                                             href={subItem.href}
                                                             className={cn(
-                                                                "block px-3 py-2 rounded-lg text-sm transition-colors",
+                                                                "block py-2 px-3 text-sm rounded-md transition-all",
                                                                 pathname === subItem.href.split("?")[0]
-                                                                    ? "text-indigo-700 bg-indigo-50 font-medium"
-                                                                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                                                                    ? "text-primary font-medium bg-primary/5"
+                                                                    : "text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300"
                                                             )}
                                                         >
                                                             {subItem.title}
@@ -194,14 +197,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                         <Link
                                             href={item.href}
                                             className={cn(
-                                                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
-                                                isActive(item.href)
-                                                    ? "bg-indigo-50 text-indigo-700 font-medium"
-                                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                                "group flex items-center gap-3 px-3.5 py-3 rounded-lg transition-all duration-200",
+                                                active
+                                                    ? "bg-primary text-white shadow-md shadow-primary/25"
+                                                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-primary"
                                             )}
                                         >
-                                            <item.icon className={cn("h-5 w-5", isActive(item.href) ? "text-indigo-600" : "")} />
-                                            <span className="text-sm">{item.title}</span>
+                                            <item.icon className={cn("h-[22px] w-[22px] flex-shrink-0 transition-transform", active ? "text-white" : "group-hover:text-primary")} />
+                                            <span className="text-sm font-medium truncate">{item.title}</span>
                                         </Link>
                                     )}
                                 </div>
@@ -209,24 +212,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         })}
                     </nav>
 
-                    {/* User & Logout */}
-                    <div className="p-4 border-t border-slate-200">
-                        <div className="flex items-center gap-3 mb-4 px-2">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold shadow-sm">
                                 {user?.name?.charAt(0) || "A"}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-900 truncate">{user?.name || "Admin"}</p>
-                                <p className="text-xs text-slate-500">School Admin</p>
+                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.name || "Admin"}</p>
+                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">School Admin</p>
                             </div>
                         </div>
                         <Button
                             onClick={handleLogout}
-                            variant="outline"
-                            className="w-full justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                            variant="ghost"
+                            className="w-full justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg h-9 text-sm font-medium"
                         >
                             <LogOut className="w-4 h-4 mr-2" />
-                            Logout
+                            Sign Out
                         </Button>
                     </div>
                 </div>
@@ -234,65 +236,52 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col overflow-hidden w-full lg:w-auto">
                     {/* Header */}
-                    <header className="h-16 bg-white border-b border-slate-200 px-4 lg:px-8 flex items-center justify-between flex-shrink-0">
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 mr-2"
-                        >
-                            <Menu className="w-6 h-6 text-slate-600" />
-                        </button>
-
-                        {/* Search - Hidden on small mobile */}
-                        <div className="hidden sm:flex items-center gap-4 flex-1 max-w-md">
-                            <div className="flex items-center gap-2 flex-1 px-4 py-2 bg-slate-100 rounded-lg border border-slate-200 focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
-                                <Search className="w-4 h-4 text-slate-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search students, teachers..."
-                                    className="bg-transparent text-sm outline-none w-full text-slate-900 placeholder:text-slate-400"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Mobile Logo */}
-                        <div className="flex lg:hidden items-center gap-2 flex-1 sm:hidden">
-                            <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center">
-                                <GraduationCap className="h-5 w-5 text-white" />
-                            </div>
-                            <span className="font-bold text-slate-900">Progress LMS</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 sm:gap-4">
-                            {/* Mobile Search Button */}
-                            <button className="sm:hidden p-2 rounded-lg hover:bg-slate-100">
-                                <Search className="w-5 h-5 text-slate-600" />
+                    <header className="h-[70px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 px-4 lg:px-8 flex items-center justify-between flex-shrink-0 sticky top-0 z-30">
+                        <div className="flex items-center gap-4 flex-1">
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={() => setSidebarOpen(true)}
+                                className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
+                            >
+                                <Menu className="w-6 h-6" />
                             </button>
 
-                            <button className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors relative">
-                                <Bell className="w-5 h-5 text-slate-600" />
-                                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                            {/* Search */}
+                            <div className="hidden sm:flex items-center gap-4 flex-1 max-w-md">
+                                <div className="group flex items-center gap-3 flex-1 px-4 py-2.5 bg-slate-100/50 dark:bg-slate-900/50 rounded-full border border-transparent focus-within:border-primary/30 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-4 focus-within:ring-primary/5 transition-all duration-300">
+                                    <Search className="w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search..."
+                                        className="bg-transparent text-sm outline-none w-full text-slate-900 dark:text-white placeholder:text-slate-400"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 sm:gap-4 justify-end flex-1 sm:flex-initial">
+                            <button className="w-10 h-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 hover:text-primary transition-all relative">
+                                <Bell className="w-5 h-5" />
+                                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-[1.5px] border-white dark:border-slate-800"></span>
                             </button>
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 hover:bg-slate-100 rounded-lg px-2 py-1.5 transition-colors">
-                                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    <button className="flex items-center gap-3 pl-2 pr-1 py-1 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full transition-all group">
+                                        <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-sm">
                                             {user?.name?.charAt(0) || "A"}
                                         </div>
-                                        <span className="text-sm font-medium text-slate-900 hidden md:block">{user?.name?.split(" ")[0] || "Admin"}</span>
-                                        <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48">
-                                    <DropdownMenuItem onClick={() => router.push("/admin/settings")}>
+                                <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl border-slate-100 dark:border-slate-700 shadow-xl dark:bg-slate-800">
+                                    <DropdownMenuItem onClick={() => router.push("/admin/settings")} className="rounded-lg py-2.5 cursor-pointer">
                                         <Settings className="w-4 h-4 mr-2" />
-                                        Settings
+                                        <span>Settings</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                                    <DropdownMenuSeparator className="bg-slate-100 dark:bg-slate-700 my-1" />
+                                    <DropdownMenuItem onClick={handleLogout} className="rounded-lg py-2.5 cursor-pointer text-red-600 focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-900/20">
                                         <LogOut className="w-4 h-4 mr-2" />
-                                        Logout
+                                        <span>Sign Out</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -300,8 +289,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </header>
 
                     {/* Content */}
-                    <main className="flex-1 overflow-y-auto">
-                        {children}
+                    <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-900 p-4 lg:p-8">
+                        <div className="mx-auto max-w-7xl animate-fadeInUp">
+                            {children}
+                        </div>
                     </main>
                 </div>
             </div>

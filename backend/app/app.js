@@ -23,6 +23,18 @@ app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan("dev"));
 
+// Debug middleware to log incoming API requests and Authorization header
+app.use((req, res, next) => {
+  try {
+    if (req.originalUrl && req.originalUrl.startsWith('/api/v1')) {
+      console.log('[DEBUG APP] Incoming:', req.method, req.originalUrl, 'Authorization:', req.headers.authorization || req.headers.Authorization);
+    }
+  } catch (err) {
+    console.error('[DEBUG APP] Logging error:', err.message);
+  }
+  next();
+});
+
 // Initialize cors 
 const allowedOrigins = [
   process.env.CLIENT_URL,
@@ -61,17 +73,23 @@ try {
   app.use("/api/v1", require("../routes/v1/staff/role.router"));
   app.use("/api/v1", require("../routes/v1/staff/teachers.router"));
 
+  // Students (moved earlier to ensure public login routes are handled before routers using router.use(isLoggedIn))
+  app.use("/api/v1", require("../routes/v1/students/students.router"));
+
   // Academic
   app.use("/api/v1", require("../routes/v1/academic/academicTerm.router"));
   app.use("/api/v1", require("../routes/v1/academic/academicYear.router"));
   app.use("/api/v1", require("../routes/v1/academic/assessmentType.router"));
   app.use("/api/v1", require("../routes/v1/academic/assignment.router"));
   app.use("/api/v1", require("../routes/v1/academic/attendance.router"));
+  app.use("/api/v1/academic/behavior", require("../routes/v1/academic/attendanceBehavior.router"));
   app.use("/api/v1", require("../routes/v1/academic/class.router"));
   app.use("/api/v1", require("../routes/v1/academic/course.router"));
   app.use("/api/v1", require("../routes/v1/academic/enrollment.router"));
   app.use("/api/v1", require("../routes/v1/academic/exams.router"));
   app.use("/api/v1", require("../routes/v1/academic/grade.router"));
+  app.use("/api/v1", require("../routes/v1/academic/gradingPolicy.router"));
+  app.use("/api/v1", require("../routes/v1/academic/performance.router"));
   app.use("/api/v1", require("../routes/v1/academic/program.router"));
   app.use("/api/v1", require("../routes/v1/academic/question.router"));
   app.use("/api/v1", require("../routes/v1/academic/results.router"));
@@ -84,6 +102,7 @@ try {
 
   // Finance
   app.use("/api/v1", require("../routes/v1/finance/fee.router"));
+  app.use("/api/v1/finance", require("../routes/v1/finance/finance.router"));
 
   // Communication
   app.use("/api/v1", require("../routes/v1/communication/chat.router"));

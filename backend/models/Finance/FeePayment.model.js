@@ -59,6 +59,14 @@ const feePaymentSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Static method to find overdue payments
+feePaymentSchema.statics.findOverduePayments = async function (schoolId) {
+    return await this.find({
+        schoolId,
+        status: "overdue"
+    }).populate('student', 'name guardian');
+};
+
 const FeePayment = mongoose.model("FeePayment", feePaymentSchema);
 
 module.exports = FeePayment;

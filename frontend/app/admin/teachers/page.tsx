@@ -271,68 +271,68 @@ export default function AdminTeachersPage() {
     }
 
     return (
-        <div className="p-4 md:p-6 space-y-6">
+        <div className="mobile-padding mobile-padding-y space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                        <Users className="h-5 w-5 text-purple-600" />
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
+                <div className="flex items-start gap-2 sm:gap-3 w-full sm:w-auto">
+                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
+                        <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Teachers</h1>
-                        <p className="text-sm text-slate-500">Manage faculty members</p>
+                    <div className="min-w-0">
+                        <h1 className="heading-responsive font-bold text-slate-900">Teachers</h1>
+                        <p className="text-xs sm:text-sm text-slate-500">Manage faculty members</p>
                     </div>
                 </div>
-                <Button asChild className="bg-purple-600 hover:bg-purple-700">
+                <Button asChild className="btn-responsive-lg w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white">
                     <Link href="/admin/teachers/create">
                         <UserPlus className="mr-2 h-4 w-4" /> Add Teacher
                     </Link>
                 </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-purple-600" />
+            {/* Stats - Mobile optimized grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+                <Card className="stat-card border-slate-200">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                         </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Total</p>
-                            <p className="text-xl font-bold">{teachers.length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Active</p>
-                            <p className="text-xl font-bold">{teachers.filter(t => !t.isWithdrawn && !t.isSuspended).length}</p>
+                        <div className="w-full">
+                            <p className="text-xs text-slate-500">Total</p>
+                            <p className="text-lg sm:text-xl font-bold text-slate-900">{teachers.length}</p>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                            <AlertCircle className="h-5 w-5 text-amber-600" />
+                <Card className="stat-card border-slate-200">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Suspended</p>
-                            <p className="text-xl font-bold">{teachers.filter(t => t.isSuspended).length}</p>
+                        <div className="w-full">
+                            <p className="text-xs text-slate-500">Active</p>
+                            <p className="text-lg sm:text-xl font-bold text-slate-900">{teachers.filter(t => !t.isWithdrawn && !t.isSuspended).length}</p>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <BookOpen className="h-5 w-5 text-blue-600" />
+                <Card className="stat-card border-slate-200">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
                         </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Subjects</p>
-                            <p className="text-xl font-bold">
+                        <div className="w-full">
+                            <p className="text-xs text-slate-500">Suspended</p>
+                            <p className="text-lg sm:text-xl font-bold text-slate-900">{teachers.filter(t => t.isSuspended).length}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="stat-card border-slate-200">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                        </div>
+                        <div className="w-full">
+                            <p className="text-xs text-slate-500">Subjects</p>
+                            <p className="text-lg sm:text-xl font-bold text-slate-900">
                                 {new Set(teachers.filter(t => t.subject).map(t => typeof t.subject === 'object' ? t.subject._id : t.subject)).size}
                             </p>
                         </div>
@@ -340,71 +340,75 @@ export default function AdminTeachersPage() {
                 </Card>
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-                <div className="flex flex-1 gap-3 items-center w-full sm:w-auto">
-                    <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            {/* Filters - Mobile optimized */}
+            <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input
                             placeholder="Search teachers..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9"
+                            className="input-mobile pl-8"
                         />
                     </div>
-                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                        {["all", "active", "suspended"].map((f) => (
-                            <button
-                                key={f}
-                                onClick={() => setStatusFilter(f as any)}
-                                className={`px-3 py-1.5 text-sm rounded-md transition-all capitalize ${statusFilter === f ? "bg-white text-purple-700 shadow-sm font-medium" : "text-slate-600 hover:text-slate-900"
-                                    }`}
-                            >
-                                {f}
-                            </button>
-                        ))}
-                    </div>
+                </div>
+                
+                {/* Filter Pills - Horizontal scroll on mobile */}
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                    {["all", "active", "suspended"].map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setStatusFilter(f as any)}
+                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all whitespace-nowrap ${statusFilter === f ? "bg-purple-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                }`}
+                        >
+                            {f.charAt(0).toUpperCase() + f.slice(1)}
+                        </button>
+                    ))}
                 </div>
 
-                {/* View Toggle */}
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                    <button
-                        onClick={() => setViewMode("card")}
-                        className={`p-2 rounded-md transition-all ${viewMode === "card" ? "bg-white text-purple-700 shadow-sm" : "text-slate-600"}`}
-                        title="Card view"
-                    >
-                        <LayoutGrid className="h-4 w-4" />
-                    </button>
-                    <button
-                        onClick={() => setViewMode("table")}
-                        className={`p-2 rounded-md transition-all ${viewMode === "table" ? "bg-white text-purple-700 shadow-sm" : "text-slate-600"}`}
-                        title="Table view"
-                    >
-                        <Table2 className="h-4 w-4" />
-                    </button>
+                {/* View Toggle - Mobile optimized */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                        <button
+                            onClick={() => setViewMode("card")}
+                            className={`p-2 rounded-md transition-all touch-target-sm ${viewMode === "card" ? "bg-white text-purple-700 shadow-sm" : "text-slate-600"}`}
+                            title="Card view"
+                        >
+                            <LayoutGrid className="h-4 w-4" />
+                        </button>
+                        <button
+                            onClick={() => setViewMode("table")}
+                            className={`p-2 rounded-md transition-all touch-target-sm ${viewMode === "table" ? "bg-white text-purple-700 shadow-sm" : "text-slate-600"}`}
+                            title="Table view"
+                        >
+                            <Table2 className="h-4 w-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
             {/* Content */}
             {filteredTeachers.length === 0 ? (
                 <Card className="border-slate-200">
-                    <CardContent className="flex flex-col items-center justify-center py-16">
-                        <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                            <Users className="h-8 w-8 text-slate-400" />
+                    <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16">
+                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                            <Users className="h-6 w-6 sm:h-8 sm:w-8 text-slate-400" />
                         </div>
-                        <h3 className="text-lg font-medium text-slate-700">No teachers found</h3>
-                        <p className="text-slate-500 mt-1">
+                        <h3 className="text-base sm:text-lg font-medium text-slate-700">No teachers found</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center px-2">
                             {searchQuery ? "Try adjusting your search" : "Add your first teacher to get started"}
                         </p>
                         {!searchQuery && (
-                            <Button asChild className="mt-4">
+                            <Button asChild className="btn-responsive-lg mt-4">
                                 <Link href="/admin/teachers/create"><Plus className="mr-2 h-4 w-4" /> Add Teacher</Link>
                             </Button>
                         )}
                     </CardContent>
                 </Card>
             ) : viewMode === "card" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                     {filteredTeachers.map((teacher) => (
                         <TeacherCard
                             key={teacher._id}
@@ -417,51 +421,49 @@ export default function AdminTeachersPage() {
                 </div>
             ) : (
                 <Card className="border-slate-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-slate-50 border-b">
+                    <div className="overflow-x-auto mobile-scroll">
+                        <table className="w-full text-xs sm:text-sm">
+                            <thead className="bg-slate-50 border-b sticky top-0">
                                 <tr>
-                                    <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">Teacher</th>
-                                    <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 hidden md:table-cell">Subject</th>
-                                    <th className="text-left px-4 py-3 text-sm font-medium text-slate-600 hidden md:table-cell">Class</th>
-                                    <th className="text-left px-4 py-3 text-sm font-medium text-slate-600">Status</th>
-                                    <th className="text-right px-4 py-3 text-sm font-medium text-slate-600">Actions</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600">Teacher</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 hidden md:table-cell">Subject</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 hidden lg:table-cell">Class</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600">Status</th>
+                                    <th className="text-right px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y">
                                 {filteredTeachers.map((teacher) => (
                                     <tr key={teacher._id} className="hover:bg-slate-50">
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-9 w-9">
-                                                    <AvatarFallback className="bg-purple-100 text-purple-700 text-sm">
+                                        <td className="px-2 sm:px-4 py-2 sm:py-3">
+                                            <div className="flex items-center gap-2">
+                                                <Avatar className="h-7 w-7 sm:h-9 sm:w-9">
+                                                    <AvatarFallback className="bg-purple-100 text-purple-700 text-xs sm:text-sm">
                                                         {teacher.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="min-w-0">
-                                                    <p className="font-medium text-slate-900 truncate">{teacher.name}</p>
-                                                    <p className="text-sm text-slate-500 truncate">{teacher.email}</p>
+                                                    <p className="font-medium text-slate-900 truncate text-xs sm:text-sm">{teacher.name}</p>
+                                                    <p className="text-xs text-slate-500 truncate hidden sm:block">{teacher.email}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 hidden md:table-cell">
+                                        <td className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell">
                                             {teacher.subject ? (
-                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
                                                     {typeof teacher.subject === 'object' ? teacher.subject.name : teacher.subject}
                                                 </Badge>
                                             ) : (
-                                                <span className="text-slate-400 text-sm">—</span>
+                                                <span className="text-slate-400">—</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 hidden md:table-cell">
-                                            <span className="text-sm text-slate-600">
-                                                {teacher.classLevel ? (
-                                                    typeof teacher.classLevel === 'object' ? teacher.classLevel.name : teacher.classLevel
-                                                ) : "—"}
-                                            </span>
+                                        <td className="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell text-slate-600">
+                                            {teacher.classLevel ? (
+                                                typeof teacher.classLevel === 'object' ? teacher.classLevel.name : teacher.classLevel
+                                            ) : "—"}
                                         </td>
-                                        <td className="px-4 py-3">{getStatusBadge(teacher)}</td>
-                                        <td className="px-4 py-3 text-right">
+                                        <td className="px-2 sm:px-4 py-2 sm:py-3">{getStatusBadge(teacher)}</td>
+                                        <td className="px-2 sm:px-4 py-2 sm:py-3 text-right">
                                             <ActionMenu
                                                 onView={() => router.push(`/admin/teachers/${teacher._id}`)}
                                                 onEdit={() => router.push(`/admin/teachers/${teacher._id}/edit`)}
@@ -476,22 +478,22 @@ export default function AdminTeachersPage() {
                 </Card>
             )}
 
-            <p className="text-sm text-slate-500 text-center">
+            <p className="text-xs sm:text-sm text-slate-500 text-center">
                 Showing {filteredTeachers.length} of {teachers.length} teachers
             </p>
 
             {/* Delete Dialog */}
             <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-w-sm sm:max-w-md">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Teacher?</AlertDialogTitle>
-                        <AlertDialogDescription>
+                        <AlertDialogTitle className="text-base sm:text-lg">Delete Teacher?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-xs sm:text-sm">
                             This will permanently delete <strong>{teacherToDelete?.name}</strong> and remove all their data.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+                    <AlertDialogFooter className="flex gap-2 sm:gap-4">
+                        <AlertDialogCancel className="btn-responsive flex-1">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="btn-responsive flex-1 bg-red-600 hover:bg-red-700 text-white">
                             Delete
                         </AlertDialogAction>
                     </AlertDialogFooter>

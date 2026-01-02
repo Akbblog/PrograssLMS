@@ -15,7 +15,10 @@ const path = require('path');
 const DB = process.env.DB || "mongodb://localhost:27017/school-management";
 
 mongoose
-    .connect(DB)
+    .connect(DB, {
+        serverSelectionTimeoutMS: 30000, // 30 seconds
+        socketTimeoutMS: 45000, // 45 seconds
+    })
     .then(() => {
         console.log("✅ Database connected successfully");
     })

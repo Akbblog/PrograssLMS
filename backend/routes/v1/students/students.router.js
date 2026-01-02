@@ -1,6 +1,18 @@
 const express = require("express");
 const studentsRouter = express.Router();
 
+// Debugging middleware: log login requests and Authorization header
+studentsRouter.use((req, res, next) => {
+  try {
+    if (req.path && req.path.toLowerCase().includes('login')) {
+      console.log(`[DEBUG] Students Router - ${req.method} ${req.path} - Authorization:`, req.headers.authorization || req.headers.Authorization);
+    }
+  } catch (err) {
+    console.error('[DEBUG] Students Router logging error:', err.message);
+  }
+  next();
+});
+
 // Middleware
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
 const isAdmin = require("../../../middlewares/isAdmin");

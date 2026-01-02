@@ -162,6 +162,10 @@ export const financeAPI = {
   recordPayment: (data: any) => api.post('/finance/fees/payment', data),
   getStudentPayments: (studentId: string) => api.get(`/finance/fees/student/${studentId}`),
   getDueFees: (studentId: string) => api.get(`/finance/fees/due/${studentId}`),
+  // Advanced Finance
+  generateStudentFee: (data: any) => api.post('/finance/generate-student-fee', data),
+  getFinancialReport: (params: any) => api.get('/finance/report', { params }),
+  getReminders: () => api.get('/finance/reminders'),
 };
 
 // Attendance endpoints
@@ -235,6 +239,34 @@ export const gradeAPI = {
   getStudentGrades: (studentId: string, params?: any) => api.get(`/academic/grades/student/${studentId}`, { params }),
   getClassGrades: (params: any) => api.get('/academic/grades/class', { params }),
   createGrade: (data: any) => api.post('/academic/grades', data),
+};
+
+// Grading Policy endpoints
+export const gradingPolicyAPI = {
+  getAll: () => api.get('/grading-policies'),
+  getById: (id: string) => api.get(`/grading-policies/${id}`),
+  create: (data: any) => api.post('/grading-policies', data),
+  update: (id: string, data: any) => api.patch(`/grading-policies/${id}`, data),
+  delete: (id: string) => api.delete(`/grading-policies/${id}`),
+  getActive: (academicYearId?: string) => api.get('/grading-policies/active', { params: { academicYearId } }),
+};
+
+// Performance endpoints
+export const performanceAPI = {
+  getStudentPerformance: (studentId: string, academicYear: string, academicTerm: string) =>
+    api.get(`/performance/student/${studentId}`, { params: { academicYear, academicTerm } }),
+  getClassPerformance: (classLevelId: string, subjectId: string, academicYear: string, academicTerm: string) =>
+    api.get(`/performance/class/${classLevelId}`, { params: { subject: subjectId, academicYear, academicTerm } }),
+};
+
+// Behavior & Risk Alert endpoints
+export const behaviorAPI = {
+  getStudentProfile: (studentId: string, academicYearId: string) =>
+    api.get(`/academic/behavior/student-profile/${studentId}`, { params: { academicYearId } }),
+  getAlerts: (academicYearId: string) =>
+    api.get('/academic/behavior/alerts', { params: { academicYearId } }),
+  getClassAnalytics: (classLevelId: string, academicYearId: string) =>
+    api.get(`/academic/behavior/class-analytics/${classLevelId}`, { params: { academicYearId } }),
 };
 
 // Assessment Type endpoints

@@ -3,7 +3,8 @@ const app = require("./app/app");
 require("dotenv").config();
 require("colors");
 // database connection
-require("./config/dbConnect");
+const dbConnect = require("./config/dbConnect");
+dbConnect();
 // ports
 const port = process.env.PORT || 3001;
 // initialize server

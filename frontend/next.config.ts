@@ -6,6 +6,18 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  redirects: async () => [
+    {
+      source: "/admin/academic-years",
+      destination: "/admin/academic/years",
+      permanent: true,
+    },
+    {
+      source: "/admin/academic-terms",
+      destination: "/admin/academic/terms",
+      permanent: true,
+    },
+  ],
   rewrites: async () => ({
     // Only proxy /api to localhost during development. In production the
     // real API should be configured via `NEXT_PUBLIC_API_URL` or a platform

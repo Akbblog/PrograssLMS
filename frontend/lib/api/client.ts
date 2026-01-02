@@ -1,7 +1,9 @@
 import axios from "axios";
 
-// Prefer explicit NEXT_PUBLIC_API_URL during development; use relative path
-// in production so no client-side localhost defaults remain.
+// Prefer explicit NEXT_PUBLIC_API_URL during development; when unset use
+// a relative path so client/server requests go to the same origin.
+// In dev set NEXT_PUBLIC_API_URL to your backend (e.g. http://localhost:5130)
+// to ensure RSC/server fetches reach the API directly.
 const baseURL = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
 
 const apiClient = axios.create({

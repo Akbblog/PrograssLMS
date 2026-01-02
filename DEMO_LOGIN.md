@@ -18,7 +18,7 @@ This file contains demo credentials for quick local testing of the LMS.
 - Login URL: http://localhost:3000/login
 
 ## Student
-- Email: student1@prog ress.edu
+- Email: student1@prog ess.edu
 - Password: student123
 - Login URL: http://localhost:3000/login
 

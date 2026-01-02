@@ -143,6 +143,7 @@ export default function CommunicationPage() {
     const [selectedTeachers, setSelectedTeachers] = useState<string[]>([])
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const [uploadProgress, setUploadProgress] = useState(0)
+    const [showMobileSidebar, setShowMobileSidebar] = useState(false)
     const [newConversation, setNewConversation] = useState({
         name: "",
         description: "",
@@ -454,36 +455,46 @@ export default function CommunicationPage() {
 
     return (
         <TooltipProvider>
-            <div className="h-[calc(100vh-4rem)] flex bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
-                {/* Sidebar */}
-                <div className="w-80 bg-white/80 backdrop-blur-xl border-r border-slate-200/60 flex flex-col shadow-sm">
+            <div className="h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] flex bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 flex-col lg:flex-row">
+                {/* Sidebar - Mobile hidden by default, toggle with button */}
+                <div className={`w-full lg:w-80 bg-white/80 backdrop-blur-xl border-b lg:border-r border-slate-200/60 flex flex-col shadow-sm transition-all duration-300 ${
+                    showMobileSidebar ? 'block' : 'hidden lg:flex'
+                }`}>
                     {/* Header */}
-                    <div className="p-4 border-b border-slate-200/60">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Messages</h2>
+                    <div className="p-3 sm:p-4 border-b border-slate-200/60">
+                        <div className="flex items-center justify-between mb-3 sm:mb-4">
+                            <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Messages</h2>
                             <div className="flex gap-1">
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button size="sm" variant="ghost" onClick={fetchConversations} className="hover:bg-indigo-50">
-                                            <RefreshCw className="w-4 h-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>Refresh</TooltipContent>
-                                </Tooltip>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button size="sm" variant="ghost" onClick={() => setIsCreateDialogOpen(true)} className="hover:bg-indigo-50">
-                                            <Plus className="w-4 h-4" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>New Channel</TooltipContent>
-                                </Tooltip>
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={fetchConversations}
+                                    className="hover:bg-indigo-50 p-1.5 h-auto"
+                                >
+                                    <RefreshCw className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setIsCreateDialogOpen(true)}
+                                    className="hover:bg-indigo-50 p-1.5 h-auto"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setShowMobileSidebar(false)}
+                                    className="lg:hidden hover:bg-indigo-50 p-1.5 h-auto"
+                                >
+                                    <X className="w-4 h-4" />
+                                </Button>
                             </div>
                         </div>
 
                         {/* Tabs */}
-                        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "channels" | "direct")} className="mb-3">
-                            <TabsList className="grid w-full grid-cols-2 bg-slate-100/80">
+                        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "channels" | "direct")} className="mb-2 sm:mb-3">
+                            <TabsList className="grid w-full grid-cols-2 bg-slate-100/80 h-8">
                                 <TabsTrigger value="channels" className="text-xs data-[state=active]:bg-white">
                                     <Hash className="w-3 h-3 mr-1" />
                                     Channels
@@ -497,10 +508,10 @@ export default function CommunicationPage() {
 
                         {/* Search */}
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Search..."
-                                className="pl-9 h-9 bg-slate-50/80 border-slate-200/60 focus:bg-white transition-colors"
+                                className="pl-8 h-8 text-sm bg-slate-50/80 border-slate-200/60 focus:bg-white transition-colors"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -510,11 +521,11 @@ export default function CommunicationPage() {
                         {activeTab === "direct" && (
                             <Button
                                 variant="outline"
-                                className="w-full mt-3 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50"
+                                className="w-full mt-2 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 text-xs py-1.5 h-auto"
                                 onClick={() => setIsDMDialogOpen(true)}
                             >
-                                <Plus className="w-4 h-4 mr-2" />
-                                New Direct Message
+                                <Plus className="w-3 h-3 mr-1.5" />
+                                New DM
                             </Button>
                         )}
                     </div>
@@ -523,49 +534,49 @@ export default function CommunicationPage() {
                     <ScrollArea className="flex-1">
                         <div className="p-2">
                             {filteredConversations.length === 0 ? (
-                                <div className="text-center py-12 text-slate-500">
-                                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-slate-100 flex items-center justify-center">
-                                        <MessageSquare className="w-8 h-8 opacity-50" />
+                                <div className="text-center py-8 text-slate-500">
+                                    <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-slate-100 flex items-center justify-center">
+                                        <MessageSquare className="w-6 h-6 opacity-50" />
                                     </div>
-                                    <p className="text-sm font-medium">No {activeTab === "direct" ? "conversations" : "channels"} yet</p>
-                                    <p className="text-xs mt-1 text-slate-400">
-                                        {activeTab === "direct" ? "Start a direct message" : "Create a channel to get started"}
+                                    <p className="text-xs font-medium">No {activeTab === "direct" ? "conversations" : "channels"}</p>
+                                    <p className="text-xs mt-0.5 text-slate-400">
+                                        {activeTab === "direct" ? "Start a DM" : "Create a channel"}
                                     </p>
                                 </div>
                             ) : (
                                 filteredConversations.map(conversation => (
                                     <button
                                         key={conversation._id}
-                                        onClick={() => setActiveConversation(conversation)}
-                                        className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all duration-200 mb-1 group ${activeConversation?._id === conversation._id
+                                        onClick={() => {
+                                            setActiveConversation(conversation)
+                                            setShowMobileSidebar(false)
+                                        }}
+                                        className={`w-full flex items-start gap-2 p-2 rounded-lg text-left transition-all duration-200 mb-0.5 group text-xs sm:text-sm ${activeConversation?._id === conversation._id
                                                 ? 'bg-gradient-to-r from-indigo-50 to-purple-50 shadow-sm border border-indigo-100'
                                                 : 'hover:bg-slate-50/80'
                                             }`}
                                     >
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${getConversationColor(conversation.type, conversation.groupType)}`}>
+                                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 flex-shrink-0 ${getConversationColor(conversation.type, conversation.groupType)}`}>
                                             {getConversationIcon(conversation.type, conversation.groupType)}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between">
-                                                <span className={`font-semibold text-sm truncate ${activeConversation?._id === conversation._id ? 'text-indigo-700' : 'text-slate-800'
+                                            <div className="flex items-center justify-between gap-1">
+                                                <span className={`font-semibold truncate text-xs sm:text-sm ${activeConversation?._id === conversation._id ? 'text-indigo-700' : 'text-slate-800'
                                                     }`}>
                                                     {conversation.name}
                                                 </span>
                                                 {conversation.lastMessage && (
-                                                    <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                                                        <Clock className="w-3 h-3" />
+                                                    <span className="text-[9px] text-slate-400 flex-shrink-0">
                                                         {formatTime(conversation.lastMessage.sentAt)}
                                                     </span>
                                                 )}
                                             </div>
                                             {conversation.lastMessage ? (
-                                                <p className="text-xs text-slate-500 truncate mt-0.5 flex items-center gap-1">
-                                                    <CheckCheck className="w-3 h-3 text-indigo-400" />
+                                                <p className="text-xs text-slate-500 truncate mt-0.5">
                                                     {conversation.lastMessage.content}
                                                 </p>
                                             ) : (
-                                                <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
-                                                    <Users className="w-3 h-3" />
+                                                <p className="text-xs text-slate-400 mt-0.5">
                                                     {conversation.participants?.length || 0} members
                                                 </p>
                                             )}
@@ -577,26 +588,23 @@ export default function CommunicationPage() {
                     </ScrollArea>
 
                     {/* User Profile */}
-                    <div className="p-4 border-t border-slate-200/60 bg-gradient-to-r from-slate-50/50 to-indigo-50/30">
-                        <div className="flex items-center gap-3">
+                    <div className="p-2 sm:p-4 border-t border-slate-200/60 bg-gradient-to-r from-slate-50/50 to-indigo-50/30">
+                        <div className="flex items-center gap-2">
                             <div className="relative">
-                                <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
-                                    <AvatarFallback className={`bg-gradient-to-br ${getAvatarColor(user?.name || "")} text-white font-semibold`}>
+                                <Avatar className="h-8 h-8 sm:h-10 sm:w-10 ring-2 ring-white shadow-sm">
+                                    <AvatarFallback className={`bg-gradient-to-br ${getAvatarColor(user?.name || "")} text-white font-semibold text-xs`}>
                                         {user?.name?.charAt(0) || "A"}
                                     </AvatarFallback>
                                 </Avatar>
-                                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                                <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border-2 border-white rounded-full"></span>
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-slate-900 truncate">{user?.name || "Admin"}</p>
+                            <div className="flex-1 min-w-0 hidden sm:block">
+                                <p className="text-xs sm:text-sm font-semibold text-slate-900 truncate">{user?.name || "Admin"}</p>
                                 <p className="text-xs text-emerald-600 flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                    <span className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></span>
                                     Online
                                 </p>
                             </div>
-                            <Button variant="ghost" size="sm" className="hover:bg-slate-100">
-                                <Settings2 className="w-4 h-4 text-slate-500" />
-                            </Button>
                         </div>
                     </div>
                 </div>
@@ -606,35 +614,35 @@ export default function CommunicationPage() {
                     {activeConversation ? (
                         <>
                             {/* Chat Header */}
-                            <div className="h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 flex items-center justify-between shadow-sm">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-sm ${getConversationColor(activeConversation.type, activeConversation.groupType)}`}>
+                            <div className="h-14 sm:h-16 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-3 sm:px-6 flex items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => setShowMobileSidebar(true)}
+                                        className="lg:hidden hover:bg-indigo-50 p-1.5 h-auto"
+                                    >
+                                        <MessageSquare className="w-4 h-4" />
+                                    </Button>
+                                    <div className={`w-8 h-8 sm:w-11 sm:h-11 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0 ${getConversationColor(activeConversation.type, activeConversation.groupType)}`}>
                                         {getConversationIcon(activeConversation.type, activeConversation.groupType)}
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-900">{activeConversation.name}</h3>
-                                        <p className="text-xs text-slate-500 flex items-center gap-2">
-                                            <Users className="w-3 h-3" />
+                                    <div className="min-w-0">
+                                        <h3 className="font-bold text-sm sm:text-base text-slate-900 truncate">{activeConversation.name}</h3>
+                                        <p className="text-xs text-slate-500 truncate">
                                             {activeConversation.participants?.length || 0} members
-                                            {activeConversation.description && (
-                                                <>
-                                                    <span className="text-slate-300">•</span>
-                                                    {activeConversation.description}
-                                                </>
-                                            )}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
                                     {activeConversation.type !== "private" && (
-                                        <Button variant="ghost" size="sm" onClick={() => setIsMembersDialogOpen(true)} className="hover:bg-indigo-50">
-                                            <UserPlus className="w-4 h-4 mr-2 text-indigo-600" />
-                                            <span className="text-indigo-600">Add</span>
+                                        <Button variant="ghost" size="sm" onClick={() => setIsMembersDialogOpen(true)} className="hover:bg-indigo-50 p-1.5 h-auto hidden sm:flex">
+                                            <UserPlus className="w-4 h-4 text-indigo-600" />
                                         </Button>
                                     )}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="sm" className="hover:bg-slate-100">
+                                            <Button variant="ghost" size="sm" className="hover:bg-slate-100 p-1.5 h-auto">
                                                 <MoreVertical className="w-4 h-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -651,7 +659,7 @@ export default function CommunicationPage() {
                                                 onClick={() => handleDeleteConversation(activeConversation._id)}
                                             >
                                                 <Trash2 className="w-4 h-4 mr-2" />
-                                                Delete {activeConversation.type === "private" ? "Chat" : "Channel"}
+                                                Delete
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
@@ -659,22 +667,22 @@ export default function CommunicationPage() {
                             </div>
 
                             {/* Messages */}
-                            <ScrollArea className="flex-1 p-6">
-                                <div className="space-y-4 max-w-4xl mx-auto">
+                            <ScrollArea className="flex-1 p-3 sm:p-6">
+                                <div className="space-y-3 sm:space-y-4 max-w-4xl mx-auto">
                                     {loadingMessages ? (
                                         <div className="flex justify-center py-12">
                                             <div className="flex flex-col items-center gap-2">
                                                 <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                                                <span className="text-sm text-slate-500">Loading messages...</span>
+                                                <span className="text-xs sm:text-sm text-slate-500">Loading...</span>
                                             </div>
                                         </div>
                                     ) : messages.length === 0 ? (
-                                        <div className="text-center py-16">
-                                            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                                                <MessageSquare className="w-10 h-10 text-indigo-400" />
+                                        <div className="text-center py-12 sm:py-16">
+                                            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-2 sm:mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                                                <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-400" />
                                             </div>
-                                            <h3 className="text-lg font-semibold text-slate-700">No messages yet</h3>
-                                            <p className="text-sm text-slate-500 mt-1">Be the first to send a message!</p>
+                                            <h3 className="text-sm sm:text-lg font-semibold text-slate-700">No messages yet</h3>
+                                            <p className="text-xs sm:text-sm text-slate-500 mt-1">Be the first to send a message!</p>
                                         </div>
                                     ) : (
                                         messages.map((message, index) => {
@@ -684,19 +692,19 @@ export default function CommunicationPage() {
                                             return (
                                                 <div
                                                     key={message._id}
-                                                    className={`flex items-start gap-3 group animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ${isOwnMessage ? 'flex-row-reverse' : ''
+                                                    className={`flex items-start gap-2 sm:gap-3 group animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ${isOwnMessage ? 'flex-row-reverse' : ''
                                                         } ${message.isDeleted ? 'opacity-50' : ''}`}
                                                 >
                                                     {showAvatar ? (
-                                                        <Avatar className="h-9 w-9 ring-2 ring-white shadow-sm">
-                                                            <AvatarFallback className={`bg-gradient-to-br ${getAvatarColor(message.sender?.name || "")} text-white text-sm font-semibold`}>
+                                                        <Avatar className="h-7 w-7 sm:h-9 sm:w-9 ring-2 ring-white shadow-sm flex-shrink-0">
+                                                            <AvatarFallback className={`bg-gradient-to-br ${getAvatarColor(message.sender?.name || "")} text-white text-xs font-semibold`}>
                                                                 {message.sender?.name?.charAt(0) || "?"}
                                                             </AvatarFallback>
                                                         </Avatar>
                                                     ) : (
-                                                        <div className="w-9" />
+                                                        <div className="w-7 sm:w-9 flex-shrink-0" />
                                                     )}
-                                                    <div className={`flex-1 max-w-[70%] ${isOwnMessage ? 'text-right' : ''}`}>
+                                                    <div className={`flex-1 max-w-[75%] sm:max-w-[70%] ${isOwnMessage ? 'text-right' : ''}`}>
                                                         {showAvatar && (
                                                             <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`}>
                                                                 <span className="font-semibold text-sm text-slate-900">

@@ -36,6 +36,16 @@ const sidebarItems = [
         icon: "lucide:graduation-cap"
     },
     {
+        label: "Performance",
+        href: "/teacher/performance",
+        icon: "lucide:bar-chart-3"
+    },
+    {
+        label: "Behavior",
+        href: "/teacher/behavior",
+        icon: "lucide:shield-alert"
+    },
+    {
         label: "Communication",
         href: "/teacher/communication",
         icon: "lucide:message-square"
@@ -67,68 +77,81 @@ export default function TeacherSidebar({ className, sidebarOpen, setSidebarOpen 
     const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
 
     return (
-        <div className={cn(
-            "fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+        <aside className={cn(
+            "fixed inset-y-0 left-0 z-50 w-[270px] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 shadow-2xl lg:shadow-none font-sans",
             sidebarOpen ? "translate-x-0" : "-translate-x-full",
             className
         )}>
             {/* Logo */}
-            <div className="h-16 border-b border-slate-200 flex items-center justify-between px-4 lg:px-6">
+            <div className="h-[70px] border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 bg-white dark:bg-slate-800">
                 <Link href="/teacher/dashboard" className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                    <div className="w-10 h-10 bg-gradient-to-br from-success to-success-600 rounded-xl flex items-center justify-center shadow-lg shadow-success/30">
                         <Icon name="lucide:graduation-cap" className="h-6 w-6 text-white" />
                     </div>
-                    <span className="font-bold text-lg text-slate-900">Progress LMS</span>
+                    <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">Progress <span className="text-success">Pro</span></span>
                 </Link>
                 {setSidebarOpen && (
                     <button
-                        onClick={() => setSidebarOpen(false)}
-                        className="lg:hidden p-2 rounded-lg hover:bg-slate-100"
+                        onClick={() => setSidebarOpen?.(false)}
+                        className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500"
                     >
-                        <X className="w-5 h-5 text-slate-600" />
+                        <X className="w-5 h-5" />
                     </button>
                 )}
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-                {sidebarItems.map((item) => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all",
-                            isActive(item.href)
-                                ? "bg-indigo-50 text-indigo-700 font-medium"
-                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                        )}
-                    >
-                        <Icon name={item.icon} className={cn("h-5 w-5", isActive(item.href) ? "text-indigo-600" : "")} />
-                        <span className="text-sm">{item.label}</span>
-                    </Link>
-                ))}
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+                {sidebarItems.map((item) => {
+                    const active = isActive(item.href);
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                                "group flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all duration-200 relative overflow-hidden",
+                                active
+                                    ? "bg-success text-white shadow-md shadow-success/30"
+                                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-success"
+                            )}
+                        >
+                            <Icon
+                                name={item.icon}
+                                className={cn(
+                                    "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
+                                    active ? "text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-success"
+                                )}
+                            />
+                            <span className="text-sm font-semibold truncate relative z-10">{item.label}</span>
+
+                            {active && (
+                                <div className="absolute right-2 w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>
+                            )}
+                        </Link>
+                    )
+                })}
             </nav>
 
             {/* User & Logout */}
-            <div className="p-4 border-t border-slate-200">
-                <div className="flex items-center gap-3 mb-4 px-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold">
+            <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                <div className="flex items-center gap-3 mb-4 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div className="w-10 h-10 bg-gradient-to-br from-success to-success-600 rounded-lg flex items-center justify-center text-white font-black shadow-sm">
                         {user?.name?.charAt(0) || "T"}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">{user?.name || "Teacher"}</p>
-                        <p className="text-xs text-slate-500">Teacher</p>
+                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.name || "Teacher"}</p>
+                        <p className="text-[10px] font-bold text-success uppercase tracking-widest leading-none">Educator Elite</p>
                     </div>
                 </div>
                 <Button
                     onClick={handleLogout}
-                    variant="outline"
-                    className="w-full justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                    variant="ghost"
+                    className="w-full justify-center text-slate-500 dark:text-slate-400 hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all font-bold h-10"
                 >
                     <Icon name="lucide:log-out" className="w-4 h-4 mr-2" />
-                    Logout
+                    Sign Out
                 </Button>
             </div>
-        </div>
+        </aside>
     )
 }
