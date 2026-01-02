@@ -4,6 +4,9 @@ const Student = require("../../models/Students/students.model");
 
 class AttendanceBehaviorService {
     constructor(schoolId) {
+        if (!schoolId) {
+            throw new Error("School ID required for multi-tenancy");
+        }
         this.schoolId = schoolId;
     }
 

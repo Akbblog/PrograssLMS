@@ -1,6 +1,6 @@
 const AttendanceBehaviorService = require("../../services/academic/attendanceBehavior.service");
 
-const getSchoolId = (req) => req.user.schoolId;
+const getSchoolId = (req) => req.schoolId;
 
 exports.getStudentProfile = async (req, res) => {
     try {

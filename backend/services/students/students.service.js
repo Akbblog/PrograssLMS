@@ -147,6 +147,9 @@ exports.getStudentsProfileService = async (id, res) => {
  * @returns {Array} - An array of all students for this school.
  */
 exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
+  if (!schoolId) {
+    return responseStatus(res, 400, "failed", "School ID required for multi-tenancy");
+  }
   // Build filter query for multi-tenancy (for school admins)
   const query = {};
   if (schoolId) query.schoolId = schoolId;
