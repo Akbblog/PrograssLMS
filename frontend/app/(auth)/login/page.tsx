@@ -101,12 +101,12 @@ export default function LoginPage() {
     async function onSubmit(values: FormValues) {
         setIsLoading(true)
 
-        // Define sequence of roles to attempt
+        // Try the most privileged roles first to avoid super admins being treated as admins
         const attempts: RoleConfig[] = [
-            roleConfigs.find(r => r.id === 'student')!,
-            roleConfigs.find(r => r.id === 'teacher')!,
+            roleConfigs.find(r => r.id === 'super_admin')!,
             roleConfigs.find(r => r.id === 'admin')!,
-            roleConfigs.find(r => r.id === 'super_admin')!
+            roleConfigs.find(r => r.id === 'teacher')!,
+            roleConfigs.find(r => r.id === 'student')!
         ];
 
         let success = false;
@@ -132,13 +132,16 @@ export default function LoginPage() {
                     }
 
                     if (userData && userData._id) {
+                        // Prefer backend role if present, otherwise fall back to attempted role
+                        const resolvedRole = (userData.role || roleConfig.id) as RoleType | string
+
                         login(
                             {
                                 _id: userData._id,
                                 id: userData._id,
                                 name: userData.name,
                                 email: userData.email,
-                                role: roleConfig.id, // Authenticated Role
+                                role: resolvedRole,
                                 schoolId: userData.schoolId,
                                 features: userData.features,
                             },
@@ -152,12 +155,14 @@ export default function LoginPage() {
 
                         const redirectMap: Record<string, string> = {
                             super_admin: "/superadmin/dashboard",
+                            superadmin: "/superadmin/dashboard",
                             admin: "/admin/dashboard",
                             teacher: "/teacher/dashboard",
                             student: "/student/dashboard",
                         }
 
-                        router.push(redirectMap[roleConfig.id] || "/dashboard")
+                        const destination = redirectMap[resolvedRole] || redirectMap[roleConfig.id] || "/dashboard"
+                        router.push(destination)
                         break; // Stop on first success
                     }
                 }
