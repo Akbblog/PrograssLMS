@@ -27,7 +27,6 @@ export default function StudentSidebar() {
         { icon: "lucide:message-square", label: "Communication", href: "/student/communication" },
         { icon: "lucide:dollar-sign", label: "Fees", href: "/student/fees" },
         { icon: "lucide:calendar", label: "Calendar", href: "/student/calendar" },
-        { icon: "lucide:user", label: "My Profile", href: "/student/profile" },
     ];
 
     return (
