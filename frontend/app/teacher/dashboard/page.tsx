@@ -76,22 +76,22 @@ export default function TeacherDashboard() {
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <div className="h-2 w-8 bg-teal-500 rounded-full"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600">Educator Command Center</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">Educator Command Center</span>
                         </div>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+                        <h1 className="text-4xl font-black text-foreground tracking-tight">
                             Command, <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-emerald-600">{user?.name?.split(" ")[0] || "Professor"}</span>! 🧑‍🏫
                         </h1>
-                        <p className="text-slate-500 font-medium mt-1">
+                        <p className="text-muted-foreground font-medium mt-1">
                             {currentDateTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                     </div>
                     <div className="flex gap-3">
-                        <Button variant="ghost" className="bg-white border border-slate-100 hover:bg-slate-50 text-slate-600 font-bold px-6 rounded-2xl h-12 shadow-sm" asChild>
+                        <Button variant="ghost" className="bg-card border border-border hover:bg-accent text-muted-foreground font-bold px-6 rounded-2xl h-12 shadow-sm" asChild>
                             <Link href="/teacher/schedule">
                                 Full Schedule
                             </Link>
                         </Button>
-                        <Button className="bg-slate-900 hover:bg-black text-white font-bold px-6 rounded-2xl h-12 shadow-xl shadow-slate-200 border-0" asChild>
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-6 rounded-2xl h-12 shadow-xl shadow-primary/20 border-0" asChild>
                             <Link href="/teacher/assignments/new">
                                 <Plus className="w-5 h-5 mr-2" />
                                 Create Task
@@ -129,14 +129,14 @@ export default function TeacherDashboard() {
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
                 {/* Today's Schedule */}
-                <LuminaCard variant="glass" className="lg:col-span-2 shadow-2xl shadow-slate-200/50 border-slate-100">
+                <LuminaCard variant="glass" className="lg:col-span-2 shadow-2xl shadow-slate-200/50 dark:shadow-none border-border">
                     <LuminaCardHeader className="pb-6">
                         <div className="flex items-center justify-between">
-                            <LuminaCardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <LuminaCardTitle className="text-xl font-black text-foreground flex items-center gap-2">
                                 <Clock className="h-6 w-6 text-teal-500" />
                                 Teaching Agenda
                             </LuminaCardTitle>
-                            <Button variant="ghost" size="sm" className="text-teal-600 hover:text-teal-700 hover:bg-teal-50 font-black px-4 rounded-xl">
+                            <Button variant="ghost" size="sm" className="text-teal-600 hover:text-teal-700 hover:bg-teal-50 dark:hover:bg-teal-950/30 font-black px-4 rounded-xl">
                                 Full Roster
                                 <ChevronRight className="w-4 h-4 ml-1" />
                             </Button>
@@ -147,29 +147,29 @@ export default function TeacherDashboard() {
                             {classes.map((cls) => (
                                 <div
                                     key={cls.id}
-                                    className="group flex flex-col sm:flex-row sm:items-center gap-4 p-5 border border-slate-50 rounded-3xl hover:shadow-xl hover:shadow-teal-500/5 hover:border-teal-100 transition-all cursor-pointer bg-white"
+                                    className="group flex flex-col sm:flex-row sm:items-center gap-4 p-5 border border-border/50 rounded-3xl hover:shadow-xl hover:shadow-teal-500/5 hover:border-teal-100 dark:hover:border-teal-900 transition-all cursor-pointer bg-card"
                                 >
-                                    <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-teal-600 transition-all duration-500 shadow-sm relative overflow-hidden">
-                                        <BookOpen className="h-8 w-8 text-teal-600 group-hover:text-white transition-colors relative z-10" />
+                                    <div className="w-16 h-16 bg-teal-50 dark:bg-teal-950/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-teal-600 transition-all duration-500 shadow-sm relative overflow-hidden">
+                                        <BookOpen className="h-8 w-8 text-teal-600 dark:text-teal-400 group-hover:text-white transition-colors relative z-10" />
                                         <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-black text-slate-900 tracking-tight group-hover:text-teal-600 transition-colors text-lg uppercase">{cls.name}</h3>
+                                            <h3 className="font-black text-foreground tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors text-lg uppercase">{cls.name}</h3>
                                             <Badge
-                                                className={`rounded-full px-3 py-0.5 text-[8px] font-black uppercase tracking-widest border-0 ${cls.status === 'Completed' ? 'bg-emerald-500 text-white shadow-emerald-100' :
-                                                    cls.status === 'In Progress' ? 'bg-amber-500 text-white shadow-amber-100 animate-pulse' :
-                                                        'bg-slate-100 text-slate-400'
+                                                className={`rounded-full px-3 py-0.5 text-[8px] font-black uppercase tracking-widest border-0 ${cls.status === 'Completed' ? 'bg-emerald-500 text-white shadow-emerald-100 dark:shadow-none' :
+                                                    cls.status === 'In Progress' ? 'bg-amber-500 text-white shadow-amber-100 dark:shadow-none animate-pulse' :
+                                                        'bg-muted text-muted-foreground'
                                                     }`}
                                             >
                                                 {cls.status}
                                             </Badge>
                                         </div>
-                                        <p className="text-sm text-slate-500 font-bold tracking-tight">{cls.subject} <span className="mx-2 opacity-30">•</span> {cls.time}</p>
+                                        <p className="text-sm text-muted-foreground font-bold tracking-tight">{cls.subject} <span className="mx-2 opacity-30">•</span> {cls.time}</p>
                                     </div>
-                                    <div className="sm:text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 border-t sm:border-t-0 sm:border-l border-slate-50 pt-3 sm:pt-0 sm:pl-6">
-                                        <p className="text-3xl font-black text-teal-600 tabular-nums leading-none tracking-tight">{cls.students}</p>
-                                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Enrolled</p>
+                                    <div className="sm:text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 border-t sm:border-t-0 sm:border-l border-border/50 pt-3 sm:pt-0 sm:pl-6">
+                                        <p className="text-3xl font-black text-teal-600 dark:text-teal-400 tabular-nums leading-none tracking-tight">{cls.students}</p>
+                                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Enrolled</p>
                                     </div>
                                 </div>
                             ))}
@@ -178,9 +178,9 @@ export default function TeacherDashboard() {
                 </LuminaCard>
 
                 {/* Recent Activity */}
-                <LuminaCard variant="glass" className="shadow-2xl shadow-slate-200/50 border-slate-100">
+                <LuminaCard variant="glass" className="shadow-2xl shadow-slate-200/50 dark:shadow-none border-border">
                     <LuminaCardHeader className="pb-6">
-                        <LuminaCardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <LuminaCardTitle className="text-xl font-black text-foreground flex items-center gap-2">
                             <BarChart3 className="h-6 w-6 text-teal-500" />
                             Operations Log
                         </LuminaCardTitle>
@@ -188,13 +188,13 @@ export default function TeacherDashboard() {
                     <LuminaCardContent>
                         <div className="space-y-4">
                             {recentActivities.map((activity) => (
-                                <div key={activity.id} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-teal-50/50 transition-all group overflow-hidden relative">
-                                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-sm">
-                                        <activity.icon className="h-5 w-5 text-teal-600" />
+                                <div key={activity.id} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-teal-50/50 dark:hover:bg-teal-950/30 transition-all group overflow-hidden relative">
+                                    <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                                        <activity.icon className="h-5 w-5 text-teal-600 dark:text-teal-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-black text-slate-900 tracking-tight leading-snug">{activity.action}</p>
-                                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5">{activity.time}</p>
+                                        <p className="text-sm font-black text-foreground tracking-tight leading-snug">{activity.action}</p>
+                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1.5">{activity.time}</p>
                                     </div>
                                 </div>
                             ))}

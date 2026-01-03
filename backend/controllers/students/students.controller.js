@@ -64,6 +64,7 @@ exports.getAllStudentsByAdminController = async (req, res) => {
     };
     await getAllStudentsByAdminService(req.schoolId, filters, res);
   } catch (error) {
+    console.error("Error in getAllStudentsByAdminController:", error);
     responseStatus(res, 400, "failed", error.message);
   }
 };

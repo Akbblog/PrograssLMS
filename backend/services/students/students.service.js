@@ -2,6 +2,7 @@ const {
   hashPassword,
   isPassMatched,
 } = require("../../handlers/passHash.handler");
+const mongoose = require("mongoose");
 const Admin = require("../../models/Staff/admin.model");
 const Student = require("../../models/Students/students.model");
 const Exam = require("../../models/Academic/exams.model");
@@ -152,7 +153,7 @@ exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
   if (schoolId) query.schoolId = schoolId;
 
   // Apply additional filters
-  if (filters.currentClassLevel) {
+  if (filters.currentClassLevel && mongoose.Types.ObjectId.isValid(filters.currentClassLevel)) {
     // Check both singular and array fields for class level
     query.$or = [
       { currentClassLevel: filters.currentClassLevel },

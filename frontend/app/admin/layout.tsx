@@ -116,24 +116,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     />
                 )}
 
-                {/* Sidebar */}
+                {/* Sidebar - Light theme (matches reference) */}
                 <div className={cn(
-                    "fixed inset-y-0 left-0 z-50 w-[270px] max-w-[90vw] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
+                    "fixed inset-y-0 left-0 z-50 w-[270px] max-w-[90vw] bg-white text-slate-700 border-r border-slate-100 flex flex-col transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0",
                     sidebarOpen ? "translate-x-0" : "-translate-x-full"
                 )}>
                     {/* Logo */}
                     <div className="h-20 flex items-center justify-between px-6">
                         <Link href="/admin/dashboard" className="flex items-center gap-3 min-w-0">
-                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
                                 <GraduationCap className="h-6 w-6 text-white" />
                             </div>
-                            <span className="font-bold text-xl text-slate-900 dark:text-white tracking-tight truncate">Progress <span className="text-primary">LMS</span></span>
+                            <span className="font-bold text-xl text-slate-900 tracking-tight truncate">Progress <span className="text-violet-500">LMS</span></span>
                         </Link>
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 flex-shrink-0"
+                            className="lg:hidden p-2 rounded-lg hover:bg-white/10 flex-shrink-0"
                         >
-                            <X className="w-5 h-5 text-slate-500" />
+                            <X className="w-5 h-5 text-white/70" />
                         </button>
                     </div>
 
@@ -161,21 +161,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                                 className={cn(
                                                     "w-full group flex items-center justify-between gap-3 px-3.5 py-3 rounded-lg transition-all duration-200",
                                                     active
-                                                        ? "bg-primary text-white shadow-md shadow-primary/25"
-                                                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-primary"
+                                                        ? "bg-violet-50 text-violet-600 font-semibold"
+                                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                                 )}
                                             >
                                                 <div className="flex items-center gap-3 min-w-0">
-                                                    <item.icon className={cn("h-[22px] w-[22px] flex-shrink-0 transition-transform", active ? "text-white" : "group-hover:text-primary")} />
+                                                    <item.icon className={cn("h-[22px] w-[22px] flex-shrink-0 transition-transform", active ? "text-violet-600" : "text-slate-500 group-hover:text-slate-700")} />
                                                     <span className="text-sm font-medium truncate">{item.title}</span>
                                                 </div>
                                                 <ChevronRight className={cn(
-                                                    "h-4 w-4 transition-transform flex-shrink-0 opacity-50",
+                                                    "h-4 w-4 transition-transform flex-shrink-0 opacity-70",
                                                     expandedItems.includes(item.title) && "rotate-90"
                                                 )} />
                                             </button>
                                             {expandedItems.includes(item.title) && (
-                                                <div className="ml-4 mt-1 space-y-1 pl-4 border-l border-slate-100 dark:border-slate-700">
+                                                <div className="ml-4 mt-1 space-y-1 pl-4 border-l border-slate-100">
                                                     {item.subItems.map((subItem) => (
                                                         <Link
                                                             key={subItem.href}
@@ -183,8 +183,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                                             className={cn(
                                                                 "block py-2 px-3 text-sm rounded-md transition-all",
                                                                 pathname === subItem.href.split("?")[0]
-                                                                    ? "text-primary font-medium bg-primary/5"
-                                                                    : "text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300"
+                                                                    ? "text-blue-600 font-medium bg-slate-100 dark:text-blue-400 dark:bg-white/5"
+                                                                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 dark:text-white/60 dark:hover:text-white dark:hover:bg-white/5"
                                                             )}
                                                         >
                                                             {subItem.title}
@@ -199,11 +199,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                             className={cn(
                                                 "group flex items-center gap-3 px-3.5 py-3 rounded-lg transition-all duration-200",
                                                 active
-                                                    ? "bg-primary text-white shadow-md shadow-primary/25"
-                                                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-primary"
-                                            )}
+                                                    ? "bg-violet-50 text-violet-600 font-semibold"
+                                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                                                )}
                                         >
-                                            <item.icon className={cn("h-[22px] w-[22px] flex-shrink-0 transition-transform", active ? "text-white" : "group-hover:text-primary")} />
+                                            <item.icon className={cn("h-[22px] w-[22px] flex-shrink-0 transition-transform", active ? "text-violet-600" : "text-slate-500 group-hover:text-slate-700")} />
                                             <span className="text-sm font-medium truncate">{item.title}</span>
                                         </Link>
                                     )}
@@ -212,9 +212,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         })}
                     </nav>
 
-                    <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                    {/* User Profile Section */}
+                    <div className="p-4 m-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white font-bold shadow-sm">
+                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary font-bold">
                                 {user?.name?.charAt(0) || "A"}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -225,10 +226,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <Button
                             onClick={handleLogout}
                             variant="ghost"
-                            className="w-full justify-center text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg h-9 text-sm font-medium"
+                            className="w-full justify-center text-slate-600 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg h-9 text-sm font-medium"
                         >
                             <LogOut className="w-4 h-4 mr-2" />
-                            Sign Out
+                            Logout
                         </Button>
                     </div>
                 </div>
@@ -236,7 +237,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col overflow-hidden w-full lg:w-auto">
                     {/* Header */}
-                    <header className="h-[70px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 px-4 lg:px-8 flex items-center justify-between flex-shrink-0 sticky top-0 z-30">
+                    <header className="h-[70px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 px-4 lg:px-6 flex items-center justify-between flex-shrink-0 sticky top-0 z-30">
                         <div className="flex items-center gap-4 flex-1">
                             {/* Mobile Menu Button */}
                             <button
@@ -289,8 +290,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </header>
 
                     {/* Content */}
-                    <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-900 p-4 lg:p-8">
-                        <div className="mx-auto max-w-7xl animate-fadeInUp">
+                    <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-900 p-4 lg:p-6">
+                        <div className="w-full animate-fadeInUp">
                             {children}
                         </div>
                     </main>

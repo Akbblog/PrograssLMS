@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "./design-tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -38,6 +37,9 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -45,687 +47,130 @@
 }
 
 :root {
-  --radius: var(--radius-lg);
-
-  /* Semantic Mappings to Design Tokens */
-  --background: var(--color-slate-50);
-  --foreground: var(--color-slate-900);
-
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: var(--color-slate-900);
-
+  --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: var(--color-slate-900);
-
-  /* Primary - Blue */
-  --primary: var(--color-primary-500);
-  --primary-foreground: oklch(1 0 0);
-
-  /* Secondary - Cyan */
-  --secondary: var(--color-secondary-500);
-  --secondary-foreground: oklch(1 0 0);
-
-  /* Muted */
-  --muted: var(--color-slate-100);
-  --muted-foreground: var(--color-slate-500);
-
-  /* Accent */
-  --accent: var(--color-primary-50);
-  --accent-foreground: var(--color-primary-700);
-
-  /* Destructive */
-  --destructive: var(--color-error-500);
-  --destructive-foreground: oklch(1 0 0);
-
-  /* Borders & Inputs */
-  --border: var(--color-slate-200);
-  --input: var(--color-slate-200);
-  --ring: var(--color-primary-500);
-
-  /* Charts (mapped to palette) */
-  --chart-1: var(--color-primary-500);
-  --chart-2: var(--color-secondary-500);
-  --chart-3: var(--color-warning-500);
-  --chart-4: var(--color-success-500);
-  --chart-5: var(--color-info-500);
-
-  /* Sidebar */
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: var(--color-slate-600);
-  --sidebar-primary: var(--color-primary-500);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: var(--color-primary-50);
-  --sidebar-accent-foreground: var(--color-primary-700);
-  --sidebar-border: var(--color-slate-100);
-  --sidebar-ring: var(--color-primary-500);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.58 0.23 255);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.58 0.23 255);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --success: oklch(0.623 0.188 145.205);
+  --warning: oklch(0.795 0.184 86.047);
+  --info: oklch(0.546 0.245 262.881);
 }
 
 .dark {
-  --background: var(--color-slate-50);
-  /* Dark slate from tokens */
-  --foreground: var(--color-slate-900);
-  /* Actually light text in dark mode tokens */
-
-  --card: var(--color-slate-50);
-  --card-foreground: var(--color-slate-900);
-
-  --popover: var(--color-slate-100);
-  --popover-foreground: var(--color-slate-900);
-
-  --primary: var(--color-primary-500);
-  --primary-foreground: oklch(1 0 0);
-
-  --secondary: var(--color-secondary-500);
-  --secondary-foreground: oklch(1 0 0);
-
-  --muted: var(--color-slate-100);
-  --muted-foreground: var(--color-slate-400);
-
-  --accent: var(--color-slate-200);
-  --accent-foreground: oklch(1 0 0);
-
-  --destructive: var(--color-error-500);
-  --border: var(--color-slate-200);
-  --input: var(--color-slate-200);
-  --ring: var(--color-primary-500);
-
-  --sidebar: var(--color-slate-50);
-  --sidebar-foreground: var(--color-slate-900);
-  --sidebar-primary: var(--color-primary-500);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: var(--color-slate-200);
-  --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: var(--color-slate-200);
-  --sidebar-ring: var(--color-primary-500);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.66 0.24 255);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.66 0.24 255);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --success: oklch(0.623 0.188 145.205);
+  --warning: oklch(0.795 0.184 86.047);
+  --info: oklch(0.546 0.245 262.881);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
     @apply bg-background text-foreground;
   }
 }
 
 @layer components {
-  /* =================================================================
-     KEYFRAME ANIMATIONS
-     ================================================================= */
-
-  /* Entrance Animations */
+  /* Simple keyframes for subtle entrance animations */
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-
   @keyframes fadeInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-12px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
   }
-
   @keyframes slideInFromRight {
-    from {
-      opacity: 0;
-      transform: translateX(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
   }
 
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
+  .animate-fadeInUp { animation: fadeInUp 420ms ease forwards; }
+  .animate-fadeInLeft { animation: fadeInLeft 420ms ease forwards; }
+  .animate-slideInFromRight { animation: slideInFromRight 300ms ease forwards; }
+  .animate-delay-100 { animation-delay: 120ms; }
 
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  /* Role badge / pill */
+  .role-pill {
+    @apply inline-flex items-center gap-3 px-3 py-2 rounded-full text-sm font-semibold ring-1 ring-inset;
+    transition: transform .18s ease, box-shadow .18s ease, opacity .12s ease;
   }
+  .role-pill:hover { transform: translateY(-3px); }
+  .role-pill:active { transform: translateY(-1px) scale(.995); }
 
-  /* Progress & Success Animations */
-  @keyframes progressFill {
-    from {
-      width: 0;
-    }
-
-    to {
-      width: var(--progress-width, 100%);
-    }
-  }
-
-  @keyframes countUp {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes successPulse {
-
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
-    }
-
-    50% {
-      box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
-    }
-  }
-
-  @keyframes achievementGlow {
-
-    0%,
-    100% {
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
-      transform: scale(1);
-    }
-
-    50% {
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
-      transform: scale(1.02);
-    }
-  }
-
-  /* Gamification Animations */
-  @keyframes levelUp {
-    0% {
-      transform: scale(1);
-    }
-
-    25% {
-      transform: scale(1.2);
-    }
-
-    50% {
-      transform: scale(0.9);
-    }
-
-    75% {
-      transform: scale(1.1);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes streakFire {
-
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-    }
-
-    50% {
-      transform: translateY(-3px) scale(1.1);
-    }
-  }
-
-  @keyframes badgeUnlock {
-    0% {
-      opacity: 0;
-      transform: scale(0.5) rotate(-10deg);
-    }
-
-    50% {
-      opacity: 1;
-      transform: scale(1.15) rotate(5deg);
-    }
-
-    100% {
-      opacity: 1;
-      transform: scale(1) rotate(0);
-    }
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-
-    100% {
-      background-position: 200% 0;
-    }
-  }
-
-  @keyframes float {
-
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-6px);
-    }
-  }
-
-  /* Feedback Animations */
-  @keyframes shake {
-
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-
-    20% {
-      transform: translateX(-6px);
-    }
-
-    40% {
-      transform: translateX(6px);
-    }
-
-    60% {
-      transform: translateX(-4px);
-    }
-
-    80% {
-      transform: translateX(4px);
-    }
-  }
-
-  @keyframes bounce {
-
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-
-    50% {
-      transform: translateY(-8px);
-    }
-  }
-
-  /* Animation Utility Classes */
-  .animate-fadeInUp {
-    animation: fadeInUp 400ms ease-out forwards;
-  }
-
-  .animate-fadeInLeft {
-    animation: fadeInLeft 400ms ease-out forwards;
-  }
-
-  .animate-slideInFromRight {
-    animation: slideInFromRight 300ms ease-out forwards;
-  }
-
-  .animate-scaleIn {
-    animation: scaleIn 300ms ease-out forwards;
-  }
-
-  .animate-progressFill {
-    animation: progressFill 1s ease-out forwards;
-  }
-
-  .animate-successPulse {
-    animation: successPulse 2s ease-in-out infinite;
-  }
-
-  .animate-achievementGlow {
-    animation: achievementGlow 2s ease-in-out infinite 0.5s;
-  }
-
-  .animate-levelUp {
-    animation: levelUp 600ms ease-out;
-  }
-
-  .animate-streakFire {
-    animation: streakFire 1s ease-in-out infinite;
-  }
-
-  .animate-badgeUnlock {
-    animation: badgeUnlock 500ms ease-out forwards;
-  }
-
-  .animate-shimmer {
-    animation: shimmer 2s linear infinite;
-  }
-
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  .animate-shake {
-    animation: shake 400ms ease-out;
-  }
-
-  .animate-bounce {
-    animation: bounce 600ms ease-in-out infinite;
-  }
-
-  /* Animation Delays */
-  .animate-delay-100 {
-    animation-delay: 100ms;
-  }
-
-  .animate-delay-200 {
-    animation-delay: 200ms;
-  }
-
-  .animate-delay-300 {
-    animation-delay: 300ms;
-  }
-
-  .animate-delay-400 {
-    animation-delay: 400ms;
-  }
-
-  .animate-delay-500 {
-    animation-delay: 500ms;
-  }
-
-  /* =================================================================
-     EDUCATIONAL COMPONENTS
-     ================================================================= */
-
-  /* Learning Card - Primary course/lesson container */
-  .learning-card {
-    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm transition-all duration-200 overflow-hidden;
-  }
-
-  .learning-card:hover {
-    @apply shadow-lg -translate-y-1 border-indigo-200 dark:border-indigo-800;
-    box-shadow: var(--shadow-card-hover), 0 0 20px rgba(79, 70, 229, 0.1);
-  }
-
-  /* Progress Card - Shows learning progress */
-  .progress-card {
-    @apply bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200;
-  }
-
-  /* Stats Card - Dashboard statistics */
-  .stat-card {
-    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-4 sm:p-5 md:p-6;
-  }
-
-  .stat-card-gradient {
-    @apply rounded-xl p-4 sm:p-5 md:p-6 shadow-sm hover:shadow-md transition-all duration-200 border;
-  }
-
-  .stat-card-gradient.blue {
-    @apply bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-800;
-  }
-
-  .stat-card-gradient.green {
-    @apply bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-emerald-200 dark:border-emerald-800;
-  }
-
-  .stat-card-gradient.purple {
-    @apply bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/30 dark:to-violet-950/30 border-purple-200 dark:border-purple-800;
-  }
-
-  .stat-card-gradient.amber {
-    @apply bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200 dark:border-amber-800;
-  }
-
-  /* Elevated Card - For emphasis */
+  /* Card elevation */
   .elevated-card {
-    @apply bg-white/90 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-100/60 dark:border-slate-700/60;
+    @apply bg-white/80 dark:bg-gray-900/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-100/60;
   }
 
-  /* Responsive Card - Adapts to screen size */
+  /* Mobile-first responsive card */
   .responsive-card {
     @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
   }
 
-  /* =================================================================
-     GAMIFICATION COMPONENTS
-     ================================================================= */
-
-  /* Achievement Badge */
-  .achievement-badge {
-    @apply relative inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg border-4 border-white dark:border-slate-800;
-  }
-
-  .achievement-badge.locked {
-    @apply from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 opacity-60 grayscale;
-  }
-
-  .achievement-badge.unlocked {
-    animation: badgeUnlock 500ms ease-out forwards, achievementGlow 2s ease-in-out infinite 0.5s;
-  }
-
-  /* XP Progress Bar */
-  .xp-bar {
-    @apply relative h-3 sm:h-4 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden;
-  }
-
-  .xp-bar-fill {
-    @apply h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000 ease-out;
-  }
-
-  /* Level Badge */
-  .level-badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg;
-  }
-
-  /* Streak Counter */
-  .streak-counter {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 border border-amber-200 dark:border-amber-700;
-  }
-
-  .streak-fire {
-    @apply text-2xl;
-    animation: streakFire 1s ease-in-out infinite;
-  }
-
-  /* =================================================================
-     PROGRESS INDICATORS
-     ================================================================= */
-
-  /* Circular Progress Ring */
-  .progress-ring {
-    @apply relative inline-flex items-center justify-center;
-  }
-
-  .progress-ring-circle {
-    transform: rotate(-90deg);
-    transform-origin: center;
-  }
-
-  .progress-ring-bg {
-    @apply stroke-slate-200 dark:stroke-slate-700;
-    fill: none;
-  }
-
-  .progress-ring-fill {
-    @apply stroke-indigo-500;
-    fill: none;
-    transition: stroke-dashoffset 1s ease-out;
-  }
-
-  /* Linear Progress */
-  .progress-linear {
-    @apply relative h-2 sm:h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden;
-  }
-
-  .progress-linear-fill {
-    @apply h-full rounded-full transition-all duration-700 ease-out;
-  }
-
-  .progress-linear-fill.primary {
-    @apply bg-gradient-to-r from-indigo-500 to-indigo-600;
-  }
-
-  .progress-linear-fill.success {
-    @apply bg-gradient-to-r from-emerald-500 to-teal-500;
-  }
-
-  .progress-linear-fill.warning {
-    @apply bg-gradient-to-r from-amber-500 to-orange-500;
-  }
-
-  .progress-linear-fill.danger {
-    @apply bg-gradient-to-r from-rose-500 to-red-500;
-  }
-
-  /* =================================================================
-     ROLE INDICATORS
-     ================================================================= */
-
-  /* Role Badge/Pill */
-  .role-pill {
-    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold ring-1 ring-inset transition-all duration-200 ease-out;
-  }
-
-  .role-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-
-  .role-pill.student {
-    @apply bg-amber-50 text-amber-700 ring-amber-500/30 dark:bg-amber-900/20 dark:text-amber-400 dark:ring-amber-400/30;
-  }
-
-  .role-pill.teacher {
-    @apply bg-teal-50 text-teal-700 ring-teal-500/30 dark:bg-teal-900/20 dark:text-teal-400 dark:ring-teal-400/30;
-  }
-
-  .role-pill.admin {
-    @apply bg-indigo-50 text-indigo-700 ring-indigo-500/30 dark:bg-indigo-900/20 dark:text-indigo-400 dark:ring-indigo-400/30;
-  }
-
-  .role-pill.super {
-    @apply bg-slate-100 text-slate-700 ring-slate-500/30 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-400/30;
-  }
-
-  /* =================================================================
-     STATUS INDICATORS
-     ================================================================= */
-
-  .status-dot {
-    @apply w-2.5 h-2.5 rounded-full;
-  }
-
-  .status-dot.online {
-    @apply bg-emerald-500;
-  }
-
-  .status-dot.offline {
-    @apply bg-slate-400;
-  }
-
-  .status-dot.busy {
-    @apply bg-rose-500;
-  }
-
-  .status-dot.away {
-    @apply bg-amber-500;
-  }
-
-  .status-dot.pulse {
-    @apply animate-pulse;
-  }
-
-  /* =================================================================
-     SKELETON LOADING
-     ================================================================= */
-
-  .skeleton {
-    @apply relative overflow-hidden bg-slate-200 dark:bg-slate-700 rounded;
-  }
-
-  .skeleton::after {
-    content: "";
-    @apply absolute inset-0;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        transparent 100%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s linear infinite;
-  }
-
-  .dark .skeleton::after {
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 100%);
-    background-size: 200% 100%;
-  }
-
-  /* =================================================================
-     INTERACTIVE ELEMENTS
-     ================================================================= */
-
-  /* Interactive Card */
-  .interactive-card {
-    @apply cursor-pointer select-none;
-    transition: transform 100ms ease-out, box-shadow 200ms ease-out;
-  }
-
-  .interactive-card:active {
-    transform: scale(0.98);
-  }
-
-  /* Quick Action Button */
-  .quick-action {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-medium rounded-xl shadow-md transition-all duration-200 ease-out;
-  }
-
-  .quick-action:hover {
-    @apply shadow-lg;
-    transform: translateY(-2px);
-  }
-
-  .quick-action:active {
-    transform: translateY(0) scale(0.98);
-  }
-
-  /* =================================================================
-     CALENDAR & SCHEDULE ELEMENTS
-     ================================================================= */
-
-  .calendar-day {
-    @apply relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-sm font-medium transition-colors duration-150;
-  }
-
-  .calendar-day.today {
-    @apply bg-indigo-500 text-white font-bold;
-  }
-
-  .calendar-day.has-event::after {
-    content: "";
-    @apply absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-amber-500 rounded-full;
-  }
-
-  .calendar-day.deadline::after {
-    @apply bg-rose-500;
-  }
-
-  /* =================================================================
-     NOTIFICATION BADGE
-     ================================================================= */
-
-  .notification-badge {
-    @apply absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-rose-500 text-white text-xs font-bold border-2 border-white dark:border-slate-900;
+  /* Mobile-first stat cards */
+  .stat-card {
+    @apply bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-3 sm:p-4 md:p-6;
   }
 }
 
@@ -736,9 +181,7 @@ body.sidebar-open {
 
 /* Improve tap highlighting on mobile */
 @media (hover: none) {
-
-  button,
-  a {
+  button, a {
     -webkit-tap-highlight-color: transparent;
   }
 }

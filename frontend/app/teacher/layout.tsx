@@ -59,11 +59,11 @@ export default function TeacherLayout({
 
     return (
         <ProtectedRoute requiredRoles={['teacher']}>
-            <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden font-sans">
+            <div className="flex h-screen bg-background overflow-hidden font-sans">
                 {/* Mobile Overlay */}
                 {sidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+                        className="fixed inset-0 bg-background/80 z-40 lg:hidden backdrop-blur-sm"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}
@@ -72,26 +72,26 @@ export default function TeacherLayout({
                 <TeacherSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col overflow-hidden w-full lg:w-auto bg-slate-50 dark:bg-slate-900">
+                <div className="flex-1 flex flex-col overflow-hidden w-full lg:w-auto bg-background">
                     {/* Header */}
-                    <header className="h-[70px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 px-4 lg:px-8 flex items-center justify-between flex-shrink-0 sticky top-0 z-30 transition-all duration-200">
+                    <header className="h-[70px] bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-8 flex items-center justify-between flex-shrink-0 sticky top-0 z-30 transition-all duration-200">
                         <div className="flex items-center gap-4 flex-1">
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="lg:hidden p-2 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+                                className="lg:hidden p-2 rounded-xl text-muted-foreground hover:bg-accent transition-all"
                             >
                                 <Menu className="w-6 h-6" />
                             </button>
 
                             {/* Search */}
                             <div className="hidden sm:flex items-center gap-4 flex-1 max-w-md">
-                                <div className="group flex items-center gap-3 flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-transparent focus-within:border-success/50 focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:shadow-sm focus-within:ring-4 focus-within:ring-success/10 transition-all duration-300">
-                                    <Search className="w-4 h-4 text-slate-400 group-focus-within:text-success transition-colors" />
+                                <div className="group flex items-center gap-3 flex-1 px-4 py-2.5 bg-muted/50 rounded-xl border border-transparent focus-within:border-primary/50 focus-within:bg-background focus-within:shadow-sm focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-300">
+                                    <Search className="w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                     <input
                                         type="text"
                                         placeholder="Command search (⌘K)"
-                                        className="bg-transparent text-sm outline-none w-full text-slate-900 dark:text-white placeholder:text-slate-400 font-medium"
+                                        className="bg-transparent text-sm outline-none w-full text-foreground placeholder:text-muted-foreground font-medium"
                                     />
                                 </div>
                             </div>

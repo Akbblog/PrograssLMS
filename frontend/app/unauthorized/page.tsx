@@ -4,39 +4,39 @@ import { Lock, Home, ArrowRight, ShieldAlert, HelpCircle } from 'lucide-react'
 
 export default function UnauthorizedPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 sm:p-6">
             <div className="max-w-md w-full">
                 {/* Card Container */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/60 p-6 sm:p-8 text-center animate-scaleIn">
+                <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-xl border border-border/60 p-6 sm:p-8 text-center animate-scaleIn">
                     {/* Icon */}
                     <div className="mb-6">
-                        <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-rose-200 animate-float">
+                        <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-rose-200 dark:shadow-none animate-float">
                             <ShieldAlert className="w-10 h-10 text-white" />
                         </div>
                     </div>
 
                     {/* Error Code */}
                     <div className="mb-6">
-                        <h1 className="text-7xl sm:text-8xl font-bold bg-gradient-to-r from-slate-200 to-slate-300 bg-clip-text text-transparent mb-3">
+                        <h1 className="text-7xl sm:text-8xl font-bold bg-gradient-to-r from-muted to-muted-foreground/20 bg-clip-text text-transparent mb-3">
                             403
                         </h1>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
                             Access Denied
                         </h2>
-                        <p className="text-slate-500">
+                        <p className="text-muted-foreground">
                             You don't have permission to access this page.
                         </p>
                     </div>
 
                     {/* Error Message */}
-                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 mb-6">
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 mb-6">
                         <div className="flex items-start gap-3 text-left">
-                            <Lock className="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5" />
+                            <Lock className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                             <div>
-                                <p className="text-sm font-medium text-rose-900 mb-1">
+                                <p className="text-sm font-medium text-destructive mb-1">
                                     Permission Required
                                 </p>
-                                <p className="text-xs text-rose-700">
+                                <p className="text-xs text-destructive/80">
                                     Your current role doesn't have the required permissions to view this page.
                                     Please login with appropriate credentials or contact your administrator.
                                 </p>
@@ -47,7 +47,7 @@ export default function UnauthorizedPage() {
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-3">
                         <Link href="/login" className="w-full">
-                            <Button className="w-full h-12 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300">
+                            <Button className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30">
                                 <ArrowRight className="w-4 h-4 mr-2" />
                                 Back to Login
                             </Button>

@@ -132,12 +132,12 @@ export default function AdminDashboard() {
     ].filter(card => !card.feature || (user?.features as any)?.[card.feature] !== false);
 
     const quickActions = [
-        { title: "Add Student", icon: UserPlus, href: "/admin/students", color: "text-primary bg-primary/10", feature: "canManageStudents" },
-        { title: "Add Teacher", icon: Users, href: "/admin/teachers", color: "text-secondary bg-secondary/10", feature: "canManageTeachers" },
-        { title: "Create Class", icon: BookOpen, href: "/admin/academic", color: "text-success bg-success/10", feature: "canManageAcademics" },
-        { title: "Record Attendance", icon: Calendar, href: "/admin/attendance", color: "text-warning bg-warning/10", feature: "canManageAttendance" },
+        { title: "Add Student", icon: UserPlus, href: "/admin/students", color: "text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20", feature: "canManageStudents" },
+        { title: "Add Teacher", icon: Users, href: "/admin/teachers", color: "text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/20", feature: "canManageTeachers" },
+        { title: "Create Class", icon: BookOpen, href: "/admin/academic", color: "text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/20", feature: "canManageAcademics" },
+        { title: "Record Attendance", icon: Calendar, href: "/admin/attendance", color: "text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/20", feature: "canManageAttendance" },
         { title: "View Reports", icon: BarChart3, href: "/admin/reports", color: "text-destructive bg-destructive/10", feature: "canViewReports" },
-        { title: "Messages", icon: MessageSquare, href: "/admin/communication", color: "text-info-600 bg-info-100", feature: "canManageCommunication" },
+        { title: "Messages", icon: MessageSquare, href: "/admin/communication", color: "text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20", feature: "canManageCommunication" },
     ].filter(action => !action.feature || (user?.features as any)?.[action.feature] !== false);
 
     const upcomingEvents = [
@@ -148,7 +148,8 @@ export default function AdminDashboard() {
     ];
 
     const getStatColor = (index: number) => {
-        const colors = ['indigo', 'teal', 'emerald', 'amber']; // Maps to LuminaCard variants
+        // Reference order: blue (Students), purple (Teachers), green (Classes), orange (Attendance)
+        const colors = ['blue', 'purple', 'emerald', 'orange'];
         return colors[index % colors.length] as any;
     };
 
@@ -167,30 +168,30 @@ export default function AdminDashboard() {
         <div className="mobile-padding mobile-padding-y space-y-4 sm:space-y-6 md:space-y-8">
             {/* Welcome Section - Mobile optimized */}
             <div>
-                <div className="flex flex-col gap-3 sm:gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h1 className="heading-responsive font-bold text-slate-900 dark:text-white">
+                        <h1 className="heading-responsive font-bold text-foreground">
                             Welcome back, {user?.name?.split(" ")[0] || "Admin"}! 👋
                         </h1>
-                        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 sm:mt-2">
+                        <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
                             {currentDateTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                             {" • "}Here's what's happening today
                         </p>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <div className="flex items-center gap-3">
                         <Button
                             variant="outline"
-                            className="w-full sm:w-auto rounded-lg border-slate-200"
+                            className="hidden sm:inline-flex rounded-lg border-border px-4 py-2"
                             onClick={() => router.push('/admin/reports')}
                         >
-                            <BarChart3 className="w-4 h-4 mr-2" />
+                            <BarChart3 className="w-4 h-4 mr-2 text-primary" />
                             View Reports
                         </Button>
                         <Button
                             onClick={() => router.push('/admin/students')}
-                            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 rounded-lg"
+                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg rounded-lg px-4 py-2"
                         >
-                            <Plus className="w-4 h-4 mr-2" />
+                            <Plus className="w-4 h-4" />
                             Add Student
                         </Button>
                     </div>
@@ -230,9 +231,9 @@ export default function AdminDashboard() {
             {/* Main Grid - Mobile optimized to single column */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
                 {/* Quick Actions */}
-                <LuminaCard variant="default" className="border-none shadow-card">
+                <LuminaCard variant="default" className="border-none shadow-card bg-card">
                     <LuminaCardHeader className="pb-2">
-                        <LuminaCardTitle className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <LuminaCardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-primary" />
                             Quick Actions
                         </LuminaCardTitle>
@@ -243,12 +244,12 @@ export default function AdminDashboard() {
                                 <button
                                     key={index}
                                     onClick={() => router.push(action.href)}
-                                    className="group flex flex-col items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-transparent hover:border-primary/20 hover:bg-primary/5 transition-all duration-300"
+                                    className="group flex flex-col items-center gap-3 p-4 rounded-xl bg-muted/50 border border-transparent hover:border-primary/20 hover:bg-primary/5 transition-all duration-300"
                                 >
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-sm ${action.color}`}>
                                         <action.icon className="w-6 h-6" />
                                     </div>
-                                    <span className="font-bold text-xs text-slate-700 dark:text-slate-300 text-center">{action.title}</span>
+                                    <span className="font-bold text-xs text-foreground text-center">{action.title}</span>
                                 </button>
                             ))}
                         </div>
@@ -256,46 +257,47 @@ export default function AdminDashboard() {
                 </LuminaCard>
 
                 {/* Recent Students */}
-                <LuminaCard variant="default" className="border-none shadow-card">
+                <LuminaCard variant="default" className="border-none shadow-card bg-card">
                     <LuminaCardHeader className="pb-2">
                         <div className="flex items-center justify-between">
-                            <LuminaCardTitle className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <Users className="w-5 h-5 text-secondary" />
+                            <LuminaCardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <GraduationCap className="w-5 h-5 text-secondary" />
                                 Recent Students
                             </LuminaCardTitle>
-                            <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary hover:bg-primary/10 font-bold px-3">
-                                <Link href="/admin/students">All</Link>
+                            <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary hover:bg-primary/10 font-medium text-sm">
+                                <Link href="/admin/students">View All</Link>
                             </Button>
                         </div>
                     </LuminaCardHeader>
                     <LuminaCardContent className="pt-2">
                         {recentStudents.length === 0 ? (
-                            <div className="text-center py-10 text-slate-400">
-                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-dashed border-slate-200">
-                                    <GraduationCap className="h-8 w-8 opacity-20" />
+                            <div className="text-center py-8 text-muted-foreground">
+                                <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <GraduationCap className="h-7 w-7 text-muted-foreground/50" />
                                 </div>
-                                <p className="font-bold text-sm">No new students</p>
+                                <p className="font-semibold text-sm text-muted-foreground">No students yet</p>
+                                <p className="text-xs text-muted-foreground/80 mt-1">Add students to see them here</p>
                             </div>
                         ) : (
                             <div className="space-y-3">
                                 {recentStudents.map((student, index) => (
                                     <div
                                         key={student._id || index}
-                                        className="group flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                                        className="group flex items-center gap-4 p-3 rounded-xl hover:bg-muted/50 transition-all cursor-pointer"
                                         onClick={() => router.push(`/admin/students/${student._id}`)}
                                     >
                                         <div className="relative">
                                             <div className="w-11 h-11 bg-gradient-to-br from-primary to-primary-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-sm transition-transform group-hover:rotate-6">
                                                 {student.name?.charAt(0) || "S"}
                                             </div>
-                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success border-2 border-white dark:border-slate-900 rounded-full"></div>
+                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success border-2 border-background rounded-full"></div>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{student.name}</p>
-                                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate uppercase tracking-wider">{student.email?.split('@')[0]}</p>
+                                            <p className="text-sm font-bold text-foreground truncate">{student.name}</p>
+                                            <p className="text-[10px] font-bold text-muted-foreground truncate uppercase tracking-wider">{student.email?.split('@')[0]}</p>
                                         </div>
-                                        <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                                        <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
                                         </div>
                                     </div>
                                 ))}
@@ -305,11 +307,11 @@ export default function AdminDashboard() {
                 </LuminaCard>
 
                 {/* Upcoming Events */}
-                <LuminaCard variant="default" className="border-none shadow-card">
+                <LuminaCard variant="default" className="border-none shadow-card bg-card">
                     <LuminaCardHeader className="pb-2">
-                        <LuminaCardTitle className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-success" />
-                            Events Calendar
+                        <LuminaCardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+                            <Calendar className="w-5 h-5 text-primary" />
+                            Upcoming Events
                         </LuminaCardTitle>
                     </LuminaCardHeader>
                     <LuminaCardContent className="pt-2">
@@ -317,24 +319,21 @@ export default function AdminDashboard() {
                             {upcomingEvents.map((event, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-start gap-4 p-4 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border border-transparent hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm transition-all duration-300"
+                                    className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-all duration-200"
                                 >
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${event.type === 'meeting' ? 'bg-primary/10 text-primary' :
-                                        event.type === 'event' ? 'bg-secondary/10 text-secondary' :
-                                            event.type === 'exam' ? 'bg-destructive/10 text-destructive' :
-                                                'bg-success/10 text-success'
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${event.type === 'meeting' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' :
+                                        event.type === 'event' ? 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' :
+                                            event.type === 'exam' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+                                                'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
                                         }`}>
-                                        <Calendar className="w-6 h-6" />
+                                        <Calendar className="w-5 h-5" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{event.title}</p>
-                                        <div className="flex items-center gap-1.5 mt-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
-                                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                                                <Clock className="w-3 h-3" />
-                                                {event.date}
-                                            </p>
-                                        </div>
+                                        <p className="text-sm font-semibold text-foreground leading-tight">{event.title}</p>
+                                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                                            <Clock className="w-3 h-3" />
+                                            {event.date}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
@@ -343,57 +342,57 @@ export default function AdminDashboard() {
                 </LuminaCard>
             </div>
 
-            {/* Activity Feed */}
-            <LuminaCard variant="default" className="border-none shadow-card animate-fadeInUp" style={{ animationDelay: '300ms' }}>
+            {/* Recent Activity */}
+            <LuminaCard variant="default" className="border-none shadow-card animate-fadeInUp bg-card" style={{ animationDelay: '300ms' }}>
                 <LuminaCardHeader className="pb-4">
-                    <LuminaCardTitle className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <Activity className="h-6 w-6 text-primary" />
-                        Institutional Performance
+                    <LuminaCardTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                        <Activity className="h-5 w-5 text-primary" />
+                        Recent Activity
                     </LuminaCardTitle>
                 </LuminaCardHeader>
                 <LuminaCardContent>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {user?.features?.canManageStudents !== false && (
-                            <div className="group flex flex-col gap-4 p-6 bg-gradient-to-br from-primary/5 to-white dark:from-primary/10 dark:to-slate-800 rounded-2xl border border-primary/10 transition-all hover:shadow-lg hover:-translate-y-1">
-                                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25 group-hover:rotate-6 transition-transform">
+                            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-white">
+                                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                                     <UserPlus className="w-6 h-6 text-white" />
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{stats.newEnrollments || 8}</p>
-                                    <p className="text-[11px] font-bold text-primary uppercase tracking-widest mt-1">New Enrollments</p>
+                                <div>
+                                    <p className="text-2xl font-bold">{stats.newEnrollments || 8}</p>
+                                    <p className="text-sm text-white/80">New Enrollments</p>
                                 </div>
                             </div>
                         )}
                         {user?.features?.canManageAttendance !== false && (
-                            <div className="group flex flex-col gap-4 p-6 bg-gradient-to-br from-success/5 to-white dark:from-success/10 dark:to-slate-800 rounded-2xl border border-success/10 transition-all hover:shadow-lg hover:-translate-y-1">
-                                <div className="w-12 h-12 bg-success rounded-xl flex items-center justify-center shadow-lg shadow-success/25 group-hover:rotate-6 transition-transform">
+                            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl text-white">
+                                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                                     <CheckCircle2 className="w-6 h-6 text-white" />
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{stats.attendanceRate || 94.5}%</p>
-                                    <p className="text-[11px] font-bold text-success uppercase tracking-widest mt-1">Daily Attendance</p>
+                                <div>
+                                    <p className="text-2xl font-bold">{stats.attendanceRate || 94.5}%</p>
+                                    <p className="text-sm text-white/80">Today's Attendance</p>
                                 </div>
                             </div>
                         )}
                         {user?.features?.canManageAcademics !== false && (
-                            <div className="group flex flex-col gap-4 p-6 bg-gradient-to-br from-secondary/5 to-white dark:from-secondary/10 dark:to-slate-800 rounded-2xl border border-secondary/10 transition-all hover:shadow-lg hover:-translate-y-1">
-                                <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center shadow-lg shadow-secondary/25 group-hover:rotate-6 transition-transform">
+                            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl text-white">
+                                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                                     <BookOpen className="w-6 h-6 text-white" />
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{stats.totalClasses}</p>
-                                    <p className="text-[11px] font-bold text-secondary uppercase tracking-widest mt-1">Active Courses</p>
+                                <div>
+                                    <p className="text-2xl font-bold">{stats.totalClasses}</p>
+                                    <p className="text-sm text-white/80">Active Classes</p>
                                 </div>
                             </div>
                         )}
                         {user?.features?.canManageFinance !== false && (
-                            <div className="group flex flex-col gap-4 p-6 bg-gradient-to-br from-warning/5 to-white dark:from-warning/10 dark:to-slate-800 rounded-2xl border border-warning/10 transition-all hover:shadow-lg hover:-translate-y-1">
-                                <div className="w-12 h-12 bg-warning rounded-xl flex items-center justify-center shadow-lg shadow-warning/25 group-hover:rotate-6 transition-transform">
+                            <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-400 to-amber-500 rounded-xl text-white">
+                                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                                     <DollarSign className="w-6 h-6 text-white" />
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">${stats.pendingFees?.toLocaleString() || '12.5k'}</p>
-                                    <p className="text-[11px] font-bold text-warning uppercase tracking-widest mt-1">Pending Dues</p>
+                                <div>
+                                    <p className="text-2xl font-bold">${stats.pendingFees?.toLocaleString() || '0'}</p>
+                                    <p className="text-sm text-white/80">Pending Fees</p>
                                 </div>
                             </div>
                         )}
