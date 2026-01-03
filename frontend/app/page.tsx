@@ -1,21 +1,17 @@
 "use client"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-
 export default function Home() {
-  const router = useRouter()
-
-  useEffect(() => {
-    // Redirect to presentation page
-    router.replace("/presentation")
-  }, [router])
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
       <div className="text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-4"></div>
-        <p className="text-slate-600 text-sm">Redirecting to presentation...</p>
+        <h1 className="text-4xl font-bold text-slate-800 mb-4">Progress LMS</h1>
+        <p className="text-xl text-slate-600 mb-8">Hello World - Testing Deployment</p>
+        <a
+          href="/login"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Go to Login
+        </a>
       </div>
     </div>
   )
