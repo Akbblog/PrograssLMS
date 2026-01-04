@@ -578,7 +578,7 @@ export default function AdminAcademicPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {classes.map((cls) => (
-                                            <TableRow key={cls._id} className="hover:bg-slate-50">
+                                            <TableRow key={cls._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                 <TableCell className="font-medium">{cls.name}</TableCell>
                                                 <TableCell className="text-slate-500">{cls.description || "—"}</TableCell>
                                                 <TableCell>
@@ -635,7 +635,7 @@ export default function AdminAcademicPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {subjects.map((subject) => (
-                                            <TableRow key={subject._id} className="hover:bg-slate-50">
+                                            <TableRow key={subject._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                 <TableCell className="font-medium">{subject.name}</TableCell>
                                                 <TableCell className="text-slate-500">{subject.code || "—"}</TableCell>
                                                 <TableCell>
@@ -696,7 +696,7 @@ export default function AdminAcademicPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {programs.map((program) => (
-                                            <TableRow key={program._id} className="hover:bg-slate-50">
+                                            <TableRow key={program._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                 <TableCell className="font-medium">{program.name}</TableCell>
                                                 <TableCell className="text-slate-500">{program.description || "—"}</TableCell>
                                                 <TableCell>{program.duration || "—"}</TableCell>
@@ -752,13 +752,13 @@ export default function AdminAcademicPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {years.map((year) => (
-                                            <TableRow key={year._id} className="hover:bg-slate-50">
+                                            <TableRow key={year._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                 <TableCell className="font-medium">{year.name}</TableCell>
                                                 <TableCell>{year.fromYear ? new Date(year.fromYear).toLocaleDateString() : "—"}</TableCell>
                                                 <TableCell>{year.toYear ? new Date(year.toYear).toLocaleDateString() : "—"}</TableCell>
                                                 <TableCell>
                                                     {year.isCurrent ? (
-                                                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                                                        <Badge variant="success">
                                                             <CheckCircle2 className="h-3 w-3 mr-1" />Current
                                                         </Badge>
                                                     ) : (
@@ -816,7 +816,7 @@ export default function AdminAcademicPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {terms.map((term) => (
-                                            <TableRow key={term._id} className="hover:bg-slate-50">
+                                            <TableRow key={term._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                 <TableCell className="font-medium">{term.name}</TableCell>
                                                 <TableCell className="text-slate-500">{term.description || "—"}</TableCell>
                                                 <TableCell>{term.duration || "—"}</TableCell>

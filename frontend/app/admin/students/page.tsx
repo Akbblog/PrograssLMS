@@ -119,9 +119,9 @@ function StudentCard({ student, onView, onEdit, onEnroll, onDelete }: {
     onDelete: () => void;
 }) {
     const getStatusBadge = () => {
-        if (student.isWithdrawn) return <Badge className="bg-red-100 text-red-700">Withdrawn</Badge>;
-        if (student.isSuspended) return <Badge className="bg-amber-100 text-amber-700">Suspended</Badge>;
-        return <Badge className="bg-green-100 text-green-700">Active</Badge>;
+        if (student.isWithdrawn) return <Badge variant="destructive">Withdrawn</Badge>;
+        if (student.isSuspended) return <Badge variant="warning">Suspended</Badge>;
+        return <Badge variant="success">Active</Badge>;
     };
 
     const getClassName = () => {
@@ -129,18 +129,18 @@ function StudentCard({ student, onView, onEdit, onEnroll, onDelete }: {
     };
 
     return (
-        <Card className="hover:shadow-md transition-shadow cursor-pointer border-slate-200" onClick={onView}>
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onView}>
             <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                        <Avatar className="h-11 w-11">
-                            <AvatarFallback className="bg-blue-100 text-blue-700 font-medium">
+                        <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-primary/10 text-primary font-medium">
                                 {student.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
-                            <h3 className="font-medium text-slate-900 truncate">{student.name}</h3>
-                            <p className="text-sm text-slate-500 truncate">{student.email}</p>
+                            <h3 className="font-medium text-slate-900 dark:text-white truncate">{student.name}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{student.email}</p>
                         </div>
                     </div>
                     <ActionMenu onView={onView} onEdit={onEdit} onEnroll={onEnroll} onDelete={onDelete} />
@@ -148,13 +148,13 @@ function StudentCard({ student, onView, onEdit, onEnroll, onDelete }: {
 
                 <div className="flex flex-wrap gap-2 mb-3">
                     {student.studentId && (
-                        <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
+                        <Badge variant="outline" className="text-xs">
                             <Hash className="h-3 w-3 mr-1" />
                             {student.studentId}
                         </Badge>
                     )}
                     {getClassName() && (
-                        <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                        <Badge variant="secondary" className="text-xs">
                             <GraduationCap className="h-3 w-3 mr-1" />
                             {getClassName()}
                         </Badge>
@@ -271,9 +271,9 @@ export default function AdminStudentsPage() {
     };
 
     const getStatusBadge = (student: any) => {
-        if (student.isWithdrawn) return <Badge className="bg-red-100 text-red-700">Withdrawn</Badge>;
-        if (student.isSuspended) return <Badge className="bg-amber-100 text-amber-700">Suspended</Badge>;
-        return <Badge className="bg-green-100 text-green-700">Active</Badge>;
+        if (student.isWithdrawn) return <Badge variant="destructive">Withdrawn</Badge>;
+        if (student.isSuspended) return <Badge variant="warning">Suspended</Badge>;
+        return <Badge variant="success">Active</Badge>;
     };
 
     if (loading) {
@@ -293,7 +293,13 @@ export default function AdminStudentsPage() {
         <AdminPageLayout
             title="Students"
             description="Manage student registrations"
-            actions={<Button asChild className="bg-blue-600 hover:bg-blue-700"><Link href="/admin/students/create"><UserPlus className="mr-2 h-4 w-4" /> Register Student</Link></Button>}
+            actions={
+                <Button asChild>
+                    <Link href="/admin/students/create">
+                        <UserPlus className="mr-2 h-4 w-4" /> Register Student
+                    </Link>
+                </Button>
+            }
             stats={(
                 <>
                     <SummaryStatCard title="Total" value={total} icon={<Users className="h-4 w-4 text-white" />} variant="blue" />
@@ -311,23 +317,23 @@ export default function AdminStudentsPage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input placeholder="Search students..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
                     </div>
-                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                    <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                         {["all", "active", "suspended"].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setStatusFilter(f as any)}
-                                className={`px-3 py-1.5 text-sm rounded-md transition-all capitalize ${statusFilter === f ? "bg-white text-blue-700 shadow-sm font-medium" : "text-slate-600 hover:text-slate-900"}`}
+                                className={`px-3 py-1.5 text-sm rounded-md transition-all capitalize ${statusFilter === f ? "bg-white dark:bg-slate-700 text-primary shadow-sm font-medium" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}
                             >
                                 {f}
                             </button>
                         ))}
                     </div>
                 </div>
-                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                    <button onClick={() => setViewMode("card")} className={`p-2 rounded-md transition-all ${viewMode === "card" ? "bg-white text-blue-700 shadow-sm" : "text-slate-600"}`} title="Card view">
+                <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+                    <button onClick={() => setViewMode("card")} className={`p-2 rounded-md transition-all ${viewMode === "card" ? "bg-white dark:bg-slate-700 text-primary shadow-sm" : "text-slate-600 dark:text-slate-400"}`} title="Card view">
                         <LayoutGrid className="h-4 w-4" />
                     </button>
-                    <button onClick={() => setViewMode("table")} className={`p-2 rounded-md transition-all ${viewMode === "table" ? "bg-white text-blue-700 shadow-sm" : "text-slate-600"}`} title="Table view">
+                    <button onClick={() => setViewMode("table")} className={`p-2 rounded-md transition-all ${viewMode === "table" ? "bg-white dark:bg-slate-700 text-primary shadow-sm" : "text-slate-600 dark:text-slate-400"}`} title="Table view">
                         <Table2 className="h-4 w-4" />
                     </button>
                 </div>

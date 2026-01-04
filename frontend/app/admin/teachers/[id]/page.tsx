@@ -83,9 +83,9 @@ export default function TeacherProfilePage() {
     };
 
     const getStatusBadge = () => {
-        if (teacher?.isWithdrawn) return <Badge className="bg-red-100 text-red-700">Withdrawn</Badge>;
-        if (teacher?.isSuspended) return <Badge className="bg-amber-100 text-amber-700">Suspended</Badge>;
-        return <Badge className="bg-green-100 text-green-700">Active</Badge>;
+        if (teacher?.isWithdrawn) return <Badge variant="destructive">Withdrawn</Badge>;
+        if (teacher?.isSuspended) return <Badge variant="warning">Suspended</Badge>;
+        return <Badge variant="success">Active</Badge>;
     };
 
     const formatDate = (date: string) => {

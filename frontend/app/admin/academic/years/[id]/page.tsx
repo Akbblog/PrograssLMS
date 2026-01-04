@@ -145,14 +145,14 @@ export default function AcademicYearDetailPage() {
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">{yearData.name}</h1>
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{yearData.name}</h1>
                                 {yearData.isCurrent && (
-                                    <Badge className="bg-green-100 text-green-700">
+                                    <Badge variant="success">
                                         <CheckCircle2 className="h-3 w-3 mr-1" /> Current
                                     </Badge>
                                 )}
                             </div>
-                            <p className="text-slate-500">Academic Year Details</p>
+                            <p className="text-slate-500 dark:text-slate-400">Academic Year Details</p>
                         </div>
                     </div>
                 </div>

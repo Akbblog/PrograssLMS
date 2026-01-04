@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import AdminPageLayout from '@/components/layouts/AdminPageLayout';
 
 export default function AdminSchedulePage() {
     const [classes, setClasses] = useState<any[]>([]);
@@ -36,33 +37,29 @@ export default function AdminSchedulePage() {
     }
 
     return (
-        <div className="p-6 space-y-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Class Schedule</h1>
-                    <p className="text-muted-foreground">View and manage class timetables</p>
+        <AdminPageLayout
+            title="Class Schedule"
+            description="View and manage class timetables"
+            actions={
+                <div className="w-[200px]">
+                    <Select value={selectedClass} onValueChange={setSelectedClass}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select Class" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {classes.map((c: any) => (
+                                <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
-            </div>
-
+            }
+        >
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5" />
-                            Timetable View
-                        </div>
-                        <div className="w-[200px]">
-                            <Select value={selectedClass} onValueChange={setSelectedClass}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Class" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {classes.map((c: any) => (
-                                        <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    <CardTitle className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5" />
+                        Timetable View
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -75,30 +72,30 @@ export default function AdminSchedulePage() {
                             </p>
                         </div>
                     ) : (
-                        <div className="border rounded-lg p-4">
+                        <div className="border dark:border-slate-700 rounded-lg p-4">
                             {/* Placeholder for actual timetable grid */}
                             <div className="grid grid-cols-6 gap-4 text-center text-sm">
-                                <div className="font-bold bg-slate-100 p-2">Time</div>
-                                <div className="font-bold bg-slate-100 p-2">Mon</div>
-                                <div className="font-bold bg-slate-100 p-2">Tue</div>
-                                <div className="font-bold bg-slate-100 p-2">Wed</div>
-                                <div className="font-bold bg-slate-100 p-2">Thu</div>
-                                <div className="font-bold bg-slate-100 p-2">Fri</div>
+                                <div className="font-bold bg-slate-100 dark:bg-slate-800 p-2 rounded">Time</div>
+                                <div className="font-bold bg-slate-100 dark:bg-slate-800 p-2 rounded">Mon</div>
+                                <div className="font-bold bg-slate-100 dark:bg-slate-800 p-2 rounded">Tue</div>
+                                <div className="font-bold bg-slate-100 dark:bg-slate-800 p-2 rounded">Wed</div>
+                                <div className="font-bold bg-slate-100 dark:bg-slate-800 p-2 rounded">Thu</div>
+                                <div className="font-bold bg-slate-100 dark:bg-slate-800 p-2 rounded">Fri</div>
 
                                 {/* Mock Rows */}
-                                <div className="p-2 border-b">08:00 - 09:00</div>
-                                <div className="p-2 border-b bg-blue-50">Math</div>
-                                <div className="p-2 border-b bg-green-50">Science</div>
-                                <div className="p-2 border-b bg-blue-50">Math</div>
-                                <div className="p-2 border-b bg-purple-50">English</div>
-                                <div className="p-2 border-b bg-green-50">Science</div>
+                                <div className="p-2 border-b dark:border-slate-700">08:00 - 09:00</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-blue-50 dark:bg-blue-900/30 rounded">Math</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-green-50 dark:bg-green-900/30 rounded">Science</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-blue-50 dark:bg-blue-900/30 rounded">Math</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30 rounded">English</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-green-50 dark:bg-green-900/30 rounded">Science</div>
 
-                                <div className="p-2 border-b">09:00 - 10:00</div>
-                                <div className="p-2 border-b bg-purple-50">English</div>
-                                <div className="p-2 border-b bg-blue-50">Math</div>
-                                <div className="p-2 border-b bg-green-50">Science</div>
-                                <div className="p-2 border-b bg-blue-50">Math</div>
-                                <div className="p-2 border-b bg-purple-50">English</div>
+                                <div className="p-2 border-b dark:border-slate-700">09:00 - 10:00</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30 rounded">English</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-blue-50 dark:bg-blue-900/30 rounded">Math</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-green-50 dark:bg-green-900/30 rounded">Science</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-blue-50 dark:bg-blue-900/30 rounded">Math</div>
+                                <div className="p-2 border-b dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30 rounded">English</div>
                             </div>
                             <p className="text-xs text-muted-foreground mt-4 text-center">
                                 * This is a visual representation. Actual schedule data integration required.
@@ -107,6 +104,6 @@ export default function AdminSchedulePage() {
                     )}
                 </CardContent>
             </Card>
-        </div>
+        </AdminPageLayout>
     );
 }

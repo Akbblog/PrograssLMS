@@ -363,11 +363,11 @@ export default function ClassDetailPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {students.map((student: any) => (
-                                            <TableRow key={student._id} className="hover:bg-slate-50">
+                                            <TableRow key={student._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                 <TableCell className="font-medium">{student.name}</TableCell>
-                                                <TableCell className="text-slate-500">{student.email}</TableCell>
+                                                <TableCell className="text-slate-500 dark:text-slate-400">{student.email}</TableCell>
                                                 <TableCell>
-                                                    <Badge className="bg-green-100 text-green-700">
+                                                    <Badge variant="success">
                                                         {student.enrollmentStatus || 'Active'}
                                                     </Badge>
                                                 </TableCell>

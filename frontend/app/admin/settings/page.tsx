@@ -121,7 +121,7 @@ export default function AdminSettingsPage() {
             )}
         >
             <Tabs defaultValue="school" className="space-y-6">
-                <TabsList className="bg-slate-100 p-1">
+                <TabsList className="bg-slate-100 dark:bg-slate-800 p-1 gap-1 flex-wrap">
                     <TabsTrigger value="school" className="flex items-center gap-2">
                         <School className="w-4 h-4" />
                         School
@@ -146,10 +146,10 @@ export default function AdminSettingsPage() {
 
                 {/* School Settings */}
                 <TabsContent value="school" className="space-y-6">
-                    <Card className="shadow-sm border-slate-200">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <School className="w-5 h-5 text-indigo-600" />
+                            <CardTitle className="flex items-center gap-2">
+                                <School className="w-5 h-5 text-primary" />
                                 School Information
                             </CardTitle>
                             <CardDescription>
@@ -234,10 +234,10 @@ export default function AdminSettingsPage() {
 
                 {/* Profile Settings */}
                 <TabsContent value="profile" className="space-y-6">
-                    <Card className="shadow-sm border-slate-200">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <User className="w-5 h-5 text-indigo-600" />
+                            <CardTitle className="flex items-center gap-2">
+                                <User className="w-5 h-5 text-primary" />
                                 Profile Information
                             </CardTitle>
                             <CardDescription>
@@ -246,7 +246,7 @@ export default function AdminSettingsPage() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                <div className="w-20 h-20 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
                                     {name.charAt(0) || "A"}
                                 </div>
                                 <div>
@@ -287,63 +287,61 @@ export default function AdminSettingsPage() {
 
                 {/* Notification Settings */}
                 <TabsContent value="notifications" className="space-y-6">
-                    <Card className="shadow-sm border-slate-200">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <Bell className="w-5 h-5 text-indigo-600" />
+                            <CardTitle className="flex items-center gap-2">
+                                <Bell className="w-5 h-5 text-primary" />
                                 Notification Preferences
                             </CardTitle>
                             <CardDescription>
                                 Configure how you receive notifications
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <Mail className="w-5 h-5 text-slate-500" />
-                                        <div>
-                                            <p className="font-medium text-slate-900">Email Notifications</p>
-                                            <p className="text-sm text-slate-500">Receive notifications via email</p>
-                                        </div>
-                                    </div>
-                                    <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
-                                </div>
-
-                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                    <Mail className="w-5 h-5 text-slate-500" />
                                     <div>
-                                        <p className="font-medium text-slate-900">New Student Enrollments</p>
-                                        <p className="text-sm text-slate-500">Get notified when new students enroll</p>
+                                        <p className="font-medium text-slate-900 dark:text-white">Email Notifications</p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Receive notifications via email</p>
                                     </div>
-                                    <Switch checked={newStudentAlerts} onCheckedChange={setNewStudentAlerts} />
                                 </div>
-
-                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
-                                    <div>
-                                        <p className="font-medium text-slate-900">Attendance Alerts</p>
-                                        <p className="text-sm text-slate-500">Alerts for low attendance rates</p>
-                                    </div>
-                                    <Switch checked={attendanceAlerts} onCheckedChange={setAttendanceAlerts} />
-                                </div>
-
-                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
-                                    <div>
-                                        <p className="font-medium text-slate-900">Payment Notifications</p>
-                                        <p className="text-sm text-slate-500">Alerts for fee payments and dues</p>
-                                    </div>
-                                    <Switch checked={paymentAlerts} onCheckedChange={setPaymentAlerts} />
-                                </div>
-
-                                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
-                                    <div>
-                                        <p className="font-medium text-slate-900">System Alerts</p>
-                                        <p className="text-sm text-slate-500">Critical system notifications</p>
-                                    </div>
-                                    <Switch checked={systemAlerts} onCheckedChange={setSystemAlerts} />
-                                </div>
+                                <Switch checked={emailNotifications} onCheckedChange={setEmailNotifications} />
                             </div>
 
-                            <div className="flex justify-end">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                <div>
+                                    <p className="font-medium text-slate-900 dark:text-white">New Student Enrollments</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Get notified when new students enroll</p>
+                                </div>
+                                <Switch checked={newStudentAlerts} onCheckedChange={setNewStudentAlerts} />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                <div>
+                                    <p className="font-medium text-slate-900 dark:text-white">Attendance Alerts</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Alerts for low attendance rates</p>
+                                </div>
+                                <Switch checked={attendanceAlerts} onCheckedChange={setAttendanceAlerts} />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                <div>
+                                    <p className="font-medium text-slate-900 dark:text-white">Payment Notifications</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Alerts for fee payments and dues</p>
+                                </div>
+                                <Switch checked={paymentAlerts} onCheckedChange={setPaymentAlerts} />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                <div>
+                                    <p className="font-medium text-slate-900 dark:text-white">System Alerts</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Critical system notifications</p>
+                                </div>
+                                <Switch checked={systemAlerts} onCheckedChange={setSystemAlerts} />
+                            </div>
+
+                            <div className="flex justify-end pt-4">
                                 <Button onClick={() => handleSave("Notifications")} disabled={saving}>
                                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                                     Save Preferences
@@ -355,10 +353,10 @@ export default function AdminSettingsPage() {
 
                 {/* Appearance Settings */}
                 <TabsContent value="appearance" className="space-y-6">
-                    <Card className="shadow-sm border-slate-200">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <Palette className="w-5 h-5 text-indigo-600" />
+                            <CardTitle className="flex items-center gap-2">
+                                <Palette className="w-5 h-5 text-primary" />
                                 Appearance Settings
                             </CardTitle>
                             <CardDescription>
@@ -369,30 +367,30 @@ export default function AdminSettingsPage() {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <Label>Theme</Label>
-                                    <div className="flex gap-4">
+                                    <div className="grid grid-cols-3 gap-4">
                                         <button
                                             onClick={() => setTheme("light")}
-                                            className={`flex-1 p-4 rounded-lg border-2 transition-colors ${theme === "light" ? "border-indigo-500 bg-indigo-50" : "border-slate-200"
+                                            className={`p-4 rounded-lg border-2 transition-colors ${theme === "light" ? "border-primary bg-primary/5" : "border-slate-200 dark:border-slate-700"
                                                 }`}
                                         >
-                                            <div className="w-full h-20 bg-white rounded border mb-2"></div>
-                                            <p className="text-sm font-medium">Light</p>
+                                            <div className="w-full h-20 bg-white rounded border border-slate-200 mb-2"></div>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">Light</p>
                                         </button>
                                         <button
                                             onClick={() => setTheme("dark")}
-                                            className={`flex-1 p-4 rounded-lg border-2 transition-colors ${theme === "dark" ? "border-indigo-500 bg-indigo-50" : "border-slate-200"
+                                            className={`p-4 rounded-lg border-2 transition-colors ${theme === "dark" ? "border-primary bg-primary/5" : "border-slate-200 dark:border-slate-700"
                                                 }`}
                                         >
-                                            <div className="w-full h-20 bg-slate-800 rounded border mb-2"></div>
-                                            <p className="text-sm font-medium">Dark</p>
+                                            <div className="w-full h-20 bg-slate-800 rounded border border-slate-700 mb-2"></div>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">Dark</p>
                                         </button>
                                         <button
                                             onClick={() => setTheme("system")}
-                                            className={`flex-1 p-4 rounded-lg border-2 transition-colors ${theme === "system" ? "border-indigo-500 bg-indigo-50" : "border-slate-200"
+                                            className={`p-4 rounded-lg border-2 transition-colors ${theme === "system" ? "border-primary bg-primary/5" : "border-slate-200 dark:border-slate-700"
                                                 }`}
                                         >
-                                            <div className="w-full h-20 bg-gradient-to-r from-white to-slate-800 rounded border mb-2"></div>
-                                            <p className="text-sm font-medium">System</p>
+                                            <div className="w-full h-20 bg-gradient-to-r from-white to-slate-800 rounded border border-slate-200 mb-2"></div>
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">System</p>
                                         </button>
                                     </div>
                                 </div>
@@ -433,10 +431,10 @@ export default function AdminSettingsPage() {
 
                 {/* Security Settings */}
                 <TabsContent value="security" className="space-y-6">
-                    <Card className="shadow-sm border-slate-200">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <Key className="w-5 h-5 text-indigo-600" />
+                            <CardTitle className="flex items-center gap-2">
+                                <Key className="w-5 h-5 text-primary" />
                                 Change Password
                             </CardTitle>
                             <CardDescription>
@@ -480,34 +478,34 @@ export default function AdminSettingsPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="shadow-sm border-slate-200">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg flex items-center gap-2">
-                                <Shield className="w-5 h-5 text-indigo-600" />
+                            <CardTitle className="flex items-center gap-2">
+                                <Shield className="w-5 h-5 text-primary" />
                                 Security Settings
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                                 <div>
-                                    <p className="font-medium text-slate-900">Two-Factor Authentication</p>
-                                    <p className="text-sm text-slate-500">Add an extra layer of security</p>
+                                    <p className="font-medium text-slate-900 dark:text-white">Two-Factor Authentication</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Add an extra layer of security</p>
                                 </div>
                                 <Switch checked={twoFactorEnabled} onCheckedChange={setTwoFactorEnabled} />
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                                 <div>
-                                    <p className="font-medium text-slate-900">Active Sessions</p>
-                                    <p className="text-sm text-slate-500">Manage your login sessions</p>
+                                    <p className="font-medium text-slate-900 dark:text-white">Active Sessions</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Manage your login sessions</p>
                                 </div>
                                 <Button variant="outline" size="sm">View Sessions</Button>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                            <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                                 <div>
-                                    <p className="font-medium text-slate-900">Login History</p>
-                                    <p className="text-sm text-slate-500">View your recent login activity</p>
+                                    <p className="font-medium text-slate-900 dark:text-white">Login History</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">View your recent login activity</p>
                                 </div>
                                 <Button variant="outline" size="sm">View History</Button>
                             </div>

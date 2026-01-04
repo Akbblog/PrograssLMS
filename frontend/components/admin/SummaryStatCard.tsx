@@ -8,27 +8,44 @@ interface Props {
   value: string | number
   icon?: React.ReactNode
   variant?: 'blue' | 'purple' | 'green' | 'orange'
+  trend?: string
 }
 
-const VARIANT_STYLES: Record<string, string> = {
-  blue: 'from-blue-500 to-blue-600 text-white',
-  purple: 'from-purple-500 to-purple-600 text-white',
-  green: 'from-green-500 to-green-600 text-white',
-  orange: 'from-orange-500 to-red-500 text-white',
+const VARIANT_STYLES: Record<string, { gradient: string; iconBg: string }> = {
+  blue: { 
+    gradient: 'from-blue-500 to-blue-600', 
+    iconBg: 'bg-white/20' 
+  },
+  purple: { 
+    gradient: 'from-purple-500 to-purple-600', 
+    iconBg: 'bg-white/20' 
+  },
+  green: { 
+    gradient: 'from-emerald-500 to-emerald-600', 
+    iconBg: 'bg-white/20' 
+  },
+  orange: { 
+    gradient: 'from-orange-500 to-red-500', 
+    iconBg: 'bg-white/20' 
+  },
 }
 
-export default function SummaryStatCard({ title, value, icon, variant = 'blue' }: Props) {
-  const cls = VARIANT_STYLES[variant] || VARIANT_STYLES.blue
+export default function SummaryStatCard({ title, value, icon, variant = 'blue', trend }: Props) {
+  const styles = VARIANT_STYLES[variant] || VARIANT_STYLES.blue
+  
   return (
-    <Card className={`bg-gradient-to-br ${cls} border-0 shadow-lg`}>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-white/90">{title}</CardTitle>
-        <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
+    <Card className={`bg-gradient-to-br ${styles.gradient} text-white border-0 shadow-lg overflow-hidden`}>
+      <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
+        <CardTitle className="text-sm font-medium text-white/90 uppercase tracking-wide">{title}</CardTitle>
+        <div className={`h-10 w-10 rounded-lg ${styles.iconBg} flex items-center justify-center flex-shrink-0`}>
           {icon}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-white">{value}</div>
+      <CardContent className="px-5 pb-5">
+        <div className="text-3xl font-bold text-white leading-tight">{value}</div>
+        {trend && (
+          <div className="text-xs font-medium text-white/80 mt-1">{trend}</div>
+        )}
       </CardContent>
     </Card>
   )

@@ -118,7 +118,21 @@ export default function AdminFinancePage() {
         <AdminPageLayout
             title="Finance"
             description="Advanced fee management, billing & revenue"
-            actions={<div className="flex items-center gap-3"><Select value={selectedYear} onValueChange={setSelectedYear}><SelectTrigger className="w-[200px] bg-white"><SelectValue placeholder="Academic Year" /></SelectTrigger><SelectContent>{years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}</SelectContent></Select><Button onClick={() => setCreateDialogOpen(true)} className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25"><Plus className="mr-2 h-4 w-4" /> New Fee Policy</Button></div>}
+            actions={
+                <div className="flex items-center gap-3">
+                    <Select value={selectedYear} onValueChange={setSelectedYear}>
+                        <SelectTrigger className="w-[200px]">
+                            <SelectValue placeholder="Academic Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <Button onClick={() => setCreateDialogOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" /> New Fee Policy
+                    </Button>
+                </div>
+            }
             stats={(
                 <>
                     <SummaryStatCard title="Total Revenue" value={formatCurrency(report?.totalRevenue || 0)} icon={<DollarSign className="h-4 w-4 text-white" />} variant="blue" />
@@ -128,106 +142,51 @@ export default function AdminFinancePage() {
                 </>
             )}
         >
-            <div className="p-4 lg:p-8 space-y-8 max-w-[1600px] mx-auto animate-fadeInUp">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Institutional Finance</h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Advanced fee management, automated billing, and revenue intelligence.</p>
-                </div>
-            </div>
-
-            {/* Financial Overview Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="border-none shadow-card">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total Revenue (Year)</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-black text-slate-900 dark:text-white">{formatCurrency(report?.totalRevenue || 0)}</div>
-                        <div className="flex items-center mt-2 text-xs text-success font-bold">
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                            +4.5% from last period
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-card">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Received Payments</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-black text-success">{formatCurrency(report?.receivedPayments || 0)}</div>
-                        <Badge variant="outline" className="mt-2 text-[10px] bg-success/10 text-success border-success/20 uppercase font-bold">Collected</Badge>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-card">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Pending Collection</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-black text-slate-400">{formatCurrency(report?.pendingPayments || 0)}</div>
-                        <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full mt-3">
-                            <div
-                                className="h-full bg-primary rounded-full"
-                                style={{ width: `${(report?.receivedPayments / (report?.receivedPayments + report?.pendingPayments)) * 100}%` }}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-card bg-destructive/5 dark:bg-destructive/10">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-bold text-destructive uppercase tracking-wide">Overdue Amount</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-3xl font-black text-destructive">{formatCurrency(report?.overdueAmount || 0)}</div>
-                        <p className="text-xs text-destructive/80 mt-2 font-bold underline cursor-pointer hover:text-destructive">View at-risk accounts</p>
-                    </CardContent>
-                </Card>
-            </div>
-
+            {/* Main Content */}
             <Tabs defaultValue="structures" className="w-full">
-                <TabsList className="bg-transparent border-b border-slate-200 dark:border-slate-700 w-full justify-start rounded-none h-auto p-0 gap-8">
-                    <TabsTrigger value="structures" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 pt-0 font-bold text-slate-500 hover:text-slate-700 data-[state=active]:text-primary transition-all">Fee Structures</TabsTrigger>
-                    <TabsTrigger value="analytics" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 pt-0 font-bold text-slate-500 hover:text-slate-700 data-[state=active]:text-primary transition-all">Analytics & Reports</TabsTrigger>
-                    <TabsTrigger value="reminders" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-1 pb-4 pt-0 font-bold text-slate-500 hover:text-slate-700 data-[state=active]:text-primary transition-all flex items-center gap-2">
+                <TabsList className="bg-slate-100 dark:bg-slate-800 p-1 gap-1">
+                    <TabsTrigger value="structures">Fee Structures</TabsTrigger>
+                    <TabsTrigger value="analytics">Analytics & Reports</TabsTrigger>
+                    <TabsTrigger value="reminders" className="flex items-center gap-2">
                         Payment Reminders
-                        {reminders.length > 0 && <Badge className="bg-destructive h-5 px-1.5 min-w-[20px] justify-center text-[10px]">{reminders.length}</Badge>}
+                        {reminders.length > 0 && <Badge variant="destructive" className="h-5 px-1.5 min-w-[20px] justify-center text-[10px]">{reminders.length}</Badge>}
                     </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="structures" className="mt-8 space-y-6">
-                    <Card className="border-none shadow-card overflow-hidden">
+                <TabsContent value="structures" className="space-y-6">
+                    <Card>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
+                                <TableHeader>
                                     <TableRow>
-                                        <TableHead className="font-bold text-slate-700 dark:text-slate-300">Policy Name</TableHead>
-                                        <TableHead className="font-bold text-slate-700 dark:text-slate-300">Year</TableHead>
-                                        <TableHead className="font-bold text-slate-700 dark:text-slate-300">Categories</TableHead>
-                                        <TableHead className="font-bold text-slate-700 dark:text-slate-300">Total Base Amount</TableHead>
-                                        <TableHead className="font-bold text-slate-700 dark:text-slate-300">Status</TableHead>
-                                        <TableHead className="text-right font-bold text-slate-700 dark:text-slate-300">Actions</TableHead>
+                                        <TableHead>Policy Name</TableHead>
+                                        <TableHead>Year</TableHead>
+                                        <TableHead>Categories</TableHead>
+                                        <TableHead>Total Base Amount</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {feeStructures.map(fee => (
                                         <TableRow key={fee._id}>
-                                            <TableCell className="font-bold text-slate-900 dark:text-white">{fee.name}</TableCell>
+                                            <TableCell className="font-medium text-slate-900 dark:text-white">{fee.name}</TableCell>
                                             <TableCell className="text-slate-600 dark:text-slate-400">{fee.academicYear?.name}</TableCell>
                                             <TableCell>
                                                 <div className="flex flex-wrap gap-1">
                                                     {fee.feeCategories?.map((c: any, i: number) => (
-                                                        <Badge key={i} variant="outline" className="text-[10px] bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 uppercase font-semibold">{c.category}</Badge>
+                                                        <Badge key={i} variant="outline" className="text-xs">{c.category}</Badge>
                                                     ))}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-bold text-slate-900 dark:text-white">
+                                            <TableCell className="font-medium">
                                                 {formatCurrency(fee.feeCategories?.reduce((sum: number, c: any) => sum + c.amount, 0) || 0)}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge className={fee.status === 'active' ? 'bg-success hover:bg-success/90' : 'bg-slate-400'}>{fee.status}</Badge>
+                                                <Badge variant={fee.status === 'active' ? 'success' : 'secondary'}>{fee.status}</Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/5">Edit</Button>
+                                                <Button variant="ghost" size="sm">Edit</Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -237,22 +196,24 @@ export default function AdminFinancePage() {
                     </Card>
                 </TabsContent>
 
-                <TabsContent value="analytics" className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <Card className="border-none shadow-card">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className="font-bold text-lg">Class-wise Breakdown</CardTitle>
-                                <CardDescription>Collection progress across different grade levels.</CardDescription>
+                <TabsContent value="analytics" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Class-wise Breakdown</CardTitle>
+                                    <CardDescription>Collection progress across different grade levels.</CardDescription>
+                                </div>
+                                <PieChart className="w-5 h-5 text-slate-400" />
                             </div>
-                            <PieChart className="w-5 h-5 text-slate-400" />
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 {report?.classWiseBreakdown && Object.entries(report.classWiseBreakdown).map(([className, data]: [string, any]) => (
                                     <div key={className} className="space-y-2">
                                         <div className="flex justify-between text-sm">
-                                            <span className="font-bold text-slate-700 dark:text-slate-300">{className}</span>
-                                            <span className="text-slate-500 font-medium">{formatCurrency(data.paid)} / {formatCurrency(data.total)}</span>
+                                            <span className="font-medium text-slate-700 dark:text-slate-300">{className}</span>
+                                            <span className="text-slate-500">{formatCurrency(data.paid)} / {formatCurrency(data.total)}</span>
                                         </div>
                                         <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                             <div
@@ -266,62 +227,62 @@ export default function AdminFinancePage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none shadow-card">
+                    <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
-                                <CardTitle className="font-bold text-lg">Payment Methods</CardTitle>
+                                <CardTitle>Payment Methods</CardTitle>
                                 <CardDescription>Distribution of collection channels.</CardDescription>
                             </div>
                             <CreditCard className="w-5 h-5 text-slate-400" />
                         </CardHeader>
-                        <CardContent className="flex flex-col items-center justify-center h-[300px] space-y-4">
+                        <CardContent className="space-y-4">
                             {report?.paymentMethodBreakdown && Object.entries(report.paymentMethodBreakdown).map(([method, amount]: [string, any]) => (
-                                <div key={method} className="w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <div key={method} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700">
                                     <div className="flex items-center gap-3">
                                         <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300 capitalize">{method}</span>
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300 capitalize">{method}</span>
                                     </div>
-                                    <span className="text-sm font-black text-slate-900 dark:text-white">{formatCurrency(amount)}</span>
+                                    <span className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(amount)}</span>
                                 </div>
                             ))}
                         </CardContent>
                     </Card>
                 </TabsContent>
 
-                <TabsContent value="reminders" className="mt-8">
-                    <Card className="border-none shadow-card overflow-hidden">
+                <TabsContent value="reminders">
+                    <Card>
                         <CardHeader>
-                            <CardTitle className="font-bold text-lg">Automated Reminder Queue</CardTitle>
+                            <CardTitle>Automated Reminder Queue</CardTitle>
                             <CardDescription>Pending alerts for overdue and upcoming payments.</CardDescription>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
+                                <TableHeader>
                                     <TableRow>
-                                        <TableHead className="font-bold">Type</TableHead>
-                                        <TableHead className="font-bold">Student</TableHead>
-                                        <TableHead className="font-bold">Guardian Email</TableHead>
-                                        <TableHead className="font-bold">Amount Due</TableHead>
-                                        <TableHead className="font-bold">Status Info</TableHead>
-                                        <TableHead className="text-right font-bold">Notify</TableHead>
+                                        <TableHead>Type</TableHead>
+                                        <TableHead>Student</TableHead>
+                                        <TableHead>Guardian Email</TableHead>
+                                        <TableHead>Amount Due</TableHead>
+                                        <TableHead>Status Info</TableHead>
+                                        <TableHead className="text-right">Notify</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {reminders.map((reminder, i) => (
                                         <TableRow key={i}>
                                             <TableCell>
-                                                <Badge className={reminder.type === 'overdue' ? 'bg-destructive' : 'bg-info'}>
+                                                <Badge variant={reminder.type === 'overdue' ? 'destructive' : 'info'}>
                                                     {reminder.type.toUpperCase()}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="font-bold text-slate-900 dark:text-white">{reminder.student}</TableCell>
+                                            <TableCell className="font-medium">{reminder.student}</TableCell>
                                             <TableCell className="text-slate-500">{reminder.guardianEmail}</TableCell>
-                                            <TableCell className="font-black text-slate-900 dark:text-white">{formatCurrency(reminder.amountDue)}</TableCell>
-                                            <TableCell className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                                            <TableCell className="font-semibold">{formatCurrency(reminder.amountDue)}</TableCell>
+                                            <TableCell className="text-sm text-slate-600 dark:text-slate-400">
                                                 {reminder.type === 'overdue' ? `${reminder.daysOverdue} days late` : `Due in ${reminder.daysUntilDue} days`}
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Button size="sm" variant="outline" className="text-primary border-primary/20 hover:bg-primary/5 hover:border-primary/50 font-bold">Send Alert</Button>
+                                                <Button size="sm" variant="outline">Send Alert</Button>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -357,21 +318,20 @@ export default function AdminFinancePage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="font-bold text-slate-700 dark:text-slate-300">Primary Amount</Label>
+                            <Label className="font-medium">Primary Amount</Label>
                             <Input type="number" value={feeForm.feeCategories[0].amount} onChange={(e) => {
                                 let cats = [...feeForm.feeCategories];
                                 cats[0].amount = e.target.value;
                                 setFeeForm({ ...feeForm, feeCategories: cats });
                             }} />
                         </div>
-                        <div className="flex items-center gap-4 pt-4">
-                            <Button onClick={handleCreateFee} className="flex-1 bg-primary text-white font-bold h-11 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/30">Active Policy</Button>
-                            <Button variant="outline" onClick={() => setCreateDialogOpen(false)} className="h-11 rounded-xl font-bold border-slate-200 dark:border-slate-700">Cancel</Button>
+                        <div className="flex items-center gap-3 pt-4">
+                            <Button onClick={handleCreateFee} className="flex-1">Create Policy</Button>
+                            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
                         </div>
                     </div>
                 </DialogContent>
             </Dialog>
-            </div>
-            </AdminPageLayout>
+        </AdminPageLayout>
     );
 }

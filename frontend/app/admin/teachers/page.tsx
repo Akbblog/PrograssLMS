@@ -108,9 +108,9 @@ function TeacherCard({ teacher, onView, onEdit, onDelete }: {
     onDelete: () => void;
 }) {
     const getStatusBadge = () => {
-        if (teacher.isWithdrawn) return <Badge className="bg-red-100 text-red-700">Withdrawn</Badge>;
-        if (teacher.isSuspended) return <Badge className="bg-amber-100 text-amber-700">Suspended</Badge>;
-        return <Badge className="bg-green-100 text-green-700">Active</Badge>;
+        if (teacher.isWithdrawn) return <Badge variant="destructive">Withdrawn</Badge>;
+        if (teacher.isSuspended) return <Badge variant="warning">Suspended</Badge>;
+        return <Badge variant="success">Active</Badge>;
     };
 
     const getSubjectName = () => {
@@ -129,61 +129,57 @@ function TeacherCard({ teacher, onView, onEdit, onDelete }: {
     };
 
     return (
-        <Card className="hover:shadow-md transition-shadow cursor-pointer border-slate-200" onClick={onView}>
+        <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onView}>
             <CardContent className="p-4">
                 {/* Header with avatar, name, status */}
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                            <AvatarFallback className="bg-purple-100 text-purple-700 font-semibold">
+                        <Avatar className="h-10 w-10">
+                            <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                                 {teacher.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
-                            <h3 className="font-semibold text-slate-900 truncate">{teacher.name}</h3>
-                            <p className="text-sm text-slate-500 truncate">{teacher.email}</p>
+                            <h3 className="font-medium text-slate-900 dark:text-white truncate">{teacher.name}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{teacher.email}</p>
                         </div>
                     </div>
                     <ActionMenu onView={onView} onEdit={onEdit} onDelete={onDelete} />
                 </div>
 
                 {/* Subject - Primary teaching area */}
-                <div className="mb-3 p-2 bg-slate-50 rounded-lg">
+                <div className="mb-3 p-2.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                     <div className="flex items-center gap-2">
-                        <BookOpen className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                        <span className="text-sm font-medium text-slate-700">
+                        <BookOpen className="h-4 w-4 text-primary flex-shrink-0" />
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                             {getSubjectName() || <span className="text-slate-400 italic">No subject assigned</span>}
                         </span>
                     </div>
                     {getClassName() && (
                         <div className="flex items-center gap-2 mt-1">
                             <GraduationCap className="h-4 w-4 text-purple-600 flex-shrink-0" />
-                            <span className="text-sm text-slate-600">{getClassName()}</span>
+                            <span className="text-sm text-slate-600 dark:text-slate-400">{getClassName()}</span>
                         </div>
                     )}
                 </div>
 
                 {/* Additional details */}
-                <div className="flex flex-wrap gap-2 mb-3 text-xs">
+                <div className="flex flex-wrap gap-2 mb-3">
                     {teacher.employmentType && (
-                        <span className="inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 rounded">
-                            {teacher.employmentType}
-                        </span>
+                        <Badge variant="outline" className="text-xs">{teacher.employmentType}</Badge>
                     )}
                     {teacher.experience && (
-                        <span className="inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 rounded">
-                            {teacher.experience} exp
-                        </span>
+                        <Badge variant="outline" className="text-xs">{teacher.experience} exp</Badge>
                     )}
                     {(teacher.dateEmployed || teacher.joiningDate) && (
-                        <span className="inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 rounded">
+                        <Badge variant="outline" className="text-xs">
                             Joined {formatDate(teacher.dateEmployed || teacher.joiningDate)}
-                        </span>
+                        </Badge>
                     )}
                 </div>
 
                 {/* Footer with status and phone */}
-                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
                     {getStatusBadge()}
                     {teacher.phone && (
                         <span className="text-xs text-slate-400 flex items-center gap-1">
@@ -259,15 +255,15 @@ export default function AdminTeachersPage() {
     };
 
     const getStatusBadge = (teacher: any) => {
-        if (teacher.isWithdrawn) return <Badge className="bg-red-100 text-red-700">Withdrawn</Badge>;
-        if (teacher.isSuspended) return <Badge className="bg-amber-100 text-amber-700">Suspended</Badge>;
-        return <Badge className="bg-green-100 text-green-700">Active</Badge>;
+        if (teacher.isWithdrawn) return <Badge variant="destructive">Withdrawn</Badge>;
+        if (teacher.isSuspended) return <Badge variant="warning">Suspended</Badge>;
+        return <Badge variant="success">Active</Badge>;
     };
 
     if (loading) {
         return (
             <div className="flex justify-center items-center h-96">
-                <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         );
     }
@@ -281,7 +277,7 @@ export default function AdminTeachersPage() {
         <AdminPageLayout
             title="Teachers"
             description="Manage faculty members"
-            actions={<Button asChild className="btn-responsive-lg w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white"><Link href="/admin/teachers/create"><UserPlus className="mr-2 h-4 w-4" /> Add Teacher</Link></Button>}
+            actions={<Button asChild className="btn-responsive-lg w-full sm:w-auto"><Link href="/admin/teachers/create"><UserPlus className="mr-2 h-4 w-4" /> Add Teacher</Link></Button>}
             stats={(
                 <>
                     <SummaryStatCard title="Total" value={total} icon={<Users className="h-4 w-4 text-white" />} variant="purple" />
@@ -312,7 +308,7 @@ export default function AdminTeachersPage() {
                         <button
                             key={f}
                             onClick={() => setStatusFilter(f as any)}
-                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all whitespace-nowrap ${statusFilter === f ? "bg-purple-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-full font-medium transition-all whitespace-nowrap ${statusFilter === f ? "bg-primary text-white shadow-md" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                                 }`}
                         >
                             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -322,17 +318,17 @@ export default function AdminTeachersPage() {
 
                 {/* View Toggle - Mobile optimized */}
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                    <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                         <button
                             onClick={() => setViewMode("card")}
-                            className={`p-2 rounded-md transition-all touch-target-sm ${viewMode === "card" ? "bg-white text-purple-700 shadow-sm" : "text-slate-600"}`}
+                            className={`p-2 rounded-md transition-all touch-target-sm ${viewMode === "card" ? "bg-white dark:bg-slate-700 text-primary shadow-sm" : "text-slate-600 dark:text-slate-400"}`}
                             title="Card view"
                         >
                             <LayoutGrid className="h-4 w-4" />
                         </button>
                         <button
                             onClick={() => setViewMode("table")}
-                            className={`p-2 rounded-md transition-all touch-target-sm ${viewMode === "table" ? "bg-white text-purple-700 shadow-sm" : "text-slate-600"}`}
+                            className={`p-2 rounded-md transition-all touch-target-sm ${viewMode === "table" ? "bg-white dark:bg-slate-700 text-primary shadow-sm" : "text-slate-600 dark:text-slate-400"}`}
                             title="Table view"
                         >
                             <Table2 className="h-4 w-4" />
@@ -343,13 +339,13 @@ export default function AdminTeachersPage() {
 
             {/* Content */}
             {filteredTeachers.length === 0 ? (
-                <Card className="border-slate-200">
+                <Card>
                     <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16">
-                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                        <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
                             <Users className="h-6 w-6 sm:h-8 sm:w-8 text-slate-400" />
                         </div>
-                        <h3 className="text-base sm:text-lg font-medium text-slate-700">No teachers found</h3>
-                        <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center px-2">
+                        <h3 className="text-base sm:text-lg font-medium text-slate-700 dark:text-slate-200">No teachers found</h3>
+                        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 text-center px-2">
                             {searchQuery ? "Try adjusting your search" : "Add your first teacher to get started"}
                         </p>
                         {!searchQuery && (
@@ -372,44 +368,44 @@ export default function AdminTeachersPage() {
                     ))}
                 </div>
             ) : (
-                <Card className="border-slate-200 overflow-hidden">
+                <Card className="overflow-hidden">
                     <div className="overflow-x-auto mobile-scroll">
                         <table className="w-full text-xs sm:text-sm">
-                            <thead className="bg-slate-50 border-b sticky top-0">
+                            <thead className="bg-slate-50 dark:bg-slate-800/50 border-b dark:border-slate-700 sticky top-0">
                                 <tr>
-                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600">Teacher</th>
-                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 hidden md:table-cell">Subject</th>
-                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 hidden lg:table-cell">Class</th>
-                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600">Status</th>
-                                    <th className="text-right px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600">Actions</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider">Teacher</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider hidden md:table-cell">Subject</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider hidden lg:table-cell">Class</th>
+                                    <th className="text-left px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider">Status</th>
+                                    <th className="text-right px-2 sm:px-4 py-2 sm:py-3 font-medium text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y">
+                            <tbody className="divide-y dark:divide-slate-700">
                                 {filteredTeachers.map((teacher) => (
-                                    <tr key={teacher._id} className="hover:bg-slate-50">
+                                    <tr key={teacher._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                         <td className="px-2 sm:px-4 py-2 sm:py-3">
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="h-7 w-7 sm:h-9 sm:w-9">
-                                                    <AvatarFallback className="bg-purple-100 text-purple-700 text-xs sm:text-sm">
+                                                    <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm font-semibold">
                                                         {teacher.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="min-w-0">
-                                                    <p className="font-medium text-slate-900 truncate text-xs sm:text-sm">{teacher.name}</p>
-                                                    <p className="text-xs text-slate-500 truncate hidden sm:block">{teacher.email}</p>
+                                                    <p className="font-medium text-slate-900 dark:text-white truncate text-xs sm:text-sm">{teacher.name}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate hidden sm:block">{teacher.email}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-2 sm:px-4 py-2 sm:py-3 hidden md:table-cell">
                                             {teacher.subject ? (
-                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                <Badge variant="outline" className="text-xs">
                                                     {typeof teacher.subject === 'object' ? teacher.subject.name : teacher.subject}
                                                 </Badge>
                                             ) : (
-                                                <span className="text-slate-400">—</span>
+                                                <span className="text-slate-400 dark:text-slate-500">—</span>
                                             )}
                                         </td>
-                                        <td className="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell text-slate-600">
+                                        <td className="px-2 sm:px-4 py-2 sm:py-3 hidden lg:table-cell text-slate-600 dark:text-slate-300">
                                             {teacher.classLevel ? (
                                                 typeof teacher.classLevel === 'object' ? teacher.classLevel.name : teacher.classLevel
                                             ) : "—"}

@@ -290,7 +290,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </header>
 
                     {/* Content */}
-                    <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-900 p-4 lg:p-6">
+                    <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-900 p-4 sm:p-6 lg:p-8">
                         <div className="w-full animate-fadeInUp">
                             {children}
                         </div>
