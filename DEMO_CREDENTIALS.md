@@ -1,55 +1,60 @@
 # 🚀 Demo Account Credentials
 
-This file contains credentials for the Progress LMS Demo School populated with 10 teachers and 25 students.
+This file contains credentials for the Progress LMS Demo School (Nurul Huda Academy) populated with 1 admin, 10 teachers, and 25 students. All accounts use the universal password: `progresslmspass`.
 
-## 🔑 Central Roles
+## 🔑 School Admin
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **Super Admin** | `SA@progresslms.com` | `Superpass` |
-| **School Admin** | `admin@school.com` | `admin123` |
+| **School Admin** | `admin@school.demo` | `progresslmspass` |
 
 ## 👨‍🏫 Teachers (10 Created)
 
-| Name | Email | Password | Primary Subject |
-| :--- | :--- | :--- | :--- |
-| Robert Smith | `teacher1@progress.edu` | `password123` | Mathematics |
-| Maria Garcia | `teacher2@progress.edu` | `password123` | English Literature |
-| Suresh Kumar | `teacher3@progress.edu` | `password123` | Physics |
-| Elena Petrova | `teacher4@progress.edu` | `password123` | History |
-| Aisha Diallo | `teacher5@progress.edu` | `password123` | Biology |
-| Kenji Tanaka | `teacher6@progress.edu` | `password123` | Computer Science |
-| Sophie Martin | `teacher7@progress.edu` | `password123` | Art & Design |
-| Thomas Muller | `teacher8@progress.edu` | `password123` | Physical Education |
-| Isabella Rossi | `teacher9@progress.edu` | `password123` | Chemistry |
-| Liam O'Connor | `teacher10@progress.edu` | `password123` | Music |
+| Name | Email | Password |
+| :--- | :--- | :--- |
+| Fatimah Hasan | `fatimah.hasan@school.demo` | `progresslmspass` |
+| Yusuf Rahman | `yusuf.rahman@school.demo` | `progresslmspass` |
+| Amina Siddiqui | `amina.siddiqui@school.demo` | `progresslmspass` |
+| Khalid Noor | `khalid.noor@school.demo` | `progresslmspass` |
+| Layla Zahra | `layla.zahra@school.demo` | `progresslmspass` |
+| Omar Qureshi | `omar.qureshi@school.demo` | `progresslmspass` |
+| Maryam Idris | `maryam.idris@school.demo` | `progresslmspass` |
+| Bilal Kareem | `bilal.kareem@school.demo` | `progresslmspass` |
+| Zainab Malik | `zainab.malik@school.demo` | `progresslmspass` |
+| Hamza Abdullah | `hamza.abdullah@school.demo` | `progresslmspass` |
 
 ## 🎓 Students (25 Created)
 
 | Name | Email | Password | Class |
 | :--- | :--- | :--- | :--- |
-| Liam Martinez | `student1@progress.edu` | `password123` | Grade 1 |
-| Noah Jones | `student2@progress.edu` | `password123` | Grade 2 |
-| Oliver Jones | `student3@progress.edu` | `password123` | Grade 3 |
-| James Martinez | `student4@progress.edu` | `password123` | Grade 4 |
-| Elijah Lopez | `student5@progress.edu` | `password123` | Grade 5 |
-| William Rodriguez | `student6@progress.edu` | `password123` | Grade 1 |
-| Henry Davis | `student7@progress.edu` | `password123` | Grade 2 |
-| Lucas Brown | `student8@progress.edu` | `password123` | Grade 3 |
-| Benjamin Martinez | `student9@progress.edu` | `password123` | Grade 4 |
-| Theodore Miller | `student10@progress.edu` | `password123` | Grade 5 |
-| Emma Rodriguez | `student11@progress.edu` | `password123` | Grade 1 |
-| Olivia Jones | `student12@progress.edu` | `password123` | Grade 2 |
-| Ava Brown | `student13@progress.edu` | `password123` | Grade 3 |
-| Sophia Jones | `student14@progress.edu` | `password123` | Grade 4 |
-| Charlotte Garcia | `student15@progress.edu` | `password123` | Grade 5 |
-| Amelia Williams | `student16@progress.edu` | `password123` | Grade 1 |
-| Mia Jones | `student17@progress.edu` | `password123` | Grade 2 |
-| Harper Davis | `student18@progress.edu` | `password123` | Grade 3 |
-| Evelyn Miller | `student19@progress.edu` | `password123` | Grade 4 |
-| Abigail Thomas | `student20@progress.edu` | `password123` | Grade 5 |
-| Daniel Williams | `student21@progress.edu` | `password123` | Grade 1 |
-| Matthew Lopez | `student22@progress.edu` | `password123` | Grade 2 |
-| Jacob Hernandez | `student23@progress.edu` | `password123` | Grade 3 |
-| Michael Rodriguez | `student24@progress.edu` | `password123` | Grade 4 |
-| Alexander Hernandez | `student25@progress.edu` | `password123` | Grade 5 |
+| Aaliyah Khan | `aaliyah.khan@school.demo` | `progresslmspass` | Grade 1 |
+| Ibrahim Malik | `ibrahim.malik@school.demo` | `progresslmspass` | Grade 1 |
+| Noor Alvi | `noor.alvi@school.demo` | `progresslmspass` | Grade 1 |
+| Rayan Siddiq | `rayan.siddiq@school.demo` | `progresslmspass` | Grade 1 |
+| Huda Qadir | `huda.qadir@school.demo` | `progresslmspass` | Grade 1 |
+| Zayd Rahim | `zayd.rahim@school.demo` | `progresslmspass` | Grade 2 |
+| Mariam Omar | `mariam.omar@school.demo` | `progresslmspass` | Grade 2 |
+| Taha Karim | `taha.karim@school.demo` | `progresslmspass` | Grade 2 |
+| Safiya Idris | `safiya.idris@school.demo` | `progresslmspass` | Grade 2 |
+| Yahya Saleh | `yahya.saleh@school.demo` | `progresslmspass` | Grade 2 |
+| Hafsa Rauf | `hafsa.rauf@school.demo` | `progresslmspass` | Grade 3 |
+| Elias Farid | `elias.farid@school.demo` | `progresslmspass` | Grade 3 |
+| Amna Jamil | `amna.jamil@school.demo` | `progresslmspass` | Grade 3 |
+| Zara Yasin | `zara.yasin@school.demo` | `progresslmspass` | Grade 3 |
+| Sami Naeem | `sami.naeem@school.demo` | `progresslmspass` | Grade 3 |
+| Aisha Basit | `aisha.basit@school.demo` | `progresslmspass` | Grade 4 |
+| Usman Tariq | `usman.tariq@school.demo` | `progresslmspass` | Grade 4 |
+| Lina Habib | `lina.habib@school.demo` | `progresslmspass` | Grade 4 |
+| Farah Imran | `farah.imran@school.demo` | `progresslmspass` | Grade 4 |
+| Nabil Khan | `nabil.khan@school.demo` | `progresslmspass` | Grade 4 |
+| Sumayyah Ali | `sumayyah.ali@school.demo` | `progresslmspass` | Grade 5 |
+| Junaid Iqbal | `junaid.iqbal@school.demo` | `progresslmspass` | Grade 5 |
+| Sara Latif | `sara.latif@school.demo` | `progresslmspass` | Grade 5 |
+| Mahmoud Saeed | `mahmoud.saeed@school.demo` | `progresslmspass` | Grade 5 |
+| Anisa Parvez | `anisa.parvez@school.demo` | `progresslmspass` | Grade 5 |
+
+## 📝 Notes
+- **Super Admin**: Not seeded; set via environment variables (`SUPERADMIN_EMAIL` and `SUPERADMIN_PASSWORD`) for global management.
+- All demo accounts use the universal password `progresslmspass` for easy access.
+- School: Nurul Huda Academy (UAE-based demo with Islamic subjects and Muslim names).
+- Data includes enrollments, grades, and academic structure for Grades 1-5.
