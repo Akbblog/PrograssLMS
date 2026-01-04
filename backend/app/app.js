@@ -45,6 +45,8 @@ const allowedOrigins = [
   "https://progresslms-frontend-alis-projects-ae84a621.vercel.app",
   "https://progresslms-frontend-akbmaksa-3745-alis-projects-ae84a621.vercel.app"
   ,"https://progresslms-frontend-git-main-alis-projects-ae84a621.vercel.app"
+  ,"https://progresslms.io"
+  ,"https://www.progresslms.io"
 ].filter(Boolean);
 
 app.use(cors({

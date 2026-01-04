@@ -24,7 +24,8 @@ import {
     Shield,
     Sparkles,
     Mail,
-    Lock
+    Lock,
+    ArrowRight
 } from "lucide-react"
 import GraduationCap from "@/components/icons/GraduationCap"
 import { toast } from "sonner"
@@ -162,140 +163,143 @@ export default function LoginPage() {
     if (!isMounted) return null
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-950 overflow-hidden font-sans selection:bg-indigo-500/30">
+        <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-50 overflow-hidden font-sans">
             
-            {/* --- Modern Background Effects --- */}
-            <div className="absolute inset-0 w-full h-full">
-                {/* Grid Overlay */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-                
-                {/* Gradient Globs */}
-                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-500/20 blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/20 blur-[100px]" />
-                <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-blue-500/10 blur-[80px]" />
+            {/* --- Modern White Background Effects --- */}
+            <div className="absolute inset-0 w-full h-full overflow-hidden">
+                {/* Subtle mesh gradient background */}
+                <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-gradient-to-tr from-blue-100/60 to-indigo-100/60 blur-[120px] animate-slow-drift opacity-70" />
+                 <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] rounded-full bg-gradient-to-tl from-violet-100/60 to-fuchsia-100/60 blur-[120px] animate-slow-drift-reverse opacity-70" />
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] mix-blend-overlay"></div>
             </div>
 
+
             {/* --- Main Card --- */}
-            <div className="relative z-10 w-full max-w-[420px] mx-4">
-                <div className="relative rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-2xl shadow-2xl overflow-hidden">
+            <div className="relative z-10 w-full max-w-[440px] mx-auto p-4">
+                
+                {/* The "Floating" White Card */}
+                <div className="bg-white rounded-[32px] shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] border border-slate-100/80 p-8 sm:p-12 relative overflow-hidden">
                     
-                    {/* Decorative Top Line */}
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50" />
-
-                    <div className="p-8 sm:p-10">
-                        {/* Header Section */}
-                        <div className="text-center space-y-6 mb-8">
-                            <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 shadow-lg shadow-indigo-500/20 mb-2 ring-1 ring-white/10">
-                                <GraduationCap className="h-8 w-8 text-white" />
-                            </div>
-                            
-                            <div className="space-y-2">
-                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                                    Welcome back
-                                </h1>
-                                <p className="text-slate-400 text-sm">
-                                    Enter your credentials to access your workspace
-                                </p>
-                            </div>
+                    {/* Header Section */}
+                    <div className="text-center space-y-4 mb-10">
+                        <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-blue-50 text-blue-600 shadow-sm shadow-blue-100 ring-1 ring-blue-100/50 mb-2">
+                            <GraduationCap className="h-7 w-7" />
                         </div>
-
-                        {/* Form Section */}
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase tracking-wider text-slate-400 font-medium ml-1">Email</FormLabel>
-                                            <FormControl>
-                                                <div className="relative group">
-                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                                                    <Input
-                                                        {...field}
-                                                        type="email"
-                                                        disabled={isLoading}
-                                                        placeholder="name@school.com"
-                                                        className="h-12 pl-10 bg-slate-950/50 border-slate-800 text-slate-100 placeholder:text-slate-600 rounded-xl focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 transition-all hover:border-slate-700"
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <div className="flex items-center justify-between ml-1">
-                                                <FormLabel className="text-xs uppercase tracking-wider text-slate-400 font-medium">Password</FormLabel>
-                                                <Link
-                                                    href="/forgot-password"
-                                                    className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
-                                                >
-                                                    Forgot password?
-                                                </Link>
-                                            </div>
-                                            <FormControl>
-                                                <div className="relative group">
-                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
-                                                    <Input
-                                                        {...field}
-                                                        type={showPassword ? "text" : "password"}
-                                                        disabled={isLoading}
-                                                        placeholder="••••••••"
-                                                        className="h-12 pl-10 pr-10 bg-slate-950/50 border-slate-800 text-slate-100 placeholder:text-slate-600 rounded-xl focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 transition-all hover:border-slate-700"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword(!showPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
-                                                    >
-                                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                                    </button>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <Button
-                                    type="submit"
-                                    className="w-full h-12 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:hover:scale-100 mt-2"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                            <span>Signing in...</span>
-                                        </div>
-                                    ) : (
-                                        "Sign in"
-                                    )}
-                                </Button>
-                            </form>
-                        </Form>
+                        
+                        <div className="space-y-2">
+                            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                                Welcome back
+                            </h1>
+                            <p className="text-slate-500 text-[15px]">
+                                Please enter your details to sign in.
+                            </p>
+                        </div>
                     </div>
 
-                    {/* Footer / Meta Area */}
-                    <div className="bg-slate-950/30 p-4 text-center border-t border-white/5">
-                        <p className="text-xs text-slate-500">
-                            By continuing, you agree to our Terms of Service and Privacy Policy.
+                    {/* Form Section */}
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <FormLabel className="text-sm font-medium text-slate-700 ml-1">Email address</FormLabel>
+                                        <FormControl>
+                                            <div className="relative group">
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                                <Input
+                                                    {...field}
+                                                    type="email"
+                                                    disabled={isLoading}
+                                                    placeholder="name@school.com"
+                                                    className="h-14 pl-12 bg-slate-50/80 border-0 text-slate-900 placeholder:text-slate-400 rounded-2xl focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:bg-white transition-all shadow-sm shadow-slate-200/50"
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="text-xs ml-1" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <FormLabel className="text-sm font-medium text-slate-700 ml-1">Password</FormLabel>
+                                        <FormControl>
+                                            <div className="relative group">
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+                                                <Input
+                                                    {...field}
+                                                    type={showPassword ? "text" : "password"}
+                                                    disabled={isLoading}
+                                                    placeholder="••••••••"
+                                                     className="h-14 pl-12 pr-12 bg-slate-50/80 border-0 text-slate-900 placeholder:text-slate-400 rounded-2xl focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:bg-white transition-all shadow-sm shadow-slate-200/50"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none p-1"
+                                                >
+                                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="text-xs ml-1" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="flex items-center justify-between pt-2">
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500/30 transition-all" />
+                                    <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800 transition-colors">Remember me</span>
+                                </label>
+                                <Link
+                                    href="/forgot-password"
+                                    className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 hover:scale-[1.01] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                        <span>Signing in...</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        Sign in
+                                        <ArrowRight className="h-5 w-5 opacity-70" />
+                                    </div>
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+
+                    {/* Footer area */}
+                    <div className="mt-10 text-center">
+                         <p className="text-sm text-slate-500 font-medium">
+                            Don't have an account?{' '}
+                            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                                Sign up now
+                            </Link>
                         </p>
                     </div>
                 </div>
                 
-                {/* Floating "Secure" Badge */}
-                <div className="mt-8 flex justify-center">
-                   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
-                        <Shield className="h-3 w-3 text-emerald-400" />
-                        <span className="text-xs font-medium text-slate-400">End-to-end encrypted session</span>
-                   </div>
-                </div>
+                {/* Subtle bottom text */}
+                <p className="text-center text-xs font-medium text-slate-400 mt-6">
+                    © 2026 ProgressLMS. Secured by industry standards.
+                </p>
             </div>
         </div>
     )
