@@ -23,6 +23,8 @@ import {
     Users,
     Shield,
     Sparkles,
+    Mail,
+    Lock
 } from "lucide-react"
 import GraduationCap from "@/components/icons/GraduationCap"
 import { toast } from "sonner"
@@ -30,6 +32,7 @@ import { useAuthStore } from "@/store/authStore"
 import apiClient from "@/lib/api/client"
 import { cn } from "@/lib/utils"
 
+// --- Validation Schema ---
 const formSchema = z.object({
     email: z.string().email({
         message: "Please enter a valid email address.",
@@ -41,6 +44,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
+// --- Role Config (Logic Preserved) ---
 type RoleType = 'student' | 'teacher' | 'admin' | 'super_admin';
 
 interface RoleConfig {
@@ -51,30 +55,10 @@ interface RoleConfig {
 }
 
 const roleConfigs: RoleConfig[] = [
-    {
-        id: 'student',
-        label: 'Student',
-        icon: GraduationCap,
-        endpoint: '/students/login'
-    },
-    {
-        id: 'teacher',
-        label: 'Teacher',
-        icon: Users,
-        endpoint: '/teachers/login'
-    },
-    {
-        id: 'admin',
-        label: 'Administrator',
-        icon: Shield,
-        endpoint: '/admin/login'
-    },
-    {
-        id: 'super_admin',
-        label: 'Super Admin',
-        icon: Sparkles,
-        endpoint: '/superadmin/login'
-    }
+    { id: 'student', label: 'Student', icon: GraduationCap, endpoint: '/students/login' },
+    { id: 'teacher', label: 'Teacher', icon: Users, endpoint: '/teachers/login' },
+    { id: 'admin', label: 'Administrator', icon: Shield, endpoint: '/admin/login' },
+    { id: 'super_admin', label: 'Super Admin', icon: Sparkles, endpoint: '/superadmin/login' }
 ]
 
 export default function LoginPage() {
@@ -96,11 +80,10 @@ export default function LoginPage() {
         },
     })
 
-    // Unified Login Logic
+    // --- Unified Login Logic (Preserved) ---
     async function onSubmit(values: FormValues) {
         setIsLoading(true)
 
-        // Try the most privileged roles first to avoid super admins being treated as admins
         const attempts: RoleConfig[] = [
             roleConfigs.find(r => r.id === 'super_admin')!,
             roleConfigs.find(r => r.id === 'admin')!,
@@ -112,7 +95,6 @@ export default function LoginPage() {
 
         for (const roleConfig of attempts) {
             try {
-                // console.log(`Attempting login as ${roleConfig.label}...`); 
                 const res = await apiClient.post(roleConfig.endpoint, {
                     email: values.email,
                     password: values.password,
@@ -131,7 +113,6 @@ export default function LoginPage() {
                     }
 
                     if (userData && userData._id) {
-                        // Prefer backend role if present, otherwise fall back to attempted role
                         const resolvedRole = (userData.role || roleConfig.id) as RoleType | string
 
                         login(
@@ -162,12 +143,10 @@ export default function LoginPage() {
 
                         const destination = redirectMap[resolvedRole] || redirectMap[roleConfig.id] || "/dashboard"
                         router.push(destination)
-                        break; // Stop on first success
+                        break;
                     }
                 }
             } catch (error: any) {
-                // Continue to next role if 401/404/400
-                // Only log real errors, suppress auth failures during scanning
                 if (error.response && error.response.status !== 401 && error.response.status !== 404 && error.response.status !== 400) {
                     console.error(`Login error for ${roleConfig.id}:`, error);
                 }
@@ -178,139 +157,144 @@ export default function LoginPage() {
             toast.error("Invalid email or password. Please try again.")
             setIsLoading(false)
         }
-        // Note: setIsLoading(false) is handled in the failure case. 
-        // In success case, we redirect, so we don't strictly need to unset loading immediately to prevent flash.
     }
 
     if (!isMounted) return null
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white flex items-center justify-center px-6 py-12">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.18),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.14),transparent_40%)]" aria-hidden />
-            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_35%,transparent_70%)]" aria-hidden />
+        <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-950 overflow-hidden font-sans selection:bg-indigo-500/30">
+            
+            {/* --- Modern Background Effects --- */}
+            <div className="absolute inset-0 w-full h-full">
+                {/* Grid Overlay */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+                
+                {/* Gradient Globs */}
+                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-500/20 blur-[100px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/20 blur-[100px]" />
+                <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-blue-500/10 blur-[80px]" />
+            </div>
 
-            <div className="w-full max-w-5xl grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center relative z-10">
-                <div className="hidden lg:flex flex-col gap-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-10 shadow-2xl shadow-indigo-900/40">
-                    <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                            <GraduationCap className="h-7 w-7" />
+            {/* --- Main Card --- */}
+            <div className="relative z-10 w-full max-w-[420px] mx-4">
+                <div className="relative rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-2xl shadow-2xl overflow-hidden">
+                    
+                    {/* Decorative Top Line */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50" />
+
+                    <div className="p-8 sm:p-10">
+                        {/* Header Section */}
+                        <div className="text-center space-y-6 mb-8">
+                            <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 shadow-lg shadow-indigo-500/20 mb-2 ring-1 ring-white/10">
+                                <GraduationCap className="h-8 w-8 text-white" />
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                                    Welcome back
+                                </h1>
+                                <p className="text-slate-400 text-sm">
+                                    Enter your credentials to access your workspace
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-semibold text-white/80">ProgressLMS</p>
-                            <p className="text-xs text-white/60">Secure access hub</p>
-                        </div>
+
+                        {/* Form Section */}
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs uppercase tracking-wider text-slate-400 font-medium ml-1">Email</FormLabel>
+                                            <FormControl>
+                                                <div className="relative group">
+                                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                                                    <Input
+                                                        {...field}
+                                                        type="email"
+                                                        disabled={isLoading}
+                                                        placeholder="name@school.com"
+                                                        className="h-12 pl-10 bg-slate-950/50 border-slate-800 text-slate-100 placeholder:text-slate-600 rounded-xl focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 transition-all hover:border-slate-700"
+                                                    />
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage className="text-xs" />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <div className="flex items-center justify-between ml-1">
+                                                <FormLabel className="text-xs uppercase tracking-wider text-slate-400 font-medium">Password</FormLabel>
+                                                <Link
+                                                    href="/forgot-password"
+                                                    className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                                                >
+                                                    Forgot password?
+                                                </Link>
+                                            </div>
+                                            <FormControl>
+                                                <div className="relative group">
+                                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 group-focus-within:text-indigo-400 transition-colors" />
+                                                    <Input
+                                                        {...field}
+                                                        type={showPassword ? "text" : "password"}
+                                                        disabled={isLoading}
+                                                        placeholder="••••••••"
+                                                        className="h-12 pl-10 pr-10 bg-slate-950/50 border-slate-800 text-slate-100 placeholder:text-slate-600 rounded-xl focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 transition-all hover:border-slate-700"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
+                                                    >
+                                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                    </button>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage className="text-xs" />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <Button
+                                    type="submit"
+                                    className="w-full h-12 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:hover:scale-100 mt-2"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            <span>Signing in...</span>
+                                        </div>
+                                    ) : (
+                                        "Sign in"
+                                    )}
+                                </Button>
+                            </form>
+                        </Form>
                     </div>
 
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-bold leading-tight">Welcome back</h1>
-                        <p className="text-white/70 text-sm">Sign in to continue to your workspace.</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 text-sm text-white/80">
-                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Secure sessions</div>
-                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Role-aware access</div>
-                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Unified academics</div>
-                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Comms & attendance</div>
+                    {/* Footer / Meta Area */}
+                    <div className="bg-slate-950/30 p-4 text-center border-t border-white/5">
+                        <p className="text-xs text-slate-500">
+                            By continuing, you agree to our Terms of Service and Privacy Policy.
+                        </p>
                     </div>
                 </div>
-
-                <div className="rounded-3xl bg-white/95 text-slate-900 dark:bg-slate-900/95 dark:text-white border border-white/10 dark:border-slate-800 shadow-2xl shadow-indigo-900/30 backdrop-blur p-8 sm:p-10">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3">
-                            <div className="h-11 w-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/30">
-                                <GraduationCap className="h-6 w-6" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-200">ProgressLMS</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Sign in</p>
-                            </div>
-                        </div>
-                        <Sparkles className="h-5 w-5 text-indigo-400" />
-                    </div>
-
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-1.5">
-                                        <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-200">Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="email"
-                                                disabled={isLoading}
-                                                placeholder="you@school.com"
-                                                className="h-11 font-medium bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-xs text-destructive" />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-1.5">
-                                        <div className="flex items-center justify-between">
-                                            <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-200">Password</FormLabel>
-                                            <Link
-                                                href="/forgot-password"
-                                                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-200 dark:hover:text-white"
-                                            >
-                                                Forgot?
-                                            </Link>
-                                        </div>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Input
-                                                    type={showPassword ? "text" : "password"}
-                                                    disabled={isLoading}
-                                                    placeholder="••••••••"
-                                                    className="h-11 font-medium pr-10 bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
-                                                    {...field}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                                                    tabIndex={-1}
-                                                >
-                                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                                </button>
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage className="text-xs text-destructive" />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <div className="flex items-center justify-between pt-1">
-                                <label className="flex items-center gap-2 cursor-pointer group">
-                                    <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-200" />
-                                    <span className="text-sm text-slate-600 dark:text-slate-300">Remember this device</span>
-                                </label>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="w-full h-11 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/30 disabled:opacity-70"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                        Signing in...
-                                    </>
-                                ) : (
-                                    "Sign in"
-                                )}
-                            </Button>
-                        </form>
-                    </Form>
+                
+                {/* Floating "Secure" Badge */}
+                <div className="mt-8 flex justify-center">
+                   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+                        <Shield className="h-3 w-3 text-emerald-400" />
+                        <span className="text-xs font-medium text-slate-400">End-to-end encrypted session</span>
+                   </div>
                 </div>
             </div>
         </div>
