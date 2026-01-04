@@ -125,7 +125,7 @@ try {
 
 // Default route
 app.get("/", (req, res) => {
-  res.send("Server is running!");
+  res.json({ message: "ProgressLMS Backend API is running!", status: "ok" });
 });
 
 // Handle invalid routes
