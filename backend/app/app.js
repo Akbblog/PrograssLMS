@@ -116,6 +116,8 @@ try {
 
   // Communication
   app.use("/api/v1", require("../routes/v1/communication/chat.router"));
+  // Notifications
+  app.use("/api/v1/communication/notifications", require("../routes/v1/communication/notifications.router"));
 
 } catch (err) {
   console.error("Error during route initialization:", err.message);

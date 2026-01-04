@@ -11,7 +11,6 @@ import {
     TableRow
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import {
     DropdownMenu,
@@ -21,58 +20,39 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { Plus, MoreHorizontal, Search, Filter, Mail, Phone } from "lucide-react"
+import { Plus, MoreHorizontal, Phone } from "lucide-react"
 import { formatDate } from "@/lib/utils"
-import apiClient from "@/lib/api/client"
+import { adminAPI } from '@/lib/api/endpoints'
 import { Skeleton } from "@/components/ui/skeleton"
+
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
+import PageToolbar from '@/components/admin/PageToolbar'
+import EmptyState from '@/components/admin/EmptyState'
+import { Users } from 'lucide-react'
 
 export default function TeachersPage() {
     const [teachers, setTeachers] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchTeachers = async () => {
+            setLoading(true)
             try {
-                // In a real app:
-                // const response = await apiClient.get("/teachers")
-                // setTeachers(response.data.data)
-
-                // Mock data
-                setTimeout(() => {
-                    setTeachers([
-                        {
-                            _id: "1",
-                            name: "Sarah Wilson",
-                            email: "sarah.wilson@school.edu",
-                            phone: "+1 (555) 123-4567",
-                            subject: "Mathematics",
-                            status: "active",
-                            createdAt: "2023-08-15"
-                        },
-                        {
-                            _id: "2",
-                            name: "James Miller",
-                            email: "james.miller@school.edu",
-                            phone: "+1 (555) 987-6543",
-                            subject: "Science",
-                            status: "active",
-                            createdAt: "2023-08-20"
-                        },
-                        {
-                            _id: "3",
-                            name: "Emily Davis",
-                            email: "emily.davis@school.edu",
-                            phone: "+1 (555) 456-7890",
-                            subject: "English Literature",
-                            status: "on_leave",
-                            createdAt: "2023-09-01"
-                        }
-                    ])
-                    setLoading(false)
-                }, 800)
-            } catch (error) {
-                console.error("Failed to fetch teachers", error)
+                const res = await adminAPI.getTeachers()
+                const data = Array.isArray(res?.teachers) ? res.teachers : (res?.data || res || [])
+                setTeachers(data)
+            } catch (err) {
+                console.warn('adminAPI.getTeachers failed, falling back to mock data', err)
+                setTeachers([
+                    { _id: '1', name: 'Sarah Wilson', email: 'sarah.wilson@school.edu', phone: '+1 (555) 123-4567', subject: 'Mathematics', status: 'active', createdAt: '2023-08-15' },
+                    { _id: '2', name: 'James Miller', email: 'james.miller@school.edu', phone: '+1 (555) 987-6543', subject: 'Science', status: 'active', createdAt: '2023-08-20' },
+                    { _id: '3', name: 'Emily Davis', email: 'emily.davis@school.edu', phone: '+1 (555) 456-7890', subject: 'English Literature', status: 'on_leave', createdAt: '2023-09-01' }
+                ])
+                setError('Failed to load teachers from server — showing local data.')
+            } finally {
                 setLoading(false)
             }
         }
@@ -81,43 +61,36 @@ export default function TeachersPage() {
     }, [])
 
     const filteredTeachers = teachers.filter(teacher =>
-        teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.subject.toLowerCase().includes(searchQuery.toLowerCase())
+        teacher.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        teacher.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        teacher.subject?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
+    const total = teachers.length
+    const active = teachers.filter(t => t.status === 'active').length
+    const onLeave = teachers.filter(t => t.status === 'on_leave').length
+
     return (
-        <div className="flex flex-col gap-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Teachers</h1>
-                    <p className="text-muted-foreground">Manage teaching staff and assignments.</p>
-                </div>
-                <Link href="/school-admin/teachers/create">
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" /> Add Teacher
-                    </Button>
-                </Link>
+        <AdminPageLayout
+            title="Teachers"
+            description="Manage teaching staff and assignments."
+            actions={<Link href="/school-admin/teachers/create"><Button><Plus className="mr-2 h-4 w-4" /> Add Teacher</Button></Link>}
+            stats={(
+                <>
+                    <SummaryStatCard title="Total Teachers" value={total} icon={<Users className="h-4 w-4 text-white" />} variant="purple" />
+                    <SummaryStatCard title="Active" value={active} icon={<Users className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="On Leave" value={onLeave} icon={<Users className="h-4 w-4 text-white" />} variant="orange" />
+                    <SummaryStatCard title="Joined This Month" value={0} icon={<Users className="h-4 w-4 text-white" />} variant="blue" />
+                </>
+            )}
+        >
+            <div className="">
+                <PageToolbar onAdd={() => window.location.href = '/school-admin/teachers/create'} query={searchQuery} setQuery={setSearchQuery} onExport={() => { /* TODO: implement export */ }} />
             </div>
 
-            <div className="flex items-center gap-4">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search teachers..."
-                        className="pl-8"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-                <Button variant="outline" size="icon">
-                    <Filter className="h-4 w-4" />
-                </Button>
-            </div>
-
-            <div className="rounded-md border bg-white">
+            <div className="rounded-md border bg-white overflow-hidden">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="sticky top-0 bg-white z-10">
                         <TableRow>
                             <TableHead>Teacher Name</TableHead>
                             <TableHead>Subject</TableHead>
@@ -141,34 +114,34 @@ export default function TeachersPage() {
                             ))
                         ) : filteredTeachers.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center">
-                                    No teachers found.
+                                <TableCell colSpan={6} className="p-8">
+                                    <EmptyState title="No teachers yet" description="Add teachers to see them here." cta={<Link href="/school-admin/teachers/create"><Button>Add Teacher</Button></Link>} />
                                 </TableCell>
                             </TableRow>
                         ) : (
                             filteredTeachers.map((teacher) => (
-                                <TableRow key={teacher._id}>
-                                    <TableCell className="font-medium">
+                                <TableRow key={teacher._id} className="hover:bg-slate-50 transition-colors">
+                                    <TableCell className="font-medium py-4">
                                         <div className="flex flex-col">
                                             <span>{teacher.name}</span>
                                             <span className="text-xs text-muted-foreground">{teacher.email}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{teacher.subject}</TableCell>
-                                    <TableCell>
+                                    <TableCell className="py-4">{teacher.subject}</TableCell>
+                                    <TableCell className="py-4">
                                         <div className="flex flex-col gap-1 text-xs text-muted-foreground">
                                             <div className="flex items-center gap-1">
                                                 <Phone className="h-3 w-3" /> {teacher.phone}
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="py-4">
                                         <Badge variant={teacher.status === "active" ? "default" : "secondary"}>
                                             {teacher.status === "on_leave" ? "On Leave" : "Active"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{formatDate(teacher.createdAt)}</TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell className="py-4">{formatDate(teacher.createdAt)}</TableCell>
+                                    <TableCell className="text-right py-4">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="icon">
@@ -193,6 +166,8 @@ export default function TeachersPage() {
                     </TableBody>
                 </Table>
             </div>
-        </div>
+
+            {error && <div className="text-sm text-amber-600">{error}</div>}
+        </AdminPageLayout>
     )
 }

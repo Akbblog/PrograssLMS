@@ -32,6 +32,8 @@ import {
     Mail,
     Palette
 } from "lucide-react"
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
 
 export default function AdminSettingsPage() {
     const user = useAuthStore((state) => state.user)
@@ -102,15 +104,22 @@ export default function AdminSettingsPage() {
         }
     }
 
-    return (
-        <div className="p-8 space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900">Settings</h1>
-                <p className="text-slate-500">
-                    Manage your school and account settings
-                </p>
-            </div>
+    const notificationCount = [emailNotifications, newStudentAlerts, attendanceAlerts, paymentAlerts, systemAlerts].filter(Boolean).length
 
+    return (
+        <AdminPageLayout
+            title="Settings"
+            description="Manage your school and account settings"
+            actions={<Button onClick={() => handleSave('All settings')}><Save className="w-4 h-4 mr-2" />Save All</Button>}
+            stats={(
+                <>
+                    <SummaryStatCard title="Active Alerts" value={notificationCount} icon={<Bell className="h-4 w-4 text-white" />} variant="blue" />
+                    <SummaryStatCard title="Academic Year" value={academicYear} icon={<Clock className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="Theme" value={theme} icon={<Palette className="h-4 w-4 text-white" />} variant="purple" />
+                    <SummaryStatCard title="Admins" value={1} icon={<User className="h-4 w-4 text-white" />} variant="orange" />
+                </>
+            )}
+        >
             <Tabs defaultValue="school" className="space-y-6">
                 <TabsList className="bg-slate-100 p-1">
                     <TabsTrigger value="school" className="flex items-center gap-2">

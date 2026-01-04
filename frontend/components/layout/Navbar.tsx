@@ -12,7 +12,8 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Menu, Bell, User } from "lucide-react"
+import { Menu, User } from "lucide-react"
+import NotificationBell from '@/components/notifications/NotificationBell'
 
 export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
     return (
@@ -28,10 +29,10 @@ export default function Navbar({ onMenuClick }: { onMenuClick: () => void }) {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon">
-                        <Bell className="h-5 w-5" />
-                        <span className="sr-only">Notifications</span>
-                    </Button>
+                    <div className="hidden md:block">
+                        {/* Notification bell with SSE support */}
+                        <NotificationBell />
+                    </div>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

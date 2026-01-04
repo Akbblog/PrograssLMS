@@ -38,6 +38,8 @@ import {
     Table2,
     Phone
 } from "lucide-react";
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { toast } from "sonner";
 
 // Action Menu Component
@@ -270,75 +272,25 @@ export default function AdminTeachersPage() {
         );
     }
 
-    return (
-        <div className="mobile-padding mobile-padding-y space-y-4 sm:space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
-                <div className="flex items-start gap-2 sm:gap-3 w-full sm:w-auto">
-                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                        <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-                    </div>
-                    <div className="min-w-0">
-                        <h1 className="heading-responsive font-bold text-slate-900">Teachers</h1>
-                        <p className="text-xs sm:text-sm text-slate-500">Manage faculty members</p>
-                    </div>
-                </div>
-                <Button asChild className="btn-responsive-lg w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white">
-                    <Link href="/admin/teachers/create">
-                        <UserPlus className="mr-2 h-4 w-4" /> Add Teacher
-                    </Link>
-                </Button>
-            </div>
+    const total = teachers.length
+    const activeCount = teachers.filter(t => !t.isWithdrawn && !t.isSuspended).length
+    const suspendedCount = teachers.filter(t => t.isSuspended).length
+    const subjectsCount = new Set(teachers.filter(t => t.subject).map(t => typeof t.subject === 'object' ? t.subject._id : t.subject)).size
 
-            {/* Stats - Mobile optimized grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
-                <Card className="stat-card border-slate-200">
-                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-                        </div>
-                        <div className="w-full">
-                            <p className="text-xs text-slate-500">Total</p>
-                            <p className="text-lg sm:text-xl font-bold text-slate-900">{teachers.length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="stat-card border-slate-200">
-                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                        </div>
-                        <div className="w-full">
-                            <p className="text-xs text-slate-500">Active</p>
-                            <p className="text-lg sm:text-xl font-bold text-slate-900">{teachers.filter(t => !t.isWithdrawn && !t.isSuspended).length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="stat-card border-slate-200">
-                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                            <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
-                        </div>
-                        <div className="w-full">
-                            <p className="text-xs text-slate-500">Suspended</p>
-                            <p className="text-lg sm:text-xl font-bold text-slate-900">{teachers.filter(t => t.isSuspended).length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="stat-card border-slate-200">
-                    <CardContent className="p-3 sm:p-4 flex flex-col items-start gap-2">
-                        <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                        </div>
-                        <div className="w-full">
-                            <p className="text-xs text-slate-500">Subjects</p>
-                            <p className="text-lg sm:text-xl font-bold text-slate-900">
-                                {new Set(teachers.filter(t => t.subject).map(t => typeof t.subject === 'object' ? t.subject._id : t.subject)).size}
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+    return (
+        <AdminPageLayout
+            title="Teachers"
+            description="Manage faculty members"
+            actions={<Button asChild className="btn-responsive-lg w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white"><Link href="/admin/teachers/create"><UserPlus className="mr-2 h-4 w-4" /> Add Teacher</Link></Button>}
+            stats={(
+                <>
+                    <SummaryStatCard title="Total" value={total} icon={<Users className="h-4 w-4 text-white" />} variant="purple" />
+                    <SummaryStatCard title="Active" value={activeCount} icon={<CheckCircle2 className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="Suspended" value={suspendedCount} icon={<AlertCircle className="h-4 w-4 text-white" />} variant="orange" />
+                    <SummaryStatCard title="Subjects" value={subjectsCount} icon={<BookOpen className="h-4 w-4 text-white" />} variant="blue" />
+                </>
+            )}
+        >
 
             {/* Filters - Mobile optimized */}
             <div className="flex flex-col gap-3">
@@ -499,6 +451,6 @@ export default function AdminTeachersPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </AdminPageLayout>
     );
 }

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { financeAPI, academicAPI } from "@/lib/api/endpoints";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -113,24 +115,24 @@ export default function AdminFinancePage() {
     if (loading) return <div className="flex h-screen items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>
 
     return (
-        <div className="p-4 lg:p-8 space-y-8 max-w-[1600px] mx-auto animate-fadeInUp">
+        <AdminPageLayout
+            title="Finance"
+            description="Advanced fee management, billing & revenue"
+            actions={<div className="flex items-center gap-3"><Select value={selectedYear} onValueChange={setSelectedYear}><SelectTrigger className="w-[200px] bg-white"><SelectValue placeholder="Academic Year" /></SelectTrigger><SelectContent>{years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}</SelectContent></Select><Button onClick={() => setCreateDialogOpen(true)} className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25"><Plus className="mr-2 h-4 w-4" /> New Fee Policy</Button></div>}
+            stats={(
+                <>
+                    <SummaryStatCard title="Total Revenue" value={formatCurrency(report?.totalRevenue || 0)} icon={<DollarSign className="h-4 w-4 text-white" />} variant="blue" />
+                    <SummaryStatCard title="Received" value={formatCurrency(report?.receivedPayments || 0)} icon={<TrendingUp className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="Pending" value={formatCurrency(report?.pendingPayments || 0)} icon={<PieChart className="h-4 w-4 text-white" />} variant="orange" />
+                    <SummaryStatCard title="Overdue" value={formatCurrency(report?.overdueAmount || 0)} icon={<ShieldCheck className="h-4 w-4 text-white" />} variant="purple" />
+                </>
+            )}
+        >
+            <div className="p-4 lg:p-8 space-y-8 max-w-[1600px] mx-auto animate-fadeInUp">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Institutional Finance</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Advanced fee management, automated billing, and revenue intelligence.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Select value={selectedYear} onValueChange={setSelectedYear}>
-                        <SelectTrigger className="w-[200px] bg-white dark:bg-slate-800">
-                            <SelectValue placeholder="Academic Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                    <Button onClick={() => setCreateDialogOpen(true)} className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25">
-                        <Plus className="mr-2 h-4 w-4" /> New Fee Policy
-                    </Button>
                 </div>
             </div>
 

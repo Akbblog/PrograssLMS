@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
     AlertDialog,
@@ -282,73 +284,25 @@ export default function AdminStudentsPage() {
         );
     }
 
-    return (
-        <div className="p-4 md:p-6 space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                        <GraduationCap className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Students</h1>
-                        <p className="text-sm text-slate-500">Manage student registrations</p>
-                    </div>
-                </div>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700">
-                    <Link href="/admin/students/create">
-                        <UserPlus className="mr-2 h-4 w-4" /> Register Student
-                    </Link>
-                </Button>
-            </div>
+    const total = students.length
+    const active = students.filter(s => !s.isWithdrawn && !s.isSuspended).length
+    const suspended = students.filter(s => s.isSuspended).length
+    const classesCount = classes.length
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <Users className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Total</p>
-                            <p className="text-xl font-bold">{students.length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Active</p>
-                            <p className="text-xl font-bold">{students.filter(s => !s.isWithdrawn && !s.isSuspended).length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                            <AlertCircle className="h-5 w-5 text-amber-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Suspended</p>
-                            <p className="text-xl font-bold">{students.filter(s => s.isSuspended).length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-slate-200">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                            <GraduationCap className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-slate-500">Classes</p>
-                            <p className="text-xl font-bold">{classes.length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+    return (
+        <AdminPageLayout
+            title="Students"
+            description="Manage student registrations"
+            actions={<Button asChild className="bg-blue-600 hover:bg-blue-700"><Link href="/admin/students/create"><UserPlus className="mr-2 h-4 w-4" /> Register Student</Link></Button>}
+            stats={(
+                <>
+                    <SummaryStatCard title="Total" value={total} icon={<Users className="h-4 w-4 text-white" />} variant="blue" />
+                    <SummaryStatCard title="Active" value={active} icon={<CheckCircle2 className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="Suspended" value={suspended} icon={<AlertCircle className="h-4 w-4 text-white" />} variant="orange" />
+                    <SummaryStatCard title="Classes" value={classesCount} icon={<GraduationCap className="h-4 w-4 text-white" />} variant="purple" />
+                </>
+            )}
+        >
 
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
@@ -512,6 +466,6 @@ export default function AdminStudentsPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </AdminPageLayout>
     );
 }
