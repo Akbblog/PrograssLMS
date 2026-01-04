@@ -75,20 +75,25 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 try {
   // --- Static Route Imports for Serverless Compatibility ---
+  console.log('[ROUTES] Starting route initialization...');
 
   // Superadmin
   app.use("/api/v1/superadmin", require("../routes/v1/superadmin/school.router"));
+  console.log('[ROUTES] Loaded: superadmin');
 
   // Contact
   app.use("/api/v1/contact", require("../routes/v1/contact.router"));
+  console.log('[ROUTES] Loaded: contact');
 
   // Staff
   app.use("/api/v1", require("../routes/v1/staff/admin.router"));
   app.use("/api/v1", require("../routes/v1/staff/role.router"));
   app.use("/api/v1", require("../routes/v1/staff/teachers.router"));
+  console.log('[ROUTES] Loaded: staff (admin, role, teachers)');
 
   // Students (moved earlier to ensure public login routes are handled before routers using router.use(isLoggedIn))
   app.use("/api/v1", require("../routes/v1/students/students.router"));
+  console.log('[ROUTES] Loaded: students');
 
   // Academic
   app.use("/api/v1", require("../routes/v1/academic/academicTerm.router"));
@@ -98,6 +103,7 @@ try {
   app.use("/api/v1", require("../routes/v1/academic/attendance.router"));
   app.use("/api/v1/academic/behavior", require("../routes/v1/academic/attendanceBehavior.router"));
   app.use("/api/v1", require("../routes/v1/academic/class.router"));
+  console.log('[ROUTES] Loaded: academic (terms, years, assessments, assignments, attendance, behavior, class)');
   app.use("/api/v1", require("../routes/v1/academic/course.router"));
   app.use("/api/v1", require("../routes/v1/academic/enrollment.router"));
   app.use("/api/v1", require("../routes/v1/academic/exams.router"));
@@ -110,18 +116,20 @@ try {
   app.use("/api/v1", require("../routes/v1/academic/subject.router"));
   app.use("/api/v1", require("../routes/v1/academic/teacherAttendance.router"));
   app.use("/api/v1", require("../routes/v1/academic/yearGroup.router"));
-
-  // Students
-  app.use("/api/v1", require("../routes/v1/students/students.router"));
+  console.log('[ROUTES] Loaded: academic (course, enrollment, exams, grade, gradingPolicy, performance, program, question, results, subject, teacherAttendance, yearGroup)');
 
   // Finance
   app.use("/api/v1", require("../routes/v1/finance/fee.router"));
   app.use("/api/v1/finance", require("../routes/v1/finance/finance.router"));
+  console.log('[ROUTES] Loaded: finance');
 
   // Communication
   app.use("/api/v1", require("../routes/v1/communication/chat.router"));
   // Notifications
   app.use("/api/v1/communication/notifications", require("../routes/v1/communication/notifications.router"));
+  console.log('[ROUTES] Loaded: communication');
+
+  console.log('[ROUTES] All routes initialized successfully!');
 
 } catch (err) {
   console.error("Error during route initialization:", err.message);
@@ -136,7 +144,8 @@ app.get("/", (req, res) => {
 
 // Handle invalid routes
 app.all("*", (req, res) => {
-  res.status(404).json({ message: "Route Not Found" });
+  console.log(`[404] Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ message: "Route Not Found", path: req.originalUrl });
 });
 
 module.exports = app;

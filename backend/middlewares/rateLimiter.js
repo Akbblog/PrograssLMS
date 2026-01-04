@@ -9,6 +9,21 @@ const limiter = rateLimit({
         status: "failed",
         message: "Too many requests from this IP, please try again after 15 minutes",
     },
+    // Custom keyGenerator for Vercel/proxy environments to handle Forwarded header
+    keyGenerator: (req) => {
+        // Use X-Forwarded-For header if available (set by proxies like Vercel)
+        const forwarded = req.headers['x-forwarded-for'];
+        if (forwarded) {
+            // X-Forwarded-For can contain multiple IPs, get the first one (client IP)
+            return forwarded.split(',')[0].trim();
+        }
+        // Fallback to direct connection IP
+        return req.ip || req.socket?.remoteAddress || 'unknown';
+    },
+    // Skip validation for the Forwarded header in serverless environments
+    validate: {
+        xForwardedForHeader: false,
+    },
 });
 
 module.exports = limiter;
