@@ -33,6 +33,7 @@ const randRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + mi
 
 async function connectDB() {
   await mongoose.connect(DB);
+  console.log("Connected to db:", mongoose.connection.db.databaseName);
   log("✅ Database connected");
 }
 
@@ -103,31 +104,44 @@ async function seed() {
 
   const universalPassword = "progresslmspass";
 
-  const school = await School.create(schoolProfile);
-  log(`✅ School created: ${school.name}`);
+  let school;
+  try {
+    school = await School.create(schoolProfile);
+    log(`✅ School created: ${school.name} with id: ${school._id}`);
+  } catch (err) {
+    log("❌ School create error:", err.message);
+    process.exit(1);
+  }
 
   // Admin tied to school
   const adminEmail = "admin@school.demo";
-  const admin = await Admin.findOneAndUpdate(
-    { email: adminEmail },
-    {
-      name: "Ahmad Farooq",
-      email: adminEmail,
-      password: await hashPassword(universalPassword),
-      role: "admin",
-      schoolId: school._id,
-      permissions: {
-        manageStudents: true,
-        manageTeachers: true,
-        manageUsers: true,
-        manageFees: true,
-        viewReports: true,
+  let admin;
+  try {
+    admin = await Admin.findOneAndUpdate(
+      { email: adminEmail },
+      {
+        name: "Ahmad Farooq",
+        email: adminEmail,
+        password: await hashPassword(universalPassword),
+        role: "admin",
+        schoolId: school._id,
+        permissions: {
+          manageStudents: true,
+          manageTeachers: true,
+          manageUsers: true,
+          manageFees: true,
+          viewReports: true,
+        },
+        createdBy: null,
       },
-      createdBy: null,
-    },
-    { new: true, upsert: true, setDefaultsOnInsert: true }
-  );
-  log("✅ Admin ready");
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
+    console.log("Admin object:", admin);
+    log("✅ Admin ready with id:", admin ? admin._id : "undefined");
+  } catch (err) {
+    log("❌ Admin create error:", err.message);
+    process.exit(1);
+  }
 
   // Academic year and terms
   const now = new Date();
@@ -392,8 +406,8 @@ async function seed() {
   log("- Student     | first student in list    | " + universalPassword);
   log("=".repeat(60) + "\n");
 
-  await mongoose.disconnect();
-  process.exit(0);
+  // await mongoose.disconnect();
+  // process.exit(0);
 }
 
 seed().catch((err) => {
