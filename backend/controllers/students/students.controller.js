@@ -187,6 +187,19 @@ exports.studentWriteExamController = async (req, res) => {
 };
 
 /**
+ * @desc Student Self Register
+ * @route POST /api/v1/students/register
+ * @access Public
+ **/
+exports.studentSelfRegisterController = async (req, res) => {
+  try {
+    await studentSelfRegisterService(req.body, res);
+  } catch (error) {
+    responseStatus(res, 400, "failed", error.message);
+  }
+};
+
+/**
  * @desc Get Student Dashboard
  * @route GET /api/v1/students/dashboard
  * @access Private (student)

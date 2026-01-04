@@ -74,80 +74,11 @@ const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 try {
-  // --- Static Route Imports for Serverless Compatibility ---
+  // --- Route Initialization ---
   console.log('[ROUTES] Starting route initialization...');
 
-  // Superadmin
-  app.use("/api/v1/superadmin", require("../routes/v1/superadmin/school.router"));
-  console.log('[ROUTES] Loaded: superadmin');
-
-  // Contact
-  app.use("/api/v1/contact", require("../routes/v1/contact.router"));
-  console.log('[ROUTES] Loaded: contact');
-
-  // Staff
-  app.use("/api/v1", require("../routes/v1/staff/admin.router"));
-  app.use("/api/v1", require("../routes/v1/staff/role.router"));
-  app.use("/api/v1", require("../routes/v1/staff/teachers.router"));
-  console.log('[ROUTES] Loaded: staff (admin, role, teachers)');
-
-  // Students (moved earlier to ensure public login routes are handled before routers using router.use(isLoggedIn))
-  app.use("/api/v1", require("../routes/v1/students/students.router"));
-  console.log('[ROUTES] Loaded: students');
-
-  // Academic
-  app.use("/api/v1", require("../routes/v1/academic/academicTerm.router"));
-  app.use("/api/v1", require("../routes/v1/academic/academicYear.router"));
-  app.use("/api/v1", require("../routes/v1/academic/assessmentType.router"));
-  app.use("/api/v1", require("../routes/v1/academic/assignment.router"));
-  app.use("/api/v1", require("../routes/v1/academic/attendance.router"));
-  app.use("/api/v1/academic/behavior", require("../routes/v1/academic/attendanceBehavior.router"));
-  app.use("/api/v1", require("../routes/v1/academic/class.router"));
-  console.log('[ROUTES] Loaded: academic (terms, years, assessments, assignments, attendance, behavior, class)');
-  app.use("/api/v1", require("../routes/v1/academic/course.router"));
-  app.use("/api/v1", require("../routes/v1/academic/enrollment.router"));
-  app.use("/api/v1", require("../routes/v1/academic/exams.router"));
-  app.use("/api/v1", require("../routes/v1/academic/grade.router"));
-  app.use("/api/v1", require("../routes/v1/academic/gradingPolicy.router"));
-  app.use("/api/v1", require("../routes/v1/academic/performance.router"));
-  app.use("/api/v1", require("../routes/v1/academic/program.router"));
-  app.use("/api/v1", require("../routes/v1/academic/question.router"));
-  app.use("/api/v1", require("../routes/v1/academic/results.router"));
-  app.use("/api/v1", require("../routes/v1/academic/subject.router"));
-  app.use("/api/v1", require("../routes/v1/academic/teacherAttendance.router"));
-  app.use("/api/v1", require("../routes/v1/academic/yearGroup.router"));
-  console.log('[ROUTES] Loaded: academic (course, enrollment, exams, grade, gradingPolicy, performance, program, question, results, subject, teacherAttendance, yearGroup)');
-
-  // Finance
-  app.use("/api/v1", require("../routes/v1/finance/fee.router"));
-  app.use("/api/v1/finance", require("../routes/v1/finance/finance.router"));
-  console.log('[ROUTES] Loaded: finance');
-
-  // Communication
-  app.use("/api/v1", require("../routes/v1/communication/chat.router"));
-  // Notifications
-  app.use("/api/v1/communication/notifications", require("../routes/v1/communication/notifications.router"));
-  console.log('[ROUTES] Loaded: communication');
-
-  // Library Module
-  app.use("/api/v1/library", require("../routes/v1/library/library.router"));
-  console.log('[ROUTES] Loaded: library');
-
-  // Transport Module
-  app.use("/api/v1/transport", require("../routes/v1/transport/transport.router"));
-  console.log('[ROUTES] Loaded: transport');
-
-  // Attendance (QR) Module
-  app.use("/api/v1/attendance", require("../routes/v1/attendance/attendance.router"));
-  console.log('[ROUTES] Loaded: attendance');
-
-  // HR Module
-  app.use("/api/v1/hr", require("../routes/v1/hr/hr.router"));
-  console.log('[ROUTES] Loaded: hr');
-
-  // Documents Module
-  app.use("/api/v1/documents", require("../routes/v1/documents/documents.router"));
-  console.log('[ROUTES] Loaded: documents');
+  // Mount all v1 routes
+  app.use('/api/v1', require('../routes/v1'));
 
   console.log('[ROUTES] All routes initialized successfully!');
 

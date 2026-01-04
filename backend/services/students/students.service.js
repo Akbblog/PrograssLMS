@@ -459,5 +459,4 @@ exports.getStudentDashboardService = async (studentId, schoolId) => {
   };
 
   return { success: true, data };
-};  }
 };
