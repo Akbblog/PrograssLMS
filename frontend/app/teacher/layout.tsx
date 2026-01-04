@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button"
 import {
     Search,
     Bell,
-    GraduationCap,
     Menu,
     ChevronDown,
     Settings,
     LogOut
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 import { cn } from "@/lib/utils"
 import {
     DropdownMenu,

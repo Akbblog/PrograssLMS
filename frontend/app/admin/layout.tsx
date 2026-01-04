@@ -18,7 +18,6 @@ import {
     LogOut,
     Search,
     Bell,
-    GraduationCap,
     Users,
     BookOpen,
     Calendar,
@@ -33,6 +32,7 @@ import {
     Menu,
     X
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 
 const sidebarItems = [
     { title: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },

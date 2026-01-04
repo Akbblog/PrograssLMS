@@ -16,10 +16,10 @@ import {
     FileText,
     DollarSign,
     LayoutDashboard,
-    GraduationCap,
     Menu,
     X
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 import { cn } from "@/lib/utils"
 
 const sidebarItems = [

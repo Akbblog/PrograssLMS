@@ -16,7 +16,6 @@ import {
     Plus,
     BookOpen,
     Calendar,
-    GraduationCap,
     Trash2,
     Edit,
     ChevronDown,
@@ -25,6 +24,7 @@ import {
     RefreshCw,
     CheckCircle2
 } from "lucide-react";
+import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
 
 // Types

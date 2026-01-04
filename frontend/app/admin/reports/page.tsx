@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, FileText, Download, Users, GraduationCap, BookOpen, DollarSign } from "lucide-react";
+import { Loader2, FileText, Download, Users, BookOpen, DollarSign } from "lucide-react";
+import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
 

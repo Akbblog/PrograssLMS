@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  GraduationCap,
   ArrowLeft,
   Send,
   Loader2,
@@ -39,6 +38,7 @@ import {
   MapPin,
   Clock
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 import { toast } from "sonner"
 
 const formSchema = z.object({

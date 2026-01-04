@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/store/authStore"
 import { Button } from "@/components/ui/button"
 import Icon from "@/components/ui/icon"
-import { LogOut, GraduationCap, Sparkles } from "lucide-react"
+import { LogOut, Sparkles } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 
 const sidebarItems = [
     {

@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Loader2, Plus, GraduationCap, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
 
 export default function AdminClassesPage() {

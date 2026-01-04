@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils"
 import {
     LayoutDashboard,
     Users,
-    GraduationCap,
     BookOpen,
     Calendar,
     Settings,
     FileText,
     Building2
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 
 const sidebarItems = [
     {

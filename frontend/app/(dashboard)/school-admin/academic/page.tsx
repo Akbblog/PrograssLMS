@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, Calendar, GraduationCap, Clock, Layers, Library } from "lucide-react"
+import { BookOpen, Calendar, Clock, Layers, Library } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 
 const academicModules = [
     {

@@ -14,12 +14,12 @@ import {
     Users,
     BarChart3,
     Settings,
-    GraduationCap,
     LayoutDashboard,
     ChevronDown,
     Menu,
     X
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 import { cn } from "@/lib/utils"
 import {
     DropdownMenu,

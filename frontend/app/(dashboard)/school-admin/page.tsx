@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { 
     Users, 
-    GraduationCap, 
     BookOpen, 
     TrendingUp,
     Plus,
@@ -15,6 +14,7 @@ import {
     UserPlus,
     CloudOff
 } from "lucide-react"
+import GraduationCap from "@/components/icons/GraduationCap"
 import Link from "next/link"
 import { useAuthStore } from "@/store/authStore"
 import { useEffect, useState } from "react"

@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
     Users,
-    GraduationCap,
     BookOpen,
     DollarSign,
     Calendar,
@@ -29,6 +28,7 @@ import {
     Sparkles,
     TrendingUp
 } from "lucide-react";
+import GraduationCap from "@/components/icons/GraduationCap"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card";
 
 interface DashboardStats {
