@@ -1,27 +1,14 @@
 /**
- * Seed Script for MongoDB
- * Populates test data for all roles: Admin, Teacher, Student, SuperAdmin
- * Run with: node seed.js
+ * Comprehensive Muslim-focused seed script.
+ * - Clears prior demo data for the target school/email.
+ * - Seeds school, admin, class levels, terms, teachers, subjects, students, enrollments, and grades.
+ * Run with: node backend/seed.js
  */
 
 require("dotenv").config();
 const mongoose = require("mongoose");
 const bcryptjs = require("bcryptjs");
 
-// Connect to MongoDB
-const DB = process.env.DB || "mongodb://localhost:27017/school-management";
-
-mongoose
-  .connect(DB)
-  .then(() => {
-    console.log("✅ Database connected successfully");
-  })
-  .catch((error) => {
-    console.error("❌ Database connection error:", error.message);
-    process.exit(1);
-  });
-
-// Import Models
 const Admin = require("./models/Staff/admin.model");
 const Teacher = require("./models/Staff/teachers.model");
 const Student = require("./models/Students/students.model");
@@ -33,336 +20,383 @@ const Subject = require("./models/Academic/subject.model");
 const Enrollment = require("./models/Academic/Enrollment.model");
 const Grade = require("./models/Academic/Grade.model");
 
-// Hash password utility
-const hashPassword = async (password) => {
-  const salt = await bcryptjs.genSalt(10);
-  return await bcryptjs.hash(password, salt);
+const DB = process.env.DB || process.env.MONGO_URI || "mongodb://localhost:27017/school-management";
+
+const log = (msg) => console.log(msg);
+const hashPassword = async (password) => bcryptjs.hash(password, await bcryptjs.genSalt(10));
+const pick = (arr, count) => {
+  const shuffled = [...arr].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
 };
+const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const randRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// Seed function
-const seedDatabase = async () => {
-  try {
-    console.log("🌱 Starting database seeding...\n");
+async function connectDB() {
+  await mongoose.connect(DB);
+  log("✅ Database connected");
+}
 
-    // 1. Create a School
-    console.log("📍 Creating test school...");
+async function clearExisting(schoolEmail) {
+  const existingSchool = await School.findOne({ email: schoolEmail });
+  if (!existingSchool) return;
 
-    // Calculate trial end date (14 days from now)
-    const trialEnd = new Date();
-    trialEnd.setDate(trialEnd.getDate() + 14);
+  const schoolId = existingSchool._id;
+  log(`⚠️  Removing existing data for ${schoolEmail}`);
 
-    const schoolData = {
-      name: "Spring Hill Academy",
-      email: "school@springhill.com",
-      phone: "+1-555-0123",
-      address: {
-        street: "123 Education Way",
-        city: "New York",
-        state: "NY",
-        country: "USA",
-        zipCode: "10001",
+  await Promise.all([
+    Admin.deleteMany({ schoolId }),
+    Teacher.deleteMany({ schoolId }),
+    Student.deleteMany({ schoolId }),
+    AcademicYear.deleteMany({ schoolId }),
+    AcademicTerm.deleteMany({ schoolId }),
+    ClassLevel.deleteMany({ schoolId }),
+    Subject.deleteMany({ schoolId }),
+    Enrollment.deleteMany({ schoolId }),
+    Grade.deleteMany({ schoolId }),
+  ]);
+
+  await School.deleteOne({ _id: schoolId });
+  log("✅ Cleared previous demo records for this school");
+}
+
+async function seed() {
+  await connectDB();
+  log("\n🌱 Seeding Muslim demo data...\n");
+
+  const schoolProfile = {
+    name: "Nurul Huda Academy",
+    email: "hello@school.demo",
+    phone: "+971-50-123-4567",
+    address: {
+      street: "12 Crescent Road",
+      city: "Dubai",
+      state: "Dubai",
+      country: "UAE",
+      zipCode: "00000",
+    },
+    logo: "",
+    primaryColor: "#0EA5E9",
+    secondaryColor: "#10B981",
+    subscription: {
+      plan: "standard",
+      status: "active",
+      startDate: new Date(),
+      endDate: (() => {
+        const d = new Date();
+        d.setMonth(d.getMonth() + 3);
+        return d;
+      })(),
+      limits: {
+        maxStudents: 500,
+        maxTeachers: 80,
+        maxClasses: 150,
       },
-      logo: "",
-      primaryColor: "#FF4B00",
-      secondaryColor: "#10B981",
-      subscription: {
-        plan: "standard",
-        status: "active",
-        startDate: new Date(),
-        endDate: trialEnd,
-        limits: {
-          maxStudents: 500,
-          maxTeachers: 50,
-          maxClasses: 100,
-        },
-      },
-    };
+    },
+    features: {
+      analytics: true,
+      parentPortal: true,
+      smsNotifications: true,
+    },
+  };
 
-    let school = await School.findOne({ email: schoolData.email });
-    if (!school) {
-      school = await School.create(schoolData);
-      console.log("✅ School created:", school.name);
-    } else {
-      console.log("⚠️  School already exists");
-    }
+  await clearExisting(schoolProfile.email);
 
-    // 2. Create Admin
-    console.log("\n👨‍💼 Creating admin user...");
-    const adminData = {
-      name: "Admin User",
-      email: "admin@school.com",
-      password: await hashPassword("admin123"),
+  const universalPassword = "progresslmspass";
+
+  const school = await School.create(schoolProfile);
+  log(`✅ School created: ${school.name}`);
+
+  // Admin tied to school
+  const adminEmail = "admin@school.demo";
+  const admin = await Admin.findOneAndUpdate(
+    { email: adminEmail },
+    {
+      name: "Ahmad Farooq",
+      email: adminEmail,
+      password: await hashPassword(universalPassword),
       role: "admin",
       schoolId: school._id,
-    };
-
-    let admin = await Admin.findOne({ email: adminData.email });
-    if (!admin) {
-      adminData.permissions = {
+      permissions: {
         manageStudents: true,
         manageTeachers: true,
         manageUsers: true,
         manageFees: true,
         viewReports: true,
-      };
-      admin = await Admin.create(adminData);
-      console.log("✅ Admin created - Email: admin@school.com, Password: admin123");
-    } else {
-      console.log("⚠️  Admin already exists");
-    }
-
-    // 3. Create Super Admin
-    console.log("\n🦸 Creating super admin user...");
-    const superAdminData = {
-      name: "Super Admin",
-      email: "superadmin@school.com",
-      password: await hashPassword("superadmin123"),
-      role: "super_admin",
-      // Super admin doesn't necessarily need a schoolId, but model might require it based on validation
-      // Checking model: schoolId required if role !== 'super_admin'. So we can skip it or set null.
-    };
-
-    let superAdmin = await Admin.findOne({ email: superAdminData.email });
-    if (!superAdmin) {
-      superAdmin = await Admin.create(superAdminData);
-      console.log("✅ Super Admin created - Email: superadmin@school.com, Password: superadmin123");
-    } else {
-      console.log("⚠️  Super Admin already exists");
-    }
-
-    // 4. Create Academic Year
-    console.log("\n📅 Creating academic year...");
-    const academicYearData = {
-      name: "2025-2026",
-      fromYear: new Date("2025-01-01"),
-      toYear: new Date("2025-12-31"),
-      isCurrent: true,
-      schoolId: school._id,
-      createdBy: admin._id,
-    };
-
-    let academicYear = await AcademicYear.findOne({ name: academicYearData.name, schoolId: school._id });
-    if (!academicYear) {
-      academicYear = await AcademicYear.create(academicYearData);
-      console.log("✅ Academic Year created:", academicYear.name);
-    } else {
-      console.log("⚠️  Academic Year already exists");
-    }
-
-    // 5. Create Academic Term
-    console.log("\n⏳ Creating academic term...");
-    const academicTermData = {
-      name: "Term 1",
-      description: "First Term",
-      duration: "3 months",
-      academicYear: academicYear._id,
-      schoolId: school._id,
-      createdBy: admin._id,
-    };
-
-    let academicTerm = await AcademicTerm.findOne({ name: academicTermData.name, schoolId: school._id });
-    if (!academicTerm) {
-      academicTerm = await AcademicTerm.create(academicTermData);
-      console.log("✅ Academic Term created:", academicTerm.name);
-    } else {
-      console.log("⚠️  Academic Term already exists");
-    }
-
-    // 6. Create Class Level
-    console.log("\n🏫 Creating class level...");
-    const classLevelData = {
-      name: "Grade 1",
-      description: "First Grade",
-      schoolId: school._id,
-      createdBy: admin._id,
-    };
-
-    let classLevel = await ClassLevel.findOne({ name: classLevelData.name, schoolId: school._id });
-    if (!classLevel) {
-      classLevel = await ClassLevel.create(classLevelData);
-      console.log("✅ Class Level created:", classLevel.name);
-    } else {
-      console.log("⚠️  Class Level already exists");
-    }
-
-    // 7. Create Teacher
-    console.log("\n👨‍🏫 Creating teacher user...");
-    const teacherData = {
-      name: "John Teacher",
-      email: "teacher@school.com",
-      password: await hashPassword("teacher123"),
-      role: "teacher",
-      schoolId: school._id,
-      createdBy: admin._id,
-      academicYear: academicYear.name,
-      academicTerm: academicTerm.name,
-      classLevel: classLevel.name,
-    };
-
-    let teacher = await Teacher.findOne({ email: teacherData.email });
-    if (!teacher) {
-      teacher = await Teacher.create(teacherData);
-      console.log("✅ Teacher created - Email: teacher@school.com, Password: teacher123");
-    } else {
-      console.log("⚠️  Teacher already exists");
-    }
-
-    // 8. Create Subject
-    console.log("\n📚 Creating subject...");
-    const subjectData = {
-      name: "Mathematics",
-      description: "Basic Math",
-      academicTerm: academicTerm._id,
-      schoolId: school._id,
-      createdBy: admin._id,
-      teacher: teacher._id,
-    };
-
-    let subject = await Subject.findOne({ name: subjectData.name, schoolId: school._id });
-    if (!subject) {
-      subject = await Subject.create(subjectData);
-      console.log("✅ Subject created:", subject.name);
-    } else {
-      console.log("⚠️  Subject already exists");
-    }
-
-    // 9. Create Student
-    console.log("\n🎓 Creating student user...");
-    const studentData = {
-      name: "Jane Student",
-      email: "student@school.com",
-      password: await hashPassword("student123"),
-      role: "student",
-      schoolId: school._id,
-      academicYear: academicYear._id,
-      currentClassLevels: [classLevel._id],
-    };
-
-    let student = await Student.findOne({ email: studentData.email });
-    if (!student) {
-      student = await Student.create(studentData);
-      console.log("✅ Student created - Email: student@school.com, Password: student123");
-    } else {
-      console.log("⚠️  Student already exists");
-    }
-
-    // 10. Create Enrollment
-    console.log("\n📝 Creating student enrollment...");
-    const enrollmentData = {
-      student: student._id,
-      subject: subject._id,
-      classLevel: classLevel._id,
-      academicYear: academicYear._id,
-      academicTerm: academicTerm._id,
-      schoolId: school._id,
-      status: "active",
-      progress: 35,
-    };
-
-    let enrollment = await Enrollment.findOne({
-      student: student._id,
-      subject: subject._id,
-      academicYear: academicYear._id,
-      academicTerm: academicTerm._id,
-    });
-    if (!enrollment) {
-      enrollment = await Enrollment.create(enrollmentData);
-      console.log("✅ Enrollment created for Mathematics");
-    } else {
-      console.log("⚠️  Enrollment already exists");
-    }
-
-    // 11. Create a few Grades
-    console.log("\n📊 Creating grade records...");
-    const gradeData = [
-      {
-        student: student._id,
-        subject: subject._id,
-        classLevel: classLevel._id,
-        academicYear: academicYear._id,
-        academicTerm: academicTerm._id,
-        schoolId: school._id,
-        examType: "quiz",
-        examName: "Quiz 1 - Basic Arithmetic",
-        score: 85,
-        maxScore: 100,
-        teacher: teacher._id,
-        remarks: "Good work!",
       },
-      {
-        student: student._id,
-        subject: subject._id,
-        classLevel: classLevel._id,
-        academicYear: academicYear._id,
-        academicTerm: academicTerm._id,
-        schoolId: school._id,
-        examType: "midterm",
-        examName: "Midterm Exam",
-        score: 78,
-        maxScore: 100,
-        teacher: teacher._id,
-        remarks: "Needs improvement in geometry",
-      },
-      {
-        student: student._id,
-        subject: subject._id,
-        classLevel: classLevel._id,
-        academicYear: academicYear._id,
-        academicTerm: academicTerm._id,
-        schoolId: school._id,
-        examType: "assignment",
-        examName: "Homework Assignment 1",
-        score: 92,
-        maxScore: 100,
-        teacher: teacher._id,
-        remarks: "Excellent work on fractions!",
-      },
-    ];
+      createdBy: null,
+    },
+    { new: true, upsert: true, setDefaultsOnInsert: true }
+  );
+  log("✅ Admin ready");
 
-    for (const grade of gradeData) {
-      const existingGrade = await Grade.findOne({
-        student: grade.student,
-        subject: grade.subject,
-        examName: grade.examName,
-      });
-      if (!existingGrade) {
-        await Grade.create(grade);
-        console.log(`✅ Grade created: ${grade.examName}`);
-      } else {
-        console.log(`⚠️  Grade already exists: ${grade.examName}`);
-      }
+  // Academic year and terms
+  const now = new Date();
+  const startYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+  const academicYearDoc = await AcademicYear.create({
+    name: `${startYear}-${startYear + 1}`,
+    fromYear: new Date(startYear, 7, 1),
+    toYear: new Date(startYear + 1, 6, 30),
+    isCurrent: true,
+    schoolId: school._id,
+    createdBy: admin._id,
+  });
+
+  const termsSeed = [
+    { name: "Term 1", description: "Muharram – Rabi al-Thani", duration: "4 months", isCurrent: true },
+    { name: "Term 2", description: "Jumada – Sha'ban", duration: "4 months", isCurrent: false },
+    { name: "Term 3", description: "Ramadan – Dhu al-Hijjah", duration: "4 months", isCurrent: false },
+  ];
+
+  const academicTerms = await AcademicTerm.insertMany(
+    termsSeed.map((t) => ({
+      ...t,
+      academicYear: academicYearDoc._id,
+      schoolId: school._id,
+      createdBy: admin._id,
+    }))
+  );
+  const currentTerm = academicTerms.find((t) => t.isCurrent) || academicTerms[0];
+
+  // Class levels
+  const classLevels = await ClassLevel.insertMany(
+    [1, 2, 3, 4, 5].map((g) => ({
+      name: `Grade ${g}`,
+      description: `Primary grade ${g}`,
+      schoolId: school._id,
+      createdBy: admin._id,
+    }))
+  );
+  const classLevelByName = Object.fromEntries(classLevels.map((c) => [c.name, c]));
+
+  // Teachers
+  const teacherSeeds = [
+    "Fatimah Hasan",
+    "Yusuf Rahman",
+    "Amina Siddiqui",
+    "Khalid Noor",
+    "Layla Zahra",
+    "Omar Qureshi",
+    "Maryam Idris",
+    "Bilal Kareem",
+    "Zainab Malik",
+    "Hamza Abdullah",
+  ].map((name, idx) => ({
+    name,
+    email: `${name.toLowerCase().replace(/[^a-z]/g, ".")}@school.demo`,
+    password: universalPassword,
+  }));
+
+  const teachers = await Promise.all(
+    teacherSeeds.map(async (t, idx) => {
+      const className = `Grade ${1 + (idx % classLevels.length)}`;
+      const teacherId = `TEA${String(Date.now()).slice(-6)}${idx}`;
+      return Teacher.findOneAndUpdate(
+        { email: t.email },
+        {
+          name: t.name,
+          email: t.email,
+          password: await hashPassword(universalPassword),
+          teacherId,
+          role: "teacher",
+          schoolId: school._id,
+          createdBy: admin._id,
+          classLevel: classLevelByName[className]._id,
+          academicYear: academicYearDoc.name,
+          academicTerm: currentTerm.name,
+          status: "active",
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: false }
+      );
+    })
+  );
+  const teacherByEmail = Object.fromEntries(teachers.map((t) => [t.email, t]));
+
+  // Subjects mapped to teachers and class levels
+  const subjectSeeds = [
+    { name: "Qur'an Studies", classLevel: "Grade 1", teacher: teacherSeeds[0].email },
+    { name: "Arabic Language", classLevel: "Grade 1", teacher: teacherSeeds[1].email },
+    { name: "Mathematics", classLevel: "Grade 2", teacher: teacherSeeds[2].email },
+    { name: "Science", classLevel: "Grade 2", teacher: teacherSeeds[3].email },
+    { name: "Islamic History", classLevel: "Grade 3", teacher: teacherSeeds[4].email },
+    { name: "English", classLevel: "Grade 3", teacher: teacherSeeds[5].email },
+    { name: "Geography", classLevel: "Grade 4", teacher: teacherSeeds[6].email },
+    { name: "Physical Education", classLevel: "Grade 4", teacher: teacherSeeds[7].email },
+    { name: "Tajweed", classLevel: "Grade 5", teacher: teacherSeeds[8].email },
+    { name: "Civics & Ethics", classLevel: "Grade 5", teacher: teacherSeeds[9].email },
+  ];
+
+  const subjects = await Subject.insertMany(
+    subjectSeeds.map((s) => ({
+      name: s.name,
+      description: `${s.name} for ${s.classLevel}`,
+      academicTerm: currentTerm._id,
+      schoolId: school._id,
+      createdBy: admin._id,
+      teacher: teacherByEmail[s.teacher]._id,
+    }))
+  );
+
+  const subjectTeacherById = {};
+  const subjectsByClass = subjects.reduce((acc, subj, idx) => {
+    const seed = subjectSeeds[idx];
+    const clsName = seed.classLevel;
+    acc[clsName] = acc[clsName] || [];
+    acc[clsName].push(subj);
+    subjectTeacherById[subj._id.toString()] = teacherByEmail[seed.teacher];
+    return acc;
+  }, {});
+
+  // Students
+  const studentNames = [
+    "Aaliyah Khan",
+    "Ibrahim Malik",
+    "Noor Alvi",
+    "Rayan Siddiq",
+    "Huda Qadir",
+    "Zayd Rahim",
+    "Mariam Omar",
+    "Taha Karim",
+    "Safiya Idris",
+    "Yahya Saleh",
+    "Hafsa Rauf",
+    "Elias Farid",
+    "Amna Jamil",
+    "Zara Yasin",
+    "Sami Naeem",
+    "Aisha Basit",
+    "Usman Tariq",
+    "Lina Habib",
+    "Farah Imran",
+    "Nabil Khan",
+    "Sumayyah Ali",
+    "Junaid Iqbal",
+    "Sara Latif",
+    "Mahmoud Saeed",
+    "Anisa Parvez",
+  ];
+
+  const studentDocs = await Promise.all(
+    studentNames.map(async (name, idx) => {
+      const className = `Grade ${1 + (idx % classLevels.length)}`;
+      const gender = idx % 2 === 0 ? "female" : "male";
+      const email = `${name.toLowerCase().replace(/[^a-z]/g, ".")}@school.demo`;
+      const studentId = `STU${String(Date.now()).slice(-6)}${idx}`;
+
+      return Student.findOneAndUpdate(
+        { email },
+        {
+          name,
+          email,
+          password: await hashPassword(universalPassword),
+          studentId,
+          role: "student",
+          gender,
+          schoolId: school._id,
+          academicYear: academicYearDoc._id,
+          currentClassLevels: [classLevelByName[className]._id],
+          currentClassLevel: classLevelByName[className]._id,
+          section: pickOne(["A", "B", "C"]),
+          enrollmentStatus: "active",
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: false }
+      );
+    })
+  );
+
+  // Enrollments and grades
+  const gradesToCreate = [];
+  const enrollments = [];
+
+  for (const student of studentDocs) {
+    const classDoc = classLevels.find((c) => c._id.equals(student.currentClassLevel));
+    if (!classDoc) continue;
+    const clsName = classDoc.name;
+    const availableSubjects = subjectsByClass[clsName] || [];
+    const subjectsForStudent = pick(availableSubjects, randRange(3, Math.min(availableSubjects.length, 5)));
+
+    for (const subj of subjectsForStudent) {
+      const enrollment = await Enrollment.findOneAndUpdate(
+        {
+          student: student._id,
+          subject: subj._id,
+          academicYear: academicYearDoc._id,
+          academicTerm: currentTerm._id,
+        },
+        {
+          student: student._id,
+          subject: subj._id,
+          classLevel: classLevelByName[clsName]._id,
+          academicYear: academicYearDoc._id,
+          academicTerm: currentTerm._id,
+          schoolId: school._id,
+          status: "active",
+          progress: randRange(40, 96),
+        },
+        { new: true, upsert: true, setDefaultsOnInsert: true }
+      );
+      enrollments.push(enrollment);
+
+      const teacher = subjectTeacherById[subj._id.toString()] || pickOne(teachers);
+
+      const quizScore = randRange(70, 98);
+      const examScore = randRange(68, 96);
+
+      gradesToCreate.push(
+        {
+          student: student._id,
+          subject: subj._id,
+          classLevel: classLevelByName[clsName]._id,
+          academicYear: academicYearDoc._id,
+          academicTerm: currentTerm._id,
+          schoolId: school._id,
+          assessmentType: "quiz",
+          examName: `${subj.name} - Quiz ${randRange(1, 2)}`,
+          score: quizScore,
+          maxScore: 100,
+          teacher: teacher._id,
+          remarks: quizScore > 90 ? "Excellent grasp" : "Steady progress",
+        },
+        {
+          student: student._id,
+          subject: subj._id,
+          classLevel: classLevelByName[clsName]._id,
+          academicYear: academicYearDoc._id,
+          academicTerm: currentTerm._id,
+          schoolId: school._id,
+          assessmentType: "exam",
+          examName: `${subj.name} - Midterm`,
+          score: examScore,
+          maxScore: 100,
+          teacher: teacher._id,
+          remarks: examScore > 85 ? "Great effort" : "Needs practice on key units",
+        }
+      );
     }
-
-
-    console.log("\n" + "=".repeat(50));
-    console.log("✨ Database seeding completed successfully!\n");
-    console.log("Test Credentials:");
-    console.log("─".repeat(50));
-    console.log("ADMIN:");
-    console.log("  Email: admin@school.com");
-    console.log("  Password: admin123");
-    console.log("  Login: http://localhost:3000/login (role: admin)");
-    console.log("\nTEACHER:");
-    console.log("  Email: teacher@school.com");
-    console.log("  Password: teacher123");
-    console.log("  Login: http://localhost:3000/login (role: teacher)");
-    console.log("\nSTUDENT:");
-    console.log("  Email: student@school.com");
-    console.log("  Password: student123");
-    console.log("  Login: http://localhost:3000/login (role: student)");
-    console.log("─".repeat(50));
-    console.log("SUPERADMIN:");
-    console.log("  Email: superadmin@school.com");
-    console.log("  Password: superadmin123");
-    console.log("  Login: http://localhost:3000/login (role: super_admin)");
-    console.log("=".repeat(50) + "\n");
-
-    process.exit(0);
-  } catch (error) {
-    console.error("❌ Seeding error:", error.message);
-    process.exit(1);
   }
-};
 
-// Run seeding
-seedDatabase();
+  // Persist grades without duplicates on examName per student/subject
+  for (const grade of gradesToCreate) {
+    const exists = await Grade.findOne({
+      student: grade.student,
+      subject: grade.subject,
+      examName: grade.examName,
+    });
+    if (!exists) await Grade.create(grade);
+  }
+
+  log("\n" + "=".repeat(60));
+  log("✨ Seeding completed");
+  log("Demo credentials:");
+  log("- Admin       | admin@school.demo        | " + universalPassword);
+  log("- Teacher     | first teacher in list    | " + universalPassword);
+  log("- Student     | first student in list    | " + universalPassword);
+  log("=".repeat(60) + "\n");
+
+  await mongoose.disconnect();
+  process.exit(0);
+}
+
+seed().catch((err) => {
+  console.error("❌ Seeding error:", err);
+  process.exit(1);
+});
