@@ -65,6 +65,9 @@ import {
     Clock,
 } from "lucide-react"
 import { communicationAPI, adminAPI } from "@/lib/api/endpoints"
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
+import PageToolbar from '@/components/admin/PageToolbar'
 
 interface Participant {
     user: {
@@ -454,6 +457,19 @@ export default function CommunicationPage() {
     }
 
     return (
+        <AdminPageLayout
+            title="Communication"
+            description="Manage messages and announcements"
+            actions={<div className="flex items-center gap-2"><Button onClick={() => setIsCreateDialogOpen(true)} className="bg-indigo-600 hover:bg-indigo-700"><Plus className="mr-2 h-4 w-4" /> New Channel</Button></div>}
+            stats={(
+                <>
+                    <SummaryStatCard title="Channels" value={conversations.filter(c => c.type !== 'private').length} icon={<Hash className="h-4 w-4 text-white" />} variant="blue" />
+                    <SummaryStatCard title="Directs" value={conversations.filter(c => c.type === 'private').length} icon={<MessageCircle className="h-4 w-4 text-white" />} variant="purple" />
+                    <SummaryStatCard title="Teachers" value={teachers.length} icon={<Users className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="Unread" value={conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0)} icon={<Bell className="h-4 w-4 text-white" />} variant="orange" />
+                </>
+            )}
+        >
         <TooltipProvider>
             <div className="h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] flex bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 flex-col lg:flex-row">
                 {/* Sidebar - Mobile hidden by default, toggle with button */}
@@ -1071,5 +1087,6 @@ export default function CommunicationPage() {
                 </Dialog>
             </div>
         </TooltipProvider>
+        </AdminPageLayout>
     )
 }

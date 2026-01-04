@@ -516,5 +516,4 @@ export default function AdminSettingsPage() {
                 </TabsContent>
             </Tabs>
         </div>
-    )
-}
+        </AdminPageLayout>
