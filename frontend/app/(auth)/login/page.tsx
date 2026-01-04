@@ -185,101 +185,133 @@ export default function LoginPage() {
     if (!isMounted) return null
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#1b1635] via-[#120f2a] to-[#0a0a18] flex items-center justify-center px-4 py-10">
-            <div className="w-full max-w-md rounded-3xl bg-white/95 dark:bg-slate-900/90 border border-white/10 dark:border-slate-800 shadow-2xl shadow-indigo-900/30 backdrop-blur p-8 sm:p-10">
-                <div className="flex flex-col items-center text-center mb-8 space-y-3">
-                    <div className="h-12 w-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                        <GraduationCap className="h-7 w-7" />
+        <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white flex items-center justify-center px-6 py-12">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.18),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.14),transparent_40%)]" aria-hidden />
+            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(120deg,transparent_0%,rgba(255,255,255,0.05)_35%,transparent_70%)]" aria-hidden />
+
+            <div className="w-full max-w-5xl grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center relative z-10">
+                <div className="hidden lg:flex flex-col gap-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-10 shadow-2xl shadow-indigo-900/40">
+                    <div className="flex items-center gap-3">
+                        <div className="h-12 w-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                            <GraduationCap className="h-7 w-7" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-white/80">ProgressLMS</p>
+                            <p className="text-xs text-white/60">Secure access hub</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-200">ProgressLMS</p>
-                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Sign in</h1>
+
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-bold leading-tight">Welcome back</h1>
+                        <p className="text-white/70 text-sm">Sign in to continue to your workspace.</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm text-white/80">
+                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Secure sessions</div>
+                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Role-aware access</div>
+                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Unified academics</div>
+                        <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">Comms & attendance</div>
                     </div>
                 </div>
 
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem className="space-y-1.5">
-                                    <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-200">Email</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="email"
-                                            disabled={isLoading}
-                                            placeholder="you@school.com"
-                                            className="h-11 font-medium bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs text-destructive" />
-                                </FormItem>
-                            )}
-                        />
+                <div className="rounded-3xl bg-white/95 text-slate-900 dark:bg-slate-900/95 dark:text-white border border-white/10 dark:border-slate-800 shadow-2xl shadow-indigo-900/30 backdrop-blur p-8 sm:p-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center gap-3">
+                            <div className="h-11 w-11 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/30">
+                                <GraduationCap className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-200">ProgressLMS</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Sign in</p>
+                            </div>
+                        </div>
+                        <Sparkles className="h-5 w-5 text-indigo-400" />
+                    </div>
 
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem className="space-y-1.5">
-                                    <div className="flex items-center justify-between">
-                                        <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-200">Password</FormLabel>
-                                        <Link
-                                            href="/forgot-password"
-                                            className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-200 dark:hover:text-white"
-                                        >
-                                            Forgot?
-                                        </Link>
-                                    </div>
-                                    <FormControl>
-                                        <div className="relative">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1.5">
+                                        <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-200">Email</FormLabel>
+                                        <FormControl>
                                             <Input
-                                                type={showPassword ? "text" : "password"}
+                                                type="email"
                                                 disabled={isLoading}
-                                                placeholder="••••••••"
-                                                className="h-11 font-medium pr-10 bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
+                                                placeholder="you@school.com"
+                                                className="h-11 font-medium bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
                                                 {...field}
                                             />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                                                tabIndex={-1}
+                                        </FormControl>
+                                        <FormMessage className="text-xs text-destructive" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1.5">
+                                        <div className="flex items-center justify-between">
+                                            <FormLabel className="text-sm font-semibold text-slate-700 dark:text-slate-200">Password</FormLabel>
+                                            <Link
+                                                href="/forgot-password"
+                                                className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-200 dark:hover:text-white"
                                             >
-                                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                            </button>
+                                                Forgot?
+                                            </Link>
                                         </div>
-                                    </FormControl>
-                                    <FormMessage className="text-xs text-destructive" />
-                                </FormItem>
-                            )}
-                        />
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Input
+                                                    type={showPassword ? "text" : "password"}
+                                                    disabled={isLoading}
+                                                    placeholder="••••••••"
+                                                    className="h-11 font-medium pr-10 bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700"
+                                                    {...field}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                                                    tabIndex={-1}
+                                                >
+                                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="text-xs text-destructive" />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="flex items-center justify-between pt-1">
-                            <label className="flex items-center gap-2 cursor-pointer group">
-                                <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-200" />
-                                <span className="text-sm text-slate-600 dark:text-slate-300">Remember this device</span>
-                            </label>
-                        </div>
+                            <div className="flex items-center justify-between pt-1">
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-200" />
+                                    <span className="text-sm text-slate-600 dark:text-slate-300">Remember this device</span>
+                                </label>
+                            </div>
 
-                        <Button
-                            type="submit"
-                            className="w-full h-11 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/30 disabled:opacity-70"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    Signing in...
-                                </>
-                            ) : (
-                                "Sign in"
-                            )}
-                        </Button>
-                    </form>
-                </Form>
+                            <Button
+                                type="submit"
+                                className="w-full h-11 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-indigo-500/30 disabled:opacity-70"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                        Signing in...
+                                    </>
+                                ) : (
+                                    "Sign in"
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+                </div>
             </div>
         </div>
     )
