@@ -129,6 +129,26 @@ try {
   app.use("/api/v1/communication/notifications", require("../routes/v1/communication/notifications.router"));
   console.log('[ROUTES] Loaded: communication');
 
+  // Library Module
+  app.use("/api/v1/library", require("../routes/v1/library/library.router"));
+  console.log('[ROUTES] Loaded: library');
+
+  // Transport Module
+  app.use("/api/v1/transport", require("../routes/v1/transport/transport.router"));
+  console.log('[ROUTES] Loaded: transport');
+
+  // Attendance (QR) Module
+  app.use("/api/v1/attendance", require("../routes/v1/attendance/attendance.router"));
+  console.log('[ROUTES] Loaded: attendance');
+
+  // HR Module
+  app.use("/api/v1/hr", require("../routes/v1/hr/hr.router"));
+  console.log('[ROUTES] Loaded: hr');
+
+  // Documents Module
+  app.use("/api/v1/documents", require("../routes/v1/documents/documents.router"));
+  console.log('[ROUTES] Loaded: documents');
+
   console.log('[ROUTES] All routes initialized successfully!');
 
 } catch (err) {

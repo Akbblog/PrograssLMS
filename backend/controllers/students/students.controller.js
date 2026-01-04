@@ -102,9 +102,69 @@ exports.studentUpdateProfileController = async (req, res) => {
  **/
 exports.adminUpdateStudentController = async (req, res) => {
   try {
-    await adminUpdateStudentService(req.body, req.params.studentId);
+    // adminUpdateStudentService will send response via responseStatus
+    await adminUpdateStudentService(req.body, req.params.studentId, res);
   } catch (error) {
     responseStatus(res, 400, "failed", error.message);
+  }
+};
+
+// --- New RESTful Admin Student Controllers ---
+exports.createStudentByAdminController = async (req, res) => {
+  try {
+    // adminRegisterStudentService sends the response itself using responseStatus
+    await adminRegisterStudentService(req.body, req.userAuth.id, res);
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
+  }
+};
+
+exports.listStudentsController = async (req, res) => {
+  try {
+    const filters = {
+      currentClassLevel: req.query.currentClassLevel,
+      enrollmentStatus: req.query.enrollmentStatus,
+      search: req.query.search,
+      page: parseInt(req.query.page) || 1,
+      limit: Math.min(parseInt(req.query.limit) || 25, 100),
+    };
+
+    // Delegate to service which will handle sending the response
+    await getAllStudentsByAdminService(req.schoolId, filters, res);
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
+  }
+};
+
+exports.getStudentByIdController = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    await getStudentByAdminService(studentId, res);
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
+  }
+};
+
+exports.updateStudentByIdController = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    // adminUpdateStudentService will send response via responseStatus
+    await adminUpdateStudentService(req.body, studentId, res);
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
+  }
+};
+
+exports.deleteStudentByIdController = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const Student = require('../../models/Students/students.model');
+    const schoolId = req.schoolId;
+    const deleted = await Student.findOneAndDelete({ _id: studentId, schoolId });
+    if (!deleted) return responseStatus(res, 404, 'failed', 'Student not found or already deleted');
+    responseStatus(res, 200, 'success', deleted, 'Student deleted');
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
   }
 };
 
@@ -145,5 +205,4 @@ exports.getStudentDashboardController = async (req, res) => {
 exports.getStudentDashboardServiceWrapper = async (studentId, schoolId) => {
     const studentsService = require("../../services/students/students.service");
     return studentsService.getStudentDashboardService(studentId, schoolId);
-};
 };

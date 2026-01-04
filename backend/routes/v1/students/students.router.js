@@ -37,6 +37,12 @@ const {
   adminUpdateStudentController,
   studentWriteExamController,
   studentSelfRegisterController,
+  // New RESTful handlers
+  createStudentByAdminController,
+  listStudentsController,
+  getStudentByIdController,
+  updateStudentByIdController,
+  deleteStudentByIdController,
 } = require("../../../controllers/students/students.controller");
 
 // Student self-registration (public - no auth required)
@@ -73,54 +79,63 @@ studentsRouter
   .route("/students/dashboard")
   .get(isLoggedIn, isStudent, require("../../../controllers/students/students.controller").getStudentDashboardController);
 
-// Get All Students by Admin - requires manageStudents
+// New RESTful Student routes
 studentsRouter
-  .route("/admin/students")
+  .route('/students')
+  .get(isLoggedIn, isAdminOrTeacher, (req, res, next) => {
+    if (req.userRole === 'admin') return hasPermission('manageStudents')(req, res, next);
+    next();
+  }, listStudentsController)
+  .post(isLoggedIn, isAdmin, hasPermission('manageStudents'), validateBody(studentAdminCreateSchema), createStudentByAdminController);
+
+studentsRouter
+  .route('/students/:id')
+  .get(isLoggedIn, isAdmin, getStudentByIdController)
+  .patch(isLoggedIn, isAdmin, hasPermission('manageStudents'), validateBody(studentUpdateSchema), updateStudentByIdController)
+  .delete(isLoggedIn, isAdmin, hasPermission('manageStudents'), deleteStudentByIdController);
+
+// Backwards compatible routes (deprecated but still available)
+// Get All Students by Admin - legacy
+studentsRouter
+  .route('/admin/students')
   .get(
     isLoggedIn,
     isAdminOrTeacher,
     (req, res, next) => {
-      if (req.userRole === "admin") {
-        return hasPermission("manageStudents")(req, res, next);
+      if (req.userRole === 'admin') {
+        return hasPermission('manageStudents')(req, res, next);
       }
       next();
     },
     getAllStudentsByAdminController
   );
 
-// Get Single Student by Admin
+// Legacy single student admin route
 studentsRouter
-  .route("/:studentId/admin")
-  .get(isLoggedIn, isAdmin, getStudentByAdminController);
-// Get Single Student by Admin - requires manageStudents
-studentsRouter
-  .route("/:studentId/admin")
-  .get(isLoggedIn, isAdmin, hasPermission("manageStudents"), getStudentByAdminController);
+  .route('/:studentId/admin')
+  .get(isLoggedIn, isAdmin, hasPermission('manageStudents'), getStudentByAdminController);
 
-// Update Student Profile by Student
+// Student profile/update routes
 studentsRouter
-  .route("/update")
-  .patch(isLoggedIn, isStudent, studentUpdateProfileController);
+  .route('/students/profile')
+  .get(isLoggedIn, isStudent, getStudentProfileController);
 
-// Admin Update Student Profile
 studentsRouter
-  .route("/:studentId/update/admin")
-  .patch(isLoggedIn, isAdmin, adminUpdateStudentController);
-// Admin Update Student Profile - requires manageStudents
-// Admin Update Student Profile - requires manageStudents
+  .route('/students/register')
+  .post(validateBody(studentSelfRegisterSchema), studentSelfRegisterController);
+
 studentsRouter
-  .route("/:studentId/update/admin")
-  .patch(
-    isLoggedIn,
-    isAdmin,
-    hasPermission("manageStudents"),
-    validateBody(studentUpdateSchema),
-    adminUpdateStudentController
-  );
+  .route('/students/login')
+  .post(studentLoginController);
+
+// Student Dashboard
+studentsRouter
+  .route('/students/dashboard')
+  .get(isLoggedIn, isStudent, require('../../../controllers/students/students.controller').getStudentDashboardController);
 
 // student write exam
 studentsRouter
-  .route("/students/:examId/exam-write")
+  .route('/students/:examId/exam-write')
   .post(isLoggedIn, isStudent, studentWriteExamController);
 
 module.exports = studentsRouter;

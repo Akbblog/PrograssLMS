@@ -1,13 +1,16 @@
-const responseStatus = (res, statusCode, status, data) => {
+const responseStatus = (res, statusCode, status, data, message) => {
+  // New unified format: { success: boolean, data: any, message: string }
   if (status === "success") {
     return res.status(statusCode).json({
-      status: status,
-      data: data,
+      success: true,
+      data: data !== undefined ? data : null,
+      message: message || "Operation successful",
     });
   } else {
     return res.status(statusCode).json({
-      status: status,
-      message: data,
+      success: false,
+      data: null,
+      message: message || data || "Operation failed",
     });
   }
 };

@@ -137,7 +137,7 @@ exports.teacherLoginService = async (data, res) => {
  * @param {string} schoolId - School ID for multi-tenancy filtering
  * @returns {Array} - Array of all teacher objects for this school
  */
-exports.getAllTeachersService = async (schoolId) => {
+exports.getAllTeachersService = async (schoolId, options = {}) => {
   const mongoose = require('mongoose');
 
   // If schoolId is provided, filter by it (for school admins)
@@ -153,11 +153,28 @@ exports.getAllTeachersService = async (schoolId) => {
     }
   }
 
-  // Populate subject and classLevel to get names instead of just IDs
-  return await Teacher.find(filter)
+  const page = parseInt(options.page) || 1;
+  const limit = Math.min(parseInt(options.limit) || 25, 100);
+  const skip = (page - 1) * limit;
+
+  const total = await Teacher.countDocuments(filter);
+  const teachers = await Teacher.find(filter)
     .select('-password')
     .populate('subject', 'name')
-    .populate('classLevel', 'name');
+    .populate('classLevel', 'name')
+    .skip(skip)
+    .limit(limit)
+    .sort('-createdAt');
+
+  return {
+    teachers,
+    pagination: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+  };
 };
 
 /**

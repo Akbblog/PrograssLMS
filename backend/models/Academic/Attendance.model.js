@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 
+const geoSchema = new mongoose.Schema({
+    latitude: Number,
+    longitude: Number,
+    accuracy: Number
+}, { _id: false });
+
 const attendanceSchema = new mongoose.Schema({
     schoolId: {
         type: ObjectId,
@@ -42,6 +48,15 @@ const attendanceSchema = new mongoose.Schema({
         enum: ["present", "absent", "late", "early-departure", "excused", "suspended"],
         required: true
     },
+    // QR / device enhanced fields
+    scanMethod: { type: String, enum: ["manual", "qr-scan", "biometric", "rfid"], default: "manual" },
+    deviceId: { type: String },
+    deviceName: { type: String },
+    geoLocation: geoSchema,
+    verifiedBy: { type: String, enum: ["automated", "manual"], default: "automated" },
+    qrScanTimestamp: { type: Date },
+    parentNotified: { type: Boolean, default: false },
+    parentNotifiedAt: { type: Date },
     // Detailed tracking
     checkInTime: Date,
     checkOutTime: Date,

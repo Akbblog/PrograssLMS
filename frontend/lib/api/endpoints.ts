@@ -132,15 +132,15 @@ export const superAdminAPI = {
 
 // Admin endpoints
 export const adminAPI = {
-  getStudents: () => api.get('/admin/students'),
-  getStudent: (id: string) => api.get(`/${id}/admin`),
-  createStudent: (data: any) => api.post('/students/admin/register', data),
-  updateStudent: (id: string, data: any) => api.patch(`/${id}/update/admin`, data),
+  getStudents: (params?: any) => api.get('/students', { params }),
+  getStudent: (id: string) => api.get(`/students/${id}`),
+  createStudent: (data: any) => api.post('/students', data),
+  updateStudent: (id: string, data: any) => api.patch(`/students/${id}`, data),
   deleteStudent: (id: string) => api.delete(`/students/${id}`),
-  getTeachers: () => api.get('/admin/teachers'),
-  createTeacher: (data: any) => api.post('/create-teacher', data),
-  updateTeacher: (id: string, data: any) => api.patch(`/teacher/${id}/update-profile`, data),
-  deleteTeacher: (id: string) => api.delete(`/admins/teacher/${id}`),
+  getTeachers: (params?: any) => api.get('/teachers', { params }),
+  createTeacher: (data: any) => api.post('/teachers', data),
+  updateTeacher: (id: string, data: any) => api.patch(`/teachers/${id}`, data),
+  deleteTeacher: (id: string) => api.delete(`/teachers/${id}`),
   withdrawTeacher: (id: string) => api.put(`/admins/withdraw/teacher/${id}`),
   restoreTeacher: (id: string) => api.put(`/admins/unwithdraw/teacher/${id}`),
   getClasses: () => api.get('/class-levels'),

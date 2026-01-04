@@ -42,12 +42,39 @@ exports.teacherLoginController = async (req, res) => {
 exports.getAllTeachersController = async (req, res) => {
   try {
     // Pass schoolId for multi-tenancy filtering
-    const result = await getAllTeachersService(req.schoolId);
+    const page = parseInt(req.query.page) || 1;
+    const limit = Math.min(parseInt(req.query.limit) || 25, 100);
+    const result = await getAllTeachersService(req.schoolId, { page, limit });
     responseStatus(res, 200, "success", result);
   } catch (error) {
     responseStatus(res, 400, "failed", error.message);
   }
 };
+
+exports.getTeacherByIdController = async (req, res) => {
+  try {
+    const id = req.params.id || req.params.teacherId;
+    const result = await getTeacherProfileService(id);
+    if (!result) return responseStatus(res, 404, 'failed', 'Teacher not found');
+    responseStatus(res, 200, 'success', result);
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
+  }
+};
+
+exports.deleteTeacherController = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const Teacher = require('../../models/Staff/teachers.model');
+    const deleted = await Teacher.findOneAndDelete({ _id: id, schoolId: req.schoolId });
+    if (!deleted) return responseStatus(res, 404, 'failed', 'Teacher not found');
+    responseStatus(res, 200, 'success', deleted, 'Teacher deleted');
+  } catch (error) {
+    responseStatus(res, 400, 'failed', error.message);
+  }
+};
+
+
 
 /**
  * @desc Get teacher profile
@@ -56,7 +83,9 @@ exports.getAllTeachersController = async (req, res) => {
  **/
 exports.getTeacherProfileController = async (req, res) => {
   try {
-    const result = await getTeacherProfileService(req.params.teacherId);
+    const id = req.params.teacherId || req.userAuth?.id;
+    const result = await getTeacherProfileService(id);
+    if (!result) return responseStatus(res, 404, 'failed', 'Teacher not found');
     responseStatus(res, 200, "success", result);
   } catch (error) {
     responseStatus(res, 400, "failed", error.message);

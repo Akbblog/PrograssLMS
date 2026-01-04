@@ -161,6 +161,27 @@ const schoolSchema = new mongoose.Schema(
         default: true,
       },
     },
+
+    // Module configuration, branding and integrations
+    moduleConfig: {
+      library: { enabled: { type: Boolean, default: true } },
+      transport: { enabled: { type: Boolean, default: true } },
+      hr: { enabled: { type: Boolean, default: true } },
+      qrAttendance: { enabled: { type: Boolean, default: false } }
+    },
+    branding: {
+      primaryColor: { type: String, default: '#3B82F6' },
+      secondaryColor: { type: String, default: '#10B981' },
+      documentWatermark: { type: String, default: '' },
+      emailHeader: { type: String, default: '' },
+      emailFooter: { type: String, default: '' }
+    },
+    integrations: {
+      smsGateway: { provider: String, apiKey: String, senderId: String },
+      paymentGateway: { provider: String, merchantId: String, apiKey: String },
+      emailService: { provider: String, apiKey: String }
+    },
+
     // Admin who registered the school
     primaryAdmin: {
       type: mongoose.Schema.Types.ObjectId,
