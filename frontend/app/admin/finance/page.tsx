@@ -371,6 +371,7 @@ export default function AdminFinancePage() {
                     </div>
                 </DialogContent>
             </Dialog>
+            </div>
             </AdminPageLayout>
     );
 }

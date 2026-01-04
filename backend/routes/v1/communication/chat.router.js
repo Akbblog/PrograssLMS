@@ -32,10 +32,11 @@ chatRouter
     .get(isLoggedIn, getConversationController)
     .delete(isLoggedIn, deleteConversationController);
 
-// Send message to conversation
+// Send message to conversation (supports multipart attachments)
+const { uploadAttachments, processAttachments } = require("../../../middlewares/fileUpload");
 chatRouter
     .route("/conversations/:id/messages")
-    .post(isLoggedIn, sendMessageController);
+    .post(isLoggedIn, uploadAttachments, processAttachments, sendMessageController);
 
 // Add participants to conversation
 chatRouter

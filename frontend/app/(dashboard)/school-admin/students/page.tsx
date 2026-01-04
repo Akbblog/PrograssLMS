@@ -41,9 +41,9 @@ export default function StudentsPage() {
         const fetchStudents = async () => {
             setLoading(true)
             try {
-                const res = await adminAPI.getStudents()
-                // endpoints return data shape from Axios interceptor, ensure consistent format
-                const data = Array.isArray(res?.students) ? res.students : (res?.data || res || [])
+                const res: any = await adminAPI.getStudents()
+                // endpoints return data shape from Axios interceptor; normalize to an array
+                const data = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : (res?.students || res?.data || []))
                 setStudents(data)
             } catch (err) {
                 console.warn('adminAPI.getStudents failed, falling back to mock data', err)
@@ -87,7 +87,7 @@ export default function StudentsPage() {
             )}
         >
             <div className="">
-                <PageToolbar onAdd={() => window.location.href = '/school-admin/students/create'} query={searchQuery} setQuery={setSearchQuery} onExport={() => { /* TODO: implement export */ }} />
+                <PageToolbar onAdd={() => window.location.href = '/school-admin/students/create'} query={searchQuery} setQuery={setSearchQuery} onExport={async () => { try { const res:any = await adminAPI.exportStudents(); const blob = new Blob([res], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'students.csv'; a.click(); URL.revokeObjectURL(url); } catch (err:any) { console.error('Export failed', err); } }} />
             </div>
 
             <div className="rounded-md border bg-white overflow-hidden">

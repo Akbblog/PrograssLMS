@@ -21,6 +21,7 @@ import {
     Calendar
 } from "lucide-react"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card"
+import { teacherAPI } from '@/lib/api/endpoints'
 
 export default function TeacherDashboard() {
     const user = useAuthStore((state) => state.user)
@@ -37,6 +38,19 @@ export default function TeacherDashboard() {
         return () => clearTimeout(timer)
     }, [])
 
+    const [dashboard, setDashboard] = useState<any>(null)
+    useEffect(() => {
+        const fetch = async () => {
+            try {
+                const res: any = await teacherAPI.getDashboard();
+                if (res?.status === 'success') setDashboard(res.data);
+            } catch (err: any) {
+                console.warn('Failed to fetch teacher dashboard:', err?.message || err)
+            }
+        }
+        fetch();
+    }, [])
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-slate-50">
@@ -49,20 +63,20 @@ export default function TeacherDashboard() {
     }
 
     const teacherStats = [
-        { id: 1, label: "Total Classes", value: "4", icon: BookOpen, color: "from-teal-500 to-teal-600" },
-        { id: 2, label: "Total Students", value: "120", icon: Users, color: "from-cyan-500 to-cyan-600" },
+        { id: 1, label: "Total Classes", value: dashboard ? dashboard.counts?.classes : "4", icon: BookOpen, color: "from-teal-500 to-teal-600" },
+        { id: 2, label: "Total Students", value: dashboard ? dashboard.counts?.students || "120" : "120", icon: Users, color: "from-cyan-500 to-cyan-600" },
         { id: 3, label: "Avg. Performance", value: "78%", icon: TrendingUp, color: "from-emerald-500 to-emerald-600" },
-        { id: 4, label: "Pending Tasks", value: "12", icon: ClipboardList, color: "from-amber-500 to-amber-600" }
+        { id: 4, label: "Pending Tasks", value: dashboard ? dashboard.counts?.upcomingAssignments : "12", icon: ClipboardList, color: "from-amber-500 to-amber-600" }
     ]
 
-    const classes = [
+    const classes = dashboard && dashboard.classes ? dashboard.classes.map((c:any, i:number) => ({ id: c._id || i, name: c.name || c.title || `Class ${i+1}`, students: c.studentCount || c.students?.length || 0, subject: c.subject?.name || 'N/A', time: c.time || 'TBD', status: c.status || 'Scheduled' })) : [
         { id: 1, name: "Class 10-A", students: 30, subject: "Mathematics", time: "9:00 AM - 10:00 AM", status: "Completed" },
         { id: 2, name: "Class 10-B", students: 28, subject: "English", time: "10:15 AM - 11:15 AM", status: "In Progress" },
         { id: 3, name: "Class 11-A", students: 32, subject: "Physics", time: "11:30 AM - 12:30 PM", status: "Upcoming" },
         { id: 4, name: "Class 9-C", students: 25, subject: "History", time: "2:00 PM - 3:00 PM", status: "Upcoming" }
     ]
 
-    const recentActivities = [
+    const recentActivities = dashboard && dashboard.upcomingAssignments ? dashboard.upcomingAssignments.map((a:any, i:number) => ({ id: a._id || i, action: `Assignment Due: ${a.title}`, time: new Date(a.dueDate).toLocaleString(), icon: ClipboardList })) : [
         { id: 1, action: "Graded quiz for Class 10-A", time: "2 hours ago", icon: FileText },
         { id: 2, action: "Posted assignment for Class 11-A", time: "4 hours ago", icon: ClipboardList },
         { id: 3, action: "Took attendance for Class 10-B", time: "Yesterday", icon: Users },
@@ -144,7 +158,7 @@ export default function TeacherDashboard() {
                     </LuminaCardHeader>
                     <LuminaCardContent>
                         <div className="space-y-4">
-                            {classes.map((cls) => (
+                            {classes.map((cls: any) => (
                                 <div
                                     key={cls.id}
                                     className="group flex flex-col sm:flex-row sm:items-center gap-4 p-5 border border-border/50 rounded-3xl hover:shadow-xl hover:shadow-teal-500/5 hover:border-teal-100 dark:hover:border-teal-900 transition-all cursor-pointer bg-card"
@@ -187,7 +201,7 @@ export default function TeacherDashboard() {
                     </LuminaCardHeader>
                     <LuminaCardContent>
                         <div className="space-y-4">
-                            {recentActivities.map((activity) => (
+                            {recentActivities.map((activity: any) => (
                                 <div key={activity.id} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-teal-50/50 dark:hover:bg-teal-950/30 transition-all group overflow-hidden relative">
                                     <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-sm">
                                         <activity.icon className="h-5 w-5 text-teal-600 dark:text-teal-400" />

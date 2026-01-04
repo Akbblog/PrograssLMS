@@ -97,3 +97,21 @@ exports.adminUpdateTeacherProfileController = async (req, res) => {
     responseStatus(res, 400, "failed", error.message);
   }
 };
+
+/**
+ * @desc Get Teacher Dashboard
+ * @route GET /api/v1/teacher/dashboard
+ * @access Private (teacher)
+ */
+exports.getTeacherDashboardController = async (req, res) => {
+  try {
+    const teacherId = req.userAuth.id;
+    const schoolId = req.schoolId;
+    const { getTeacherDashboardService } = require("../../services/staff/teachers.service");
+    const result = await getTeacherDashboardService(teacherId, schoolId);
+    if (result.error) return responseStatus(res, 404, "failed", result.error);
+    responseStatus(res, 200, "success", result.data);
+  } catch (error) {
+    responseStatus(res, 500, "failed", error.message);
+  }
+};

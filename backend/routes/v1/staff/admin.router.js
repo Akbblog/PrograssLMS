@@ -43,6 +43,10 @@ adminRouter.route("/admins").get(isLoggedIn, isAdmin, hasPermission("manageUsers
 adminRouter.route("/admin/profile").get(isLoggedIn, getAdminProfileController);
 // get dashboard stats
 adminRouter.route("/admin/stats").get(isLoggedIn, isAdmin, getDashboardStatsController);
+
+// Export CSV endpoints for students/teachers
+adminRouter.route('/admin/export/students').get(isLoggedIn, isAdmin, hasPermission('manageStudents'), require('../../../controllers/staff/admin.controller').exportStudentsController);
+adminRouter.route('/admin/export/teachers').get(isLoggedIn, isAdmin, hasPermission('manageTeachers'), require('../../../controllers/staff/admin.controller').exportTeachersController);
 // update/delete admin - update requires manageUsers
 adminRouter
   .route("/admin/:id")

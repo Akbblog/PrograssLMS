@@ -12,6 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
+import PageToolbar from '@/components/admin/PageToolbar'
+import EmptyState from '@/components/admin/EmptyState'
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminClassesPage() {
     const [classes, setClasses] = useState<any[]>([]);

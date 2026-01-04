@@ -127,14 +127,23 @@ exports.studentWriteExamController = async (req, res) => {
 };
 
 /**
- * @desc Student Self Registration
- * @route POST /api/v1/students/register
- * @access Public
- **/
-exports.studentSelfRegisterController = async (req, res) => {
-  try {
-    await studentSelfRegisterService(req.body, res);
-  } catch (error) {
-    responseStatus(res, 400, "failed", error.message);
-  }
+ * @desc Get Student Dashboard
+ * @route GET /api/v1/students/dashboard
+ * @access Private (student)
+ */
+exports.getStudentDashboardController = async (req, res) => {
+    try {
+        const result = await exports.getStudentDashboardServiceWrapper(req.userAuth.id, req.schoolId);
+        if (result.error) return responseStatus(res, 404, "failed", result.error);
+        responseStatus(res, 200, "success", result.data);
+    } catch (error) {
+        responseStatus(res, 500, "failed", error.message);
+    }
+};
+
+// internal wrapper to call service method
+exports.getStudentDashboardServiceWrapper = async (studentId, schoolId) => {
+    const studentsService = require("../../services/students/students.service");
+    return studentsService.getStudentDashboardService(studentId, schoolId);
+};
 };

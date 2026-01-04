@@ -68,6 +68,11 @@ studentsRouter
   .route("/students/profile")
   .get(isLoggedIn, isStudent, getStudentProfileController);
 
+// Student Dashboard
+studentsRouter
+  .route("/students/dashboard")
+  .get(isLoggedIn, isStudent, require("../../../controllers/students/students.controller").getStudentDashboardController);
+
 // Get All Students by Admin - requires manageStudents
 studentsRouter
   .route("/admin/students")

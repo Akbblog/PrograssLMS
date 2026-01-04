@@ -156,6 +156,45 @@ export default function CommunicationPage() {
     useEffect(() => {
         fetchConversations()
         fetchTeachers()
+
+        // Setup SSE for receiving real-time messages (and notifications)
+        const backend = process.env.NEXT_PUBLIC_BACKEND_URL || ''
+        try {
+            const url = `${backend}/api/v1/communication/notifications/stream`;
+            const es = new EventSource(url, { withCredentials: true } as any);
+
+            const handleMessageEvent = (e: MessageEvent) => {
+                try {
+                    const payload = JSON.parse(e.data);
+                    // Chat message event
+                    if (payload?.message && payload?.conversationId) {
+                        const convId = payload.conversationId
+                        // If belongs to active conversation, append
+                        if (convId === activeConversation?._id) {
+                            setMessages(prev => [...prev, payload.message])
+                        } else {
+                            // update conversations listing (lastMessage / unread)
+                            setConversations(prev => prev.map(c => c._id === convId ? ({ ...c, lastMessage: { content: payload.message.content, sender: payload.message.sender?._id || payload.message.sender || '', sentAt: payload.message.createdAt }, unreadCount: (((c as any).unreadCount || 0) + 1) } as any) : c))
+                        }
+                    }
+
+                    // Notification events handled elsewhere (NotificationBell)
+                } catch (err) {
+                    // ignore
+                }
+            }
+
+            es.addEventListener('message', handleMessageEvent)
+            es.addEventListener('message', handleMessageEvent)
+            es.onerror = () => {
+                try { es.close(); } catch (err) {}
+            }
+
+            return () => {
+                try { es.close(); } catch (err) {}
+            }
+        } catch (err) {}
+
     }, [])
 
     useEffect(() => {
@@ -214,20 +253,37 @@ export default function CommunicationPage() {
 
         setSending(true)
         try {
-            // For now, send text message. File upload would require a file upload endpoint
-            const messageData: any = {
-                content: newMessage || (selectedFiles.length > 0 ? `Shared ${selectedFiles.length} file(s)` : ""),
-                messageType: selectedFiles.length > 0 ? "file" : "text",
+            // If files are selected, send as multipart/form-data to allow attachments
+            let config = undefined
+            if (selectedFiles.length > 0) {
+                const form = new FormData()
+                form.append('content', newMessage || `Shared ${selectedFiles.length} file(s)`)
+                form.append('messageType', 'file')
+                selectedFiles.forEach(f => {
+                    form.append('attachments', f)
+                })
+
+                config = {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                    onUploadProgress: (progressEvent: ProgressEvent) => {
+                        if (progressEvent.total) {
+                            setUploadProgress(Math.round((progressEvent.loaded * 100) / progressEvent.total))
+                        }
+                    }
+                }
+
+                await communicationAPI.sendMessage(activeConversation._id, form, config)
+            } else {
+                const messageData: any = {
+                    content: newMessage || (selectedFiles.length > 0 ? `Shared ${selectedFiles.length} file(s)` : ""),
+                    messageType: selectedFiles.length > 0 ? "file" : "text",
+                }
+                await communicationAPI.sendMessage(activeConversation._id, messageData)
             }
 
-            // TODO: Implement file upload to get URLs then add attachments
-            // if (selectedFiles.length > 0) {
-            //     messageData.attachments = await uploadFiles(selectedFiles)
-            // }
-
-            await communicationAPI.sendMessage(activeConversation._id, messageData)
             setNewMessage("")
             setSelectedFiles([])
+            setUploadProgress(0)
             fetchMessages(activeConversation._id)
             fetchConversations() // Refresh to update last message
         } catch (error: any) {
@@ -466,7 +522,7 @@ export default function CommunicationPage() {
                     <SummaryStatCard title="Channels" value={conversations.filter(c => c.type !== 'private').length} icon={<Hash className="h-4 w-4 text-white" />} variant="blue" />
                     <SummaryStatCard title="Directs" value={conversations.filter(c => c.type === 'private').length} icon={<MessageCircle className="h-4 w-4 text-white" />} variant="purple" />
                     <SummaryStatCard title="Teachers" value={teachers.length} icon={<Users className="h-4 w-4 text-white" />} variant="green" />
-                    <SummaryStatCard title="Unread" value={conversations.reduce((acc, c) => acc + (c.unreadCount || 0), 0)} icon={<Bell className="h-4 w-4 text-white" />} variant="orange" />
+                    <SummaryStatCard title="Unread" value={conversations.reduce((acc, c) => acc + (((c as any).unreadCount || 0)), 0)} icon={<Bell className="h-4 w-4 text-white" />} variant="orange" />
                 </>
             )}
         >

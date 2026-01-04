@@ -61,6 +61,16 @@ eventBus.on('notification.created', ({ notification, recipients }) => {
   });
 });
 
+// Listen to chat message events and push to SSE connections for conversation participants
+eventBus.on('communication.message.sent', ({ message, conversationId, recipients }) => {
+  (recipients || []).forEach(r => {
+    const res = sseConnections.get(String(r.userId));
+    if (res) {
+      sendSSE(res, 'message', { message, conversationId });
+    }
+  });
+});
+
 // List notifications (paginated)
 router.get('/', isLoggedIn, async (req, res) => {
   try {

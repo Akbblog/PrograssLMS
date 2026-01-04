@@ -515,5 +515,6 @@ export default function AdminSettingsPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
-        </div>
         </AdminPageLayout>
+    );
+}

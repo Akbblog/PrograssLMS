@@ -400,3 +400,64 @@ exports.studentSelfRegisterService = async (data, res) => {
     return responseStatus(res, 400, "failed", error.message);
   }
 };
+
+/**
+ * Get Student Dashboard Service
+ * Returns enrolled courses, upcoming assignments, today's assignments and basic counts
+ */
+exports.getStudentDashboardService = async (studentId, schoolId) => {
+  const Enrollment = require("../../models/Academic/Enrollment.model");
+  const Assignment = require("../../models/Academic/Assignment.model");
+  const Student = require("../../models/Students/students.model");
+
+  const student = await Student.findById(studentId).select('currentClassLevel currentClassLevels schoolId');
+  if (!student) return { error: 'Student not found' };
+
+  const classLevels = [];
+  if (student.currentClassLevel) classLevels.push(student.currentClassLevel);
+  if (Array.isArray(student.currentClassLevels)) classLevels.push(...student.currentClassLevels);
+
+  // Enrolled courses (from Enrollment model)
+  const enrollments = await Enrollment.find({ student: studentId, schoolId, status: 'active' })
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .limit(20);
+
+  // Upcoming assignments for student's classes
+  const now = new Date();
+  const upcomingAssignments = await Assignment.find({
+    schoolId,
+    classLevel: { $in: classLevels },
+    dueDate: { $gt: now }
+  })
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .sort({ dueDate: 1 })
+    .limit(8);
+
+  // Today's assignments (due today)
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0,0,0,0);
+  const endOfDay = new Date(now);
+  endOfDay.setHours(23,59,59,999);
+
+  const todaysAssignments = await Assignment.find({
+    schoolId,
+    classLevel: { $in: classLevels },
+    dueDate: { $gte: startOfDay, $lte: endOfDay }
+  })
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .sort({ dueDate: 1 });
+
+  const data = {
+    totalEnrolled: enrollments.length,
+    upcomingAssignmentsCount: upcomingAssignments.length,
+    upcomingAssignments,
+    todaysAssignments,
+    enrollments,
+  };
+
+  return { success: true, data };
+};  }
+};

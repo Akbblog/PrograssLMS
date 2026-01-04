@@ -10,6 +10,9 @@ import { Loader2, FileText, Download, Users, BookOpen, DollarSign } from "lucide
 import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
+import AdminPageLayout from '@/components/layouts/AdminPageLayout'
+import SummaryStatCard from '@/components/admin/SummaryStatCard'
+import PageToolbar from '@/components/admin/PageToolbar'
 
 export default function AdminReportsPage() {
     const [stats, setStats] = useState({

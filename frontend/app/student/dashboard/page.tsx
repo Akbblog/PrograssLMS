@@ -28,7 +28,7 @@ import {
     Sparkles
 } from "lucide-react"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card"
-
+import { adminAPI } from "@/lib/api/endpoints"
 export default function StudentDashboard() {
     const user = useAuthStore((state) => state.user)
     const [isLoading, setIsLoading] = useState(true)
@@ -42,6 +42,22 @@ export default function StudentDashboard() {
     useEffect(() => {
         const timer = setTimeout(() => setIsLoading(false), 500)
         return () => clearTimeout(timer)
+    }, [])
+
+    // Dashboard data from backend
+    const [dashboard, setDashboard] = useState<any>(null)
+    useEffect(() => {
+        const fetchDashboard = async () => {
+            try {
+                const res: any = await adminAPI.getStudentDashboard();
+                if (res && res.status === 'success') {
+                    setDashboard(res.data);
+                }
+            } catch (err: any) {
+                console.warn('Failed to fetch student dashboard:', err?.message || err)
+            }
+        }
+        fetchDashboard()
     }, [])
 
     if (isLoading) {
@@ -66,13 +82,20 @@ export default function StudentDashboard() {
     }
 
     const studentStats = [
-        { id: 1, label: "Enrolled Courses", value: "6", icon: BookOpen, color: "from-indigo-500 to-indigo-600", bgLight: "bg-indigo-50" },
-        { id: 2, label: "Completed", value: "3", icon: CheckCircle2, color: "from-emerald-500 to-emerald-600", bgLight: "bg-emerald-50" },
+        { id: 1, label: "Enrolled Courses", value: dashboard ? dashboard.totalEnrolled : "6", icon: BookOpen, color: "from-indigo-500 to-indigo-600", bgLight: "bg-indigo-50" },
+        { id: 2, label: "Upcoming Tasks", value: dashboard ? dashboard.upcomingAssignmentsCount : "3", icon: CheckCircle2, color: "from-emerald-500 to-emerald-600", bgLight: "bg-emerald-50" },
         { id: 3, label: "Overall GPA", value: "3.8", icon: Target, color: "from-purple-500 to-purple-600", bgLight: "bg-purple-50" },
         { id: 4, label: "Attendance", value: "95%", icon: Calendar, color: "from-amber-500 to-amber-600", bgLight: "bg-amber-50" }
     ]
 
-    const recentCourses = [
+    const recentCourses = dashboard && dashboard.enrollments ? dashboard.enrollments.map((e:any, i:number) => ({
+        id: e._id || i,
+        title: e.subject?.name || e.classLevel?.name || 'Course',
+        instructor: e.instructorName || 'Instructor',
+        progress: e.progress || Math.floor(Math.random() * 60) + 20,
+        nextClass: e.nextClass || 'TBD',
+        color: ['from-indigo-500 to-blue-500','from-purple-500 to-violet-500','from-emerald-500 to-teal-500'][i % 3]
+    })) : [
         {
             id: 1,
             title: "Mathematics - Algebra II",
@@ -99,13 +122,13 @@ export default function StudentDashboard() {
         }
     ]
 
-    const upcomingAssignments = [
+    const upcomingAssignments = dashboard ? dashboard.upcomingAssignments || [] : [
         { id: 1, title: "Algebra Homework #5", course: "Mathematics", due: "Due Tomorrow", priority: "high" },
         { id: 2, title: "Physics Lab Report", course: "Physics", due: "Due in 3 days", priority: "medium" },
         { id: 3, title: "Essay: Shakespeare Analysis", course: "English", due: "Due in 5 days", priority: "low" },
     ]
 
-    const todaySchedule = [
+    const todaySchedule = dashboard ? dashboard.todaysAssignments?.map((a:any, i:number) => ({ id: a._id || i, time: new Date(a.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), subject: a.subject?.name || 'Class', room: a.classLevel?.name || 'Room', status: 'upcoming' })) : [
         { id: 1, time: "10:00 AM", subject: "Mathematics", room: "Room 301", status: "upcoming" },
         { id: 2, time: "11:30 AM", subject: "Chemistry Lab", room: "Lab 102", status: "upcoming" },
         { id: 3, time: "2:00 PM", subject: "Physics", room: "Room 205", status: "upcoming" },
@@ -256,7 +279,7 @@ export default function StudentDashboard() {
                     </LuminaCardHeader>
                     <LuminaCardContent>
                         <div className="space-y-4">
-                            {recentCourses.map((course) => (
+                            {recentCourses.map((course: any) => (
                                 <div
                                     key={course.id}
                                     className="group flex flex-col sm:flex-row sm:items-center gap-4 p-5 border border-slate-50 rounded-3xl hover:shadow-xl hover:shadow-amber-500/5 hover:border-amber-100 transition-all cursor-pointer bg-white"
@@ -306,7 +329,7 @@ export default function StudentDashboard() {
                     </LuminaCardHeader>
                     <LuminaCardContent>
                         <div className="space-y-4">
-                            {todaySchedule.map((item, index) => (
+                            {todaySchedule.map((item: any, index: number) => (
                                 <div
                                     key={item.id}
                                     className={`relative group flex items-start gap-4 p-5 rounded-3xl transition-all duration-300 border ${index === 0
@@ -361,7 +384,7 @@ export default function StudentDashboard() {
                     </LuminaCardHeader>
                     <LuminaCardContent>
                         <div className="space-y-3">
-                            {upcomingAssignments.map((assignment) => (
+                            {upcomingAssignments.map((assignment: any) => (
                                 <div
                                     key={assignment.id}
                                     className="group flex items-center gap-4 p-5 border border-slate-50 rounded-3xl hover:bg-white hover:border-amber-100 hover:shadow-xl hover:shadow-amber-500/5 transition-all"

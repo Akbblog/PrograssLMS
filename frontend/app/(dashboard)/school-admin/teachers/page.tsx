@@ -41,8 +41,8 @@ export default function TeachersPage() {
         const fetchTeachers = async () => {
             setLoading(true)
             try {
-                const res = await adminAPI.getTeachers()
-                const data = Array.isArray(res?.teachers) ? res.teachers : (res?.data || res || [])
+                const res: any = await adminAPI.getTeachers()
+                const data = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : (res?.teachers || res?.data || []))
                 setTeachers(data)
             } catch (err) {
                 console.warn('adminAPI.getTeachers failed, falling back to mock data', err)
@@ -85,7 +85,7 @@ export default function TeachersPage() {
             )}
         >
             <div className="">
-                <PageToolbar onAdd={() => window.location.href = '/school-admin/teachers/create'} query={searchQuery} setQuery={setSearchQuery} onExport={() => { /* TODO: implement export */ }} />
+                <PageToolbar onAdd={() => window.location.href = '/school-admin/teachers/create'} query={searchQuery} setQuery={setSearchQuery} onExport={async () => { try { const res:any = await adminAPI.exportTeachers(); const blob = new Blob([res], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'teachers.csv'; a.click(); URL.revokeObjectURL(url); } catch (err:any) { console.error('Export failed', err); } }} />
             </div>
 
             <div className="rounded-md border bg-white overflow-hidden">

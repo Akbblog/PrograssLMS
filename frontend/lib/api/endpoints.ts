@@ -153,6 +153,11 @@ export const adminAPI = {
   updateAcademicTerm: (id: string, data: any) => api.patch(`/academic-term/${id}`, data),
   deleteAcademicTerm: (id: string) => api.delete(`/academic-term/${id}`),
   getDashboardStats: () => api.get('/admin/stats'),
+  // Student dashboard
+  getStudentDashboard: () => api.get('/students/dashboard'),
+  // Export utilities
+  exportStudents: () => api.get('/admin/export/students', { responseType: 'blob' as any }),
+  exportTeachers: () => api.get('/admin/export/teachers', { responseType: 'blob' as any }),
 };
 
 // Finance endpoints
@@ -259,6 +264,11 @@ export const performanceAPI = {
     api.get(`/performance/class/${classLevelId}`, { params: { subject: subjectId, academicYear, academicTerm } }),
 };
 
+// Teacher endpoints
+export const teacherAPI = {
+  getDashboard: () => api.get('/teacher/dashboard'),
+};
+
 // Behavior & Risk Alert endpoints
 export const behaviorAPI = {
   getStudentProfile: (studentId: string, academicYearId: string) =>
@@ -323,7 +333,8 @@ export const communicationAPI = {
   createConversation: (data: any) => api.post('/conversations', data),
   deleteConversation: (id: string) => api.delete(`/conversations/${id}`),
   // Messages
-  sendMessage: (conversationId: string, data: any) => api.post(`/conversations/${conversationId}/messages`, data),
+  // data can be JSON or FormData; config is optional axios config for upload progress
+  sendMessage: (conversationId: string, data: any, config?: any) => api.post(`/conversations/${conversationId}/messages`, data, config),
   deleteMessage: (messageId: string) => api.delete(`/messages/${messageId}`),
   markAsRead: (conversationId: string) => api.post(`/conversations/${conversationId}/read`),
   searchMessages: (query: string, limit?: number) => api.get('/messages/search', { params: { q: query, limit } }),

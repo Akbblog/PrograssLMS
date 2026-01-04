@@ -290,3 +290,50 @@ exports.getDashboardStatsController = async (req, res) => {
   }
 };
 
+/**
+ * @desc Export Students CSV
+ * @route GET /api/v1/admin/export/students
+ * @access Private (admin)
+ */
+exports.exportStudentsController = async (req, res) => {
+  try {
+    const Student = require("../../models/Students/students.model");
+    const schoolId = req.schoolId;
+    const students = await Student.find(schoolId ? { schoolId } : {}).select('name email studentId currentClassLevel');
+
+    // Simple CSV generation
+    const headers = ['Name', 'Email', 'StudentId', 'Class'];
+    const rows = students.map(s => [s.name, s.email, s.studentId || '', (s.currentClassLevel && s.currentClassLevel.name) || '']);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c || '').replace(/"/g, '""')}"`).join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="students.csv"');
+    res.status(200).send(csv);
+  } catch (error) {
+    responseStatus(res, 500, 'failed', error.message);
+  }
+};
+
+/**
+ * @desc Export Teachers CSV
+ * @route GET /api/v1/admin/export/teachers
+ * @access Private (admin)
+ */
+exports.exportTeachersController = async (req, res) => {
+  try {
+    const Teacher = require("../../models/Staff/teachers.model");
+    const schoolId = req.schoolId;
+    const teachers = await Teacher.find(schoolId ? { schoolId } : {}).select('name email employeeId subject classLevel');
+
+    const headers = ['Name','Email','EmployeeId','Subject','Class'];
+    const rows = teachers.map(t => [t.name, t.email, t.employeeId || '', (t.subject && t.subject.name) || '', (t.classLevel && t.classLevel.name) || '']);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${String(c || '').replace(/"/g, '""')}"`).join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="teachers.csv"');
+    res.status(200).send(csv);
+  } catch (error) {
+    responseStatus(res, 500, 'failed', error.message);
+  }
+};
+

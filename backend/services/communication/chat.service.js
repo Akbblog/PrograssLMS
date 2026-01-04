@@ -3,6 +3,7 @@ const Message = require("../../models/Communication/Message.model");
 const Admin = require("../../models/Staff/admin.model");
 const Teacher = require("../../models/Staff/teachers.model");
 const responseStatus = require("../../handlers/responseStatus.handler");
+const eventBus = require("../../utils/eventBus");
 
 /**
  * Create Conversation/Group Service
@@ -136,21 +137,25 @@ exports.sendMessageService = async (data, conversationId, userId, userModel, sch
         return responseStatus(res, 403, "failed", "You don't have permission to send messages in this group");
     }
 
+    // Ensure content is at least an empty string (attachments-only messages allowed)
+    const safeContent = (content || '').toString();
+
     // Create message
     const message = await Message.create({
         conversation: conversationId,
         schoolId,
         sender: userId,
         senderModel: userModel,
-        content,
-        messageType: messageType || "text",
+        content: safeContent,
+        messageType: messageType || (attachments && attachments.length ? 'file' : 'text'),
         attachments: attachments || [],
         replyTo,
     });
 
-    // Update conversation's last message
+    // Update conversation's last message summary
+    const shortContent = safeContent.length ? safeContent.substring(0, 100) : (attachments && attachments.length ? `[${attachments.length} attachment(s)]` : '');
     conversation.lastMessage = {
-        content: content.substring(0, 100),
+        content: shortContent,
         sender: userId,
         sentAt: new Date(),
     };
@@ -158,6 +163,17 @@ exports.sendMessageService = async (data, conversationId, userId, userModel, sch
 
     // Populate sender info
     await message.populate("sender", "name email avatar");
+
+    // Dispatch event to notify connected clients about the new message
+    try {
+        const recipients = (conversation.participants || [])
+            .filter(p => p.user.toString() !== userId)
+            .map(p => ({ userId: p.user.toString() }));
+
+        await eventBus.dispatch('communication.message.sent', { message: message.toObject(), conversationId, recipients });
+    } catch (err) {
+        console.warn('[Chat] Failed to dispatch message event', err.message);
+    }
 
     return responseStatus(res, 201, "success", message);
 };

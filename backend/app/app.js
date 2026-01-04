@@ -69,6 +69,10 @@ app.use(cors({
 // Rate Limiting
 app.use(limiter);
 
+// Serve uploaded files (attachments) - local development fallback
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
 try {
   // --- Static Route Imports for Serverless Compatibility ---
 

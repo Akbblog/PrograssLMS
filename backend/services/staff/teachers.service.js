@@ -255,3 +255,58 @@ exports.adminUpdateTeacherProfileService = async (data, teacherId) => {
 
 // Delete teacher account (No implementation provided)
 // exports.deleteTeacherAccountService = async () => {};
+
+/**
+ * Get Teacher Dashboard Service
+ * Returns classes taught, upcoming assignments posted by teacher, and counts
+ */
+exports.getTeacherDashboardService = async (teacherId, schoolId) => {
+  const Assignment = require("../../models/Academic/Assignment.model");
+  const Teacher = require("../../models/Staff/teachers.model");
+
+  const teacher = await Teacher.findById(teacherId).select('classes schoolId');
+  if (!teacher) return { error: 'Teacher not found' };
+
+  // Classes assigned (if teacher.classes exists)
+  const classes = teacher.classes || [];
+
+  // Upcoming assignments created by teacher
+  const now = new Date();
+  const upcomingAssignments = await Assignment.find({
+    schoolId,
+    teacher: teacherId,
+    dueDate: { $gt: now }
+  })
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .sort({ dueDate: 1 })
+    .limit(8);
+
+  // Today's assignments
+  const startOfDay = new Date(now);
+  startOfDay.setHours(0,0,0,0);
+  const endOfDay = new Date(now);
+  endOfDay.setHours(23,59,59,999);
+
+  const todaysAssignments = await Assignment.find({
+    schoolId,
+    teacher: teacherId,
+    dueDate: { $gte: startOfDay, $lte: endOfDay }
+  })
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .sort({ dueDate: 1 });
+
+  return {
+    success: true,
+    data: {
+      classes,
+      upcomingAssignments,
+      todaysAssignments,
+      counts: {
+        classes: classes.length,
+        upcomingAssignments: upcomingAssignments.length,
+      }
+    }
+  };
+};

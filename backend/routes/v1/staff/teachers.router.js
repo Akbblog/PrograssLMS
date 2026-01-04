@@ -48,6 +48,11 @@ teachersRouter
 teachersRouter
   .route("/teacher/update-profile")
   .patch(isLoggedIn, isTeacher, updateTeacherProfileController);
+
+// teacher dashboard
+teachersRouter
+  .route("/teacher/dashboard")
+  .get(isLoggedIn, isTeacher, require("../../../controllers/staff/teachers.controller").getTeacherDashboardController);
 // admin update user profile
 // admin update teacher profile - requires manageTeachers
 // admin update teacher profile - requires manageTeachers
