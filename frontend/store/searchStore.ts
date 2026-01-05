@@ -61,7 +61,7 @@ export const useSearchStore = create<SearchState & SearchActions>((set, get) => 
     set({ isLoading: true });
     try {
       const params = new URLSearchParams({ q: query });
-      if (get().activeCategory) params.append('categories', get().activeCategory);
+      if (get().activeCategory) params.append('categories', get().activeCategory as string);
       const res = await fetch(`/api/v1/search?${params}`);
       const data = await res.json();
       set({ results: data, isLoading: false });
