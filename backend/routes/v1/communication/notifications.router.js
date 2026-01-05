@@ -32,8 +32,17 @@ function isLoggedInSSE(req, res, next) {
     if (parts.length === 2 && parts[0] === 'Bearer') token = parts[1];
   }
 
-  if (!token && req.query && typeof req.query.token === 'string') {
-    token = req.query.token;
+  if (!token && req.query && req.query.token) {
+    const q = req.query.token;
+    token = Array.isArray(q) ? q[0] : q;
+  }
+
+  if (typeof token === 'string') {
+    token = token.trim();
+    if (token.startsWith('Bearer ')) token = token.slice('Bearer '.length).trim();
+    if ((token.startsWith('"') && token.endsWith('"')) || (token.startsWith("'") && token.endsWith("'"))) {
+      token = token.slice(1, -1);
+    }
   }
 
   if (!token) {
