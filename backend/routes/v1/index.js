@@ -1,5 +1,8 @@
 const router = require('express').Router();
 
+// Store route loading errors for debugging
+const routeErrors = [];
+
 /**
  * Safely require a router with error handling
  * @param {string} path - Router path
@@ -16,17 +19,53 @@ const safeRequire = (path, mountPath) => {
     console.log(`[ROUTES] ✅ Mounted: ${mountPath || '/'}`);
   } catch (e) {
     console.error(`[ROUTES] ❌ Failed to load ${path}: ${e.message}`);
+    routeErrors.push({ path, mountPath, error: e.message, stack: e.stack });
+    
     // Create placeholder that returns 503
     if (mountPath && mountPath !== '/') {
         router.use(mountPath, (req, res) => {
             res.status(503).json({ 
                 message: `Service ${mountPath} temporarily unavailable`,
-                error: e.message 
+                error: e.message,
+                details: 'Check /api/v1/debug/errors for more info'
             });
         });
     }
   }
 };
+
+// Debug endpoints
+router.get('/debug/errors', (req, res) => {
+    res.json({
+        status: 'success',
+        errors: routeErrors
+    });
+});
+
+router.get('/debug/routes', (req, res) => {
+    const routes = [];
+    
+    // Helper to extract routes from stack
+    const extractRoutes = (stack, prefix = '') => {
+        stack.forEach(layer => {
+            if (layer.route) {
+                const path = layer.route.path;
+                const methods = Object.keys(layer.route.methods).join(', ').toUpperCase();
+                routes.push({ path: prefix + path, methods });
+            } else if (layer.name === 'router' && layer.handle.stack) {
+                // This is a mounted router
+                // The path is in layer.regexp, but it's a regex. 
+                // We can try to guess the prefix from the safeRequire calls or just list it as is.
+                // For simplicity, we just recurse.
+                // Note: Express doesn't easily expose the mount path of a router middleware in the stack.
+                extractRoutes(layer.handle.stack, prefix);
+            }
+        });
+    };
+
+    extractRoutes(router.stack);
+    res.json({ count: routes.length, routes });
+});
 
 // ============ ACADEMIC ROUTES ============
 safeRequire('./academic/academicYear.router', '/');

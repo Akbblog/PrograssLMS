@@ -49,6 +49,6 @@ const teacherAttendanceSchema = new mongoose.Schema(
 // Prevent duplicate attendance for same school on same date
 teacherAttendanceSchema.index({ schoolId: 1, date: 1 }, { unique: true });
 
-const TeacherAttendance = mongoose.model("TeacherAttendance", teacherAttendanceSchema);
+const TeacherAttendance = mongoose.models.TeacherAttendance || mongoose.model("TeacherAttendance", teacherAttendanceSchema);
 
 module.exports = TeacherAttendance;
