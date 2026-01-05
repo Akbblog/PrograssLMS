@@ -82,5 +82,14 @@ const staffProfileSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+// Add text index for search fields
+staffProfileSchema.index({
+  'personalInfo.firstName': 'text',
+  'personalInfo.lastName': 'text',
+  'contactInfo.email': 'text',
+  'employmentInfo.department': 'text',
+  'employmentInfo.designation': 'text'
+});
+
 const StaffProfile = mongoose.model('StaffProfile', staffProfileSchema);
 module.exports = StaffProfile;

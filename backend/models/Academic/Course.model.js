@@ -111,7 +111,7 @@ const CourseSchema = new mongoose.Schema(
 );
 
 // Indexes
-CourseSchema.index({ title: "text", description: "text" });
+CourseSchema.index({ title: "text", description: "text", instructor: "text" });
 CourseSchema.index({ status: 1, schoolId: 1 });
 
 const Course = mongoose.models.Course || mongoose.model("Course", CourseSchema);

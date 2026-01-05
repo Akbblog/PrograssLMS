@@ -40,6 +40,11 @@ const subjectSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+  // Add text index for search fields
+  subjectSchema.index({
+    name: 'text',
+    code: 'text'
+  });
 
 const Subject = mongoose.models.Subject || mongoose.model("Subject", subjectSchema);
 

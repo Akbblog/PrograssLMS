@@ -26,5 +26,12 @@ const routeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Add text index for search fields
+routeSchema.index({
+  routeName: 'text',
+  routeCode: 'text',
+  vehicle: 'text'
+});
+
 const Route = mongoose.model('Route', routeSchema);
 module.exports = Route;

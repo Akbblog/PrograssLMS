@@ -18,6 +18,11 @@ const ClassLevelSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+     // Add text index for search fields
+     ClassLevelSchema.index({
+       name: 'text',
+       section: 'text'
+     });
     createdBy: {
       type: ObjectId,
       ref: "Admin",

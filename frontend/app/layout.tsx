@@ -30,9 +30,26 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
-        <Toaster position="top-right" richColors />
+         {children}
+         <Toaster position="top-right" richColors />
+         {/* Global Search Modal */}
+         <div id="global-search-modal">
+           {/* @ts-ignore */}
+           {require('../components/search/GlobalSearchModal').GlobalSearchModal()}
+         </div>
       </body>
     </html>
   );
 }
+  import React, { useEffect } from 'react';
+  import { useSearchStore } from '../store/searchStore';
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        useSearchStore.getState().open();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);

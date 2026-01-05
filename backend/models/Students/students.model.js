@@ -53,6 +53,13 @@ const studentSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+     // Add text index for search fields
+     studentSchema.index({
+       name: 'text',
+       email: 'text',
+       studentId: 'text',
+       phone: 'text'
+     });
     currentClassLevels: [
       {
         type: ObjectId,
