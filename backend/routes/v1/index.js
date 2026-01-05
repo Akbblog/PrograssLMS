@@ -3,36 +3,8 @@ const router = require('express').Router();
 // Store route loading errors for debugging
 const routeErrors = [];
 
-/**
- * Safely require a router with error handling
- * @param {string} path - Router path
- * @param {string} mountPath - Mount path for the router
- */
-const safeRequire = (path, mountPath) => {
-  try {
-    const routerModule = require(path);
-    if (mountPath === '/') {
-        router.use(routerModule);
-    } else {
-        router.use(mountPath, routerModule);
-    }
-    console.log(`[ROUTES] ✅ Mounted: ${mountPath || '/'}`);
-  } catch (e) {
-    console.error(`[ROUTES] ❌ Failed to load ${path}: ${e.message}`);
-    routeErrors.push({ path, mountPath, error: e.message, stack: e.stack });
-    
-    // Create placeholder that returns 503
-    if (mountPath && mountPath !== '/') {
-        router.use(mountPath, (req, res) => {
-            res.status(503).json({ 
-                message: `Service ${mountPath} temporarily unavailable`,
-                error: e.message,
-                details: 'Check /api/v1/debug/errors for more info'
-            });
-        });
-    }
-  }
-};
+// NOTE: Avoid dynamic `require(pathVar)` in serverless.
+// Vercel’s bundler may not include those files, causing runtime 503s.
 
 // Debug endpoints
 router.get('/debug/errors', (req, res) => {
@@ -310,25 +282,116 @@ try {
 }
 
 // ============ LIBRARY ROUTES ============
-safeRequire('./library/library.router', '/library');
+try {
+    router.use('/library', require('./library/library.router'));
+    console.log('[ROUTES] ✅ Mounted: /library (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load library.router:', e);
+    routeErrors.push({ path: './library/library.router', mountPath: '/library', error: e.message, stack: e.stack });
+    router.use('/library', (req, res) => {
+        res.status(503).json({
+            message: 'Service /library temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 // ============ TRANSPORT ROUTES ============
-safeRequire('./transport/transport.router', '/transport');
+try {
+    router.use('/transport', require('./transport/transport.router'));
+    console.log('[ROUTES] ✅ Mounted: /transport (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load transport.router:', e);
+    routeErrors.push({ path: './transport/transport.router', mountPath: '/transport', error: e.message, stack: e.stack });
+    router.use('/transport', (req, res) => {
+        res.status(503).json({
+            message: 'Service /transport temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 // ============ ATTENDANCE (QR) ROUTES ============
-safeRequire('./attendance/attendance.router', '/attendance');
+try {
+    router.use('/attendance', require('./attendance/attendance.router'));
+    console.log('[ROUTES] ✅ Mounted: /attendance (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load attendance.router:', e);
+    routeErrors.push({ path: './attendance/attendance.router', mountPath: '/attendance', error: e.message, stack: e.stack });
+    router.use('/attendance', (req, res) => {
+        res.status(503).json({
+            message: 'Service /attendance temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 // ============ HR ROUTES ============
-safeRequire('./hr/hr.router', '/hr');
+try {
+    router.use('/hr', require('./hr/hr.router'));
+    console.log('[ROUTES] ✅ Mounted: /hr (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load hr.router:', e);
+    routeErrors.push({ path: './hr/hr.router', mountPath: '/hr', error: e.message, stack: e.stack });
+    router.use('/hr', (req, res) => {
+        res.status(503).json({
+            message: 'Service /hr temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 // ============ DOCUMENT ROUTES ============
-safeRequire('./documents/documents.router', '/documents');
+try {
+    router.use('/documents', require('./documents/documents.router'));
+    console.log('[ROUTES] ✅ Mounted: /documents (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load documents.router:', e);
+    routeErrors.push({ path: './documents/documents.router', mountPath: '/documents', error: e.message, stack: e.stack });
+    router.use('/documents', (req, res) => {
+        res.status(503).json({
+            message: 'Service /documents temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 // ============ SUPERADMIN ROUTES ============
-safeRequire('./superadmin/school.router', '/superadmin');
+try {
+    router.use('/superadmin', require('./superadmin/school.router'));
+    console.log('[ROUTES] ✅ Mounted: /superadmin (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load superadmin router:', e);
+    routeErrors.push({ path: './superadmin/school.router', mountPath: '/superadmin', error: e.message, stack: e.stack });
+    router.use('/superadmin', (req, res) => {
+        res.status(503).json({
+            message: 'Service /superadmin temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 // ============ CONTACT ROUTES ============
-safeRequire('./contact.router', '/contact');
+try {
+    router.use('/contact', require('./contact.router'));
+    console.log('[ROUTES] ✅ Mounted: /contact (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load contact.router:', e);
+    routeErrors.push({ path: './contact.router', mountPath: '/contact', error: e.message, stack: e.stack });
+    router.use('/contact', (req, res) => {
+        res.status(503).json({
+            message: 'Service /contact temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
 
 console.log('[ROUTES] Route initialization complete');
 module.exports = router;

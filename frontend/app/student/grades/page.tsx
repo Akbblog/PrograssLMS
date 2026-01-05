@@ -176,6 +176,7 @@ export default function StudentGradesPage() {
 
                             {Object.entries(performance.subjectPerformance).map(([subject, data]: [string, any]) => {
                                 const subjectAvg = data.totalWeight > 0 ? (data.totalScore / data.totalWeight) * 100 : 0;
+                                const gradeRows = unwrapArray(data, "grades");
 
                                 return (
                                     <TabsContent key={subject} value={subject} className="mt-0">
@@ -206,7 +207,7 @@ export default function StudentGradesPage() {
                                                             </TableRow>
                                                         </TableHeader>
                                                         <TableBody>
-                                                            {data.grades.map((grade: any) => (
+                                                            {gradeRows.map((grade: any) => (
                                                                 <TableRow key={grade._id}>
                                                                     <TableCell className="capitalize py-3">
                                                                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary uppercase">

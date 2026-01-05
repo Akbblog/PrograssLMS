@@ -4,7 +4,6 @@ require("dotenv").config();
 require("colors");
 // database connection
 const dbConnect = require("./config/dbConnect");
-dbConnect();
 // ports
 const port = process.env.PORT || 3001;
 // initialize server
@@ -20,6 +19,18 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-server.listen(port, () => {
-  console.log(` server is running on port : ${port} `.black.bgGreen.bold);
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err);
+  process.exit(1);
+});
+
+(async () => {
+  await dbConnect();
+
+  server.listen(port, () => {
+    console.log(` server is running on port : ${port} `.black.bgGreen.bold);
+  });
+})().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
