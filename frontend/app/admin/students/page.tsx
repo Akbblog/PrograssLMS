@@ -206,15 +206,67 @@ export default function AdminStudentsPage() {
             ]);
 
             // Handle both paginated and non-paginated responses
-            const studentsData = (studentsRes as any).data;
-            const studentsList = studentsData && studentsData.students ? studentsData.students : (studentsData || []);
+            const studentsPayload = (studentsRes as any)?.data;
+            const studentsList = Array.isArray(studentsPayload)
+                ? studentsPayload
+                : Array.isArray(studentsPayload?.students)
+                    ? studentsPayload.students
+                    : Array.isArray(studentsPayload?.data)
+                        ? studentsPayload.data
+                        : Array.isArray(studentsPayload?.data?.students)
+                            ? studentsPayload.data.students
+                            : [];
             setStudents(studentsList);
-            setSubjects((subjectsRes as any).data || []);
-            setClasses((classesRes as any).data || []);
-            setYears((yearsRes as any).data || []);
-            setTerms((termsRes as any).data || []);
 
-            const currentYear = ((yearsRes as any).data || []).find((y: any) => y.isCurrent);
+            const subjectsPayload = (subjectsRes as any)?.data;
+            const subjectsList = Array.isArray(subjectsPayload)
+                ? subjectsPayload
+                : Array.isArray(subjectsPayload?.subjects)
+                    ? subjectsPayload.subjects
+                    : Array.isArray(subjectsPayload?.data)
+                        ? subjectsPayload.data
+                        : Array.isArray(subjectsPayload?.data?.subjects)
+                            ? subjectsPayload.data.subjects
+                            : [];
+            setSubjects(subjectsList);
+
+            const classesPayload = (classesRes as any)?.data;
+            const classesList = Array.isArray(classesPayload)
+                ? classesPayload
+                : Array.isArray(classesPayload?.classes)
+                    ? classesPayload.classes
+                    : Array.isArray(classesPayload?.data)
+                        ? classesPayload.data
+                        : Array.isArray(classesPayload?.data?.classes)
+                            ? classesPayload.data.classes
+                            : [];
+            setClasses(classesList);
+
+            const yearsPayload = (yearsRes as any)?.data;
+            const yearsList = Array.isArray(yearsPayload)
+                ? yearsPayload
+                : Array.isArray(yearsPayload?.years)
+                    ? yearsPayload.years
+                    : Array.isArray(yearsPayload?.data)
+                        ? yearsPayload.data
+                        : Array.isArray(yearsPayload?.data?.years)
+                            ? yearsPayload.data.years
+                            : [];
+            setYears(yearsList);
+
+            const termsPayload = (termsRes as any)?.data;
+            const termsList = Array.isArray(termsPayload)
+                ? termsPayload
+                : Array.isArray(termsPayload?.terms)
+                    ? termsPayload.terms
+                    : Array.isArray(termsPayload?.data)
+                        ? termsPayload.data
+                        : Array.isArray(termsPayload?.data?.terms)
+                            ? termsPayload.data.terms
+                            : [];
+            setTerms(termsList);
+
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
             if (currentYear) setEnrollmentForm(prev => ({ ...prev, academicYear: currentYear._id }));
         } catch (error: any) {
             toast.error(error.message || "Failed to load data");

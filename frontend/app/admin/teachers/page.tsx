@@ -210,9 +210,18 @@ export default function AdminTeachersPage() {
     const fetchTeachers = async () => {
         try {
             const response = await adminAPI.getTeachers();
-            const data = (response as any).data || [];
-            setTeachers(data);
-            setFilteredTeachers(data);
+            const payload = (response as any)?.data;
+            const teachersList = Array.isArray(payload)
+                ? payload
+                : Array.isArray(payload?.teachers)
+                    ? payload.teachers
+                    : Array.isArray(payload?.data)
+                        ? payload.data
+                        : Array.isArray(payload?.data?.teachers)
+                            ? payload.data.teachers
+                            : [];
+            setTeachers(teachersList);
+            setFilteredTeachers(teachersList);
         } catch (error: any) {
             toast.error(error.message || "Failed to load teachers");
         } finally {

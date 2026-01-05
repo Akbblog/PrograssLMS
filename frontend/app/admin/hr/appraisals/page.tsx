@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function AppraisalsPage(){
   const [items, setItems] = useState<any[]>([])
-  useEffect(()=>{ fetch('/api/v1/hr/appraisals').then(r=>r.json()).then(d=>setItems(d.data||[])).catch(()=>{}) },[])
+  useEffect(()=>{ fetch('/api/v1/hr/appraisals').then(r=>r.json()).then(d=>setItems(unwrapArray(d))).catch(()=>{}) },[])
   return (
     <AdminPageLayout title="Appraisals" description="Manage staff appraisals">
       <div className="p-6 max-w-4xl mx-auto">

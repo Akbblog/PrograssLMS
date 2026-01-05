@@ -6,6 +6,7 @@ import { assignmentAPI, attendanceAPI } from "@/lib/api/endpoints";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Calendar as CalendarIcon, CheckCircle, Clock, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function StudentCalendarPage() {
     const user = useAuthStore((state) => state.user);
@@ -29,8 +30,8 @@ export default function StudentCalendarPage() {
                 attendanceAPI.getStudentAttendance(userId),
             ]);
 
-            setAssignments((assignmentsRes as any).data || []);
-            setAttendance((attendanceRes as any).data || []);
+            setAssignments(unwrapArray((assignmentsRes as any)?.data, "assignments"));
+            setAttendance(unwrapArray((attendanceRes as any)?.data, "attendance"));
         } catch (error: any) {
             toast.error(error.message || "Failed to load calendar data");
         } finally {

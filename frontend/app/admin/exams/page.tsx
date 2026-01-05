@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Plus, FileText, Calendar, Clock, Edit } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { unwrapArray } from "@/lib/utils";
 
 export default function AdminExamsPage() {
     const router = useRouter();
@@ -21,7 +22,7 @@ export default function AdminExamsPage() {
         const fetchExams = async () => {
             try {
                 const res = await examAPI.getAll();
-                setExams((res as any).data || []);
+                setExams(unwrapArray((res as any)?.data, "exams"));
             } catch (error) {
                 console.error("Failed to fetch exams:", error);
                 toast.error("Failed to load exams");

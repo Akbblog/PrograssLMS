@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, FileText, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function StudentAssignmentsPage() {
     const user = useAuthStore((state) => state.user);
@@ -29,7 +30,7 @@ export default function StudentAssignmentsPage() {
         try {
             if (!userId) return;
             const response = await assignmentAPI.getAssignments({ studentId: userId });
-            setAssignments((response as any).data || []);
+            setAssignments(unwrapArray((response as any)?.data, "assignments"));
         } catch (error: any) {
             toast.error(error.message || "Failed to load assignments");
         } finally {

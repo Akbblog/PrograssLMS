@@ -1,9 +1,9 @@
-const School = require("../../models/School.model");
-const Admin = require("../../models/Staff/admin.model");
+const School = require("../../models/School.model.js");
+const Admin = require("../../models/Staff/admin.model.js");
 const bcrypt = require("bcryptjs");
 const responseStatus = require("../../handlers/responseStatus.handler.js");
-const eventBus = require("../../utils/eventBus");
-const EVENTS = require("../../utils/events");
+const eventBus = require("../../utils/eventBus.js");
+const EVENTS = require("../../utils/events.js");
 
 /**
  * Create a school and primary admin

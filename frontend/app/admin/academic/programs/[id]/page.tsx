@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { academicAPI } from "@/lib/api/endpoints";
+import { unwrapArray } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ export default function ProgramDetailPage() {
     const fetchProgramData = useCallback(async () => {
         try {
             const res: any = await academicAPI.getPrograms();
-            const allPrograms = res.data || [];
+            const allPrograms = unwrapArray(res?.data, "programs");
             const program = allPrograms.find((p: any) => p._id === programId);
             if (program) {
                 setProgramData(program);

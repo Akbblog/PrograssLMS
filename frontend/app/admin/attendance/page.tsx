@@ -12,6 +12,7 @@ import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { toast } from "sonner";
 import Icon from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
+import { unwrapArray } from "@/lib/utils";
 
 export default function AdminAttendancePage() {
     const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ export default function AdminAttendancePage() {
     const fetchInitialData = async () => {
         try {
             const classesRes: any = await academicAPI.getClasses();
-            const classesData = classesRes.data || [];
+            const classesData = unwrapArray(classesRes?.data, "classes");
             setClasses(classesData);
             if (classesData.length > 0) {
                 setSelectedClass(classesData[0]._id);
@@ -45,7 +46,7 @@ export default function AdminAttendancePage() {
         try {
             // This endpoint might need to be adjusted based on actual backend implementation
             const res: any = await attendanceAPI.getAttendance(selectedClass, selectedDate);
-            setAttendanceData(res.data || []);
+            setAttendanceData(unwrapArray(res?.data, "attendance"));
         } catch (error) {
             toast.error("No attendance records found for this date");
             setAttendanceData([]);

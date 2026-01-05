@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function QRCodesPage() {
   const [qrs, setQrs] = useState<any[]>([])
 
   useEffect(() => {
-    fetch('/api/v1/attendance/recent-scans').then(r=>r.json()).then(d=>setQrs(d.data || []))
+    fetch('/api/v1/attendance/recent-scans').then(r=>r.json()).then(d=>setQrs(unwrapArray(d, 'qrs')))
   }, [])
 
   return (

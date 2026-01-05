@@ -5,6 +5,7 @@ import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { unwrapArray } from '@/lib/utils'
 
 export default function BooksPage() {
   const [books, setBooks] = useState<any[]>([])
@@ -13,7 +14,7 @@ export default function BooksPage() {
   const fetchBooks = () => {
     fetch('/api/v1/library/books')
       .then(r => r.json())
-      .then(data => setBooks(data.data || []))
+      .then(data => setBooks(unwrapArray(data, 'books')))
       .catch(() => {})
   }
 

@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function TeacherAttendancePage() {
     const user = useAuthStore((state) => state.user);
@@ -57,11 +58,11 @@ export default function TeacherAttendancePage() {
                 adminAPI.getAcademicTerms(),
             ]);
 
-            setClasses((classesRes as any).data || []);
+            setClasses(unwrapArray((classesRes as any)?.data, "classes"));
 
             // Set current year/term (logic to find current one)
-            const years = (yearsRes as any).data || [];
-            const terms = (termsRes as any).data || [];
+            const years = unwrapArray((yearsRes as any)?.data, "years");
+            const terms = unwrapArray((termsRes as any)?.data, "terms");
             const currentYear = years.find((y: any) => y.isCurrent) || years[0];
             const currentTerm = terms.find((t: any) => t.isCurrent) || terms[0]; // Assuming isCurrent flag exists or pick first
 
@@ -87,7 +88,7 @@ export default function TeacherAttendancePage() {
         try {
             // Fetch students for the class
             const studentsRes = await academicAPI.getStudentsByClass(selectedClass);
-            const studentsList = (studentsRes as any).data || [];
+            const studentsList = unwrapArray((studentsRes as any)?.data, "students");
             setStudents(studentsList);
 
             // Fetch existing attendance for the date

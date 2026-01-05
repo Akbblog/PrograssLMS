@@ -36,6 +36,7 @@ import {
     ShieldAlert
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 // Native Select Component
 function NativeSelect({ value, onChange, options, placeholder, disabled = false }: {
@@ -127,8 +128,8 @@ export default function EditStudentPage() {
                 return;
             }
 
-            setClasses((classesRes as any).data || []);
-            setYears((yearsRes as any).data || []);
+            setClasses(unwrapArray((classesRes as any)?.data, "classes"));
+            setYears(unwrapArray((yearsRes as any)?.data, "years"));
 
             setFormData({
                 name: student.name || "",

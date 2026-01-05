@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Loader2, Plus, Settings2, Trash2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { unwrapArray } from "@/lib/utils";
 
 export default function GradingPolicyPage() {
     const [policies, setPolicies] = useState<any[]>([]);
@@ -50,10 +51,12 @@ export default function GradingPolicyPage() {
                 gradingPolicyAPI.getAll(),
                 adminAPI.getAcademicYears()
             ]);
-            setPolicies((policiesRes as any).data || []);
-            setYears((yearsRes as any).data || []);
+            const policiesList = unwrapArray((policiesRes as any)?.data, "policies");
+            const yearsList = unwrapArray((yearsRes as any)?.data, "years");
+            setPolicies(policiesList);
+            setYears(yearsList);
 
-            const currentYear = ((yearsRes as any).data || []).find((y: any) => y.isCurrent);
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
             if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
         } catch (error: any) {
             toast.error(error.message || "Failed to load data");

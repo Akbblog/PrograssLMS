@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<any[]>([])
@@ -11,7 +12,7 @@ export default function RoutesPage() {
   useEffect(() => {
     fetch('/api/v1/transport/routes')
       .then(r => r.json())
-      .then(d => setRoutes(d.data || []))
+      .then(d => setRoutes(unwrapArray(d, 'routes')))
       .catch(() => {})
   }, [])
 

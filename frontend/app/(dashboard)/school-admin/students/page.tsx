@@ -21,7 +21,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Plus, MoreHorizontal } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+import { formatDate, unwrapArray } from "@/lib/utils"
 import { adminAPI } from '@/lib/api/endpoints'
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -42,8 +42,7 @@ export default function StudentsPage() {
             setLoading(true)
             try {
                 const res: any = await adminAPI.getStudents()
-                // endpoints return data shape from Axios interceptor; normalize to an array
-                const data = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : (res?.students || res?.data || []))
+                const data = unwrapArray(res, "students")
                 setStudents(data)
             } catch (err) {
                 console.warn('adminAPI.getStudents failed, falling back to mock data', err)

@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function LeavesPage(){
   const [leaves, setLeaves] = useState<any[]>([])
-  useEffect(()=>{ fetch('/api/v1/hr/leaves').then(r=>r.json()).then(d=>setLeaves(d.data||[])).catch(()=>{}) },[])
+  useEffect(()=>{ fetch('/api/v1/hr/leaves').then(r=>r.json()).then(d=>setLeaves(unwrapArray(d))).catch(()=>{}) },[])
   return (
     <AdminPageLayout title="Leaves" description="Apply and manage leaves">
       <div className="p-6 max-w-4xl mx-auto">

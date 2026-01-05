@@ -37,6 +37,7 @@ import {
     Plus,
     X
 } from "lucide-react";
+import { unwrapArray } from "@/lib/utils";
 
 interface TeacherFormData {
     name: string;
@@ -191,13 +192,18 @@ export default function CreateTeacherPage() {
                 adminAPI.getAcademicYears(),
                 adminAPI.getAcademicTerms(),
             ]);
-            setClasses((classesData as any).data || []);
-            setSubjects((subjectsData as any).data || []);
-            setAcademicYears((yearsData as any).data || []);
-            setAcademicTerms((termsData as any).data || []);
+            const classesList = unwrapArray((classesData as any)?.data, "classes");
+            const subjectsList = unwrapArray((subjectsData as any)?.data, "subjects");
+            const yearsList = unwrapArray((yearsData as any)?.data, "years");
+            const termsList = unwrapArray((termsData as any)?.data, "terms");
+
+            setClasses(classesList);
+            setSubjects(subjectsList);
+            setAcademicYears(yearsList);
+            setAcademicTerms(termsList);
 
             // Set default academic year to current
-            const currentYear = ((yearsData as any).data || []).find((y: any) => y.isCurrent);
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
             if (currentYear) {
                 setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
             }

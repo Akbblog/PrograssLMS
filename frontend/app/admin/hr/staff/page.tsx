@@ -4,10 +4,11 @@ import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function StaffPage(){
   const [staff, setStaff] = useState<any[]>([])
-  useEffect(()=>{ fetch('/api/v1/hr/staff').then(r=>r.json()).then(d=>setStaff(d.data||[])).catch(()=>{}) },[])
+  useEffect(()=>{ fetch('/api/v1/hr/staff').then(r=>r.json()).then(d=>setStaff(unwrapArray(d))).catch(()=>{}) },[])
   return (
     <AdminPageLayout title="Staff Directory" description="Manage staff profiles">
       <div className="p-6">

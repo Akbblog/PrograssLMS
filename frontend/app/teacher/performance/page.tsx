@@ -9,6 +9,7 @@ import { Loader2, Users, TrendingUp, AlertCircle, Award, BarChart3 } from "lucid
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { unwrapArray } from "@/lib/utils";
 
 export default function TeacherPerformancePage() {
     const [classes, setClasses] = useState<any[]>([]);
@@ -44,13 +45,18 @@ export default function TeacherPerformancePage() {
                 adminAPI.getAcademicTerms(),
             ]);
 
-            setClasses((classesRes as any).data || []);
-            setSubjects((subjectsRes as any).data || []);
-            setYears((yearsRes as any).data || []);
-            setTerms((termsRes as any).data || []);
+            const classesList = unwrapArray((classesRes as any)?.data, "classes");
+            const subjectsList = unwrapArray((subjectsRes as any)?.data, "subjects");
+            const yearsList = unwrapArray((yearsRes as any)?.data, "years");
+            const termsList = unwrapArray((termsRes as any)?.data, "terms");
 
-            const currentYear = ((yearsRes as any).data || []).find((y: any) => y.isCurrent);
-            const currentTerm = ((termsRes as any).data || []).find((t: any) => t.isCurrent);
+            setClasses(classesList);
+            setSubjects(subjectsList);
+            setYears(yearsList);
+            setTerms(termsList);
+
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
+            const currentTerm = termsList.find((t: any) => t.isCurrent);
 
             if (currentYear) setSelectedYear(currentYear._id);
             if (currentTerm) setSelectedTerm(currentTerm._id);

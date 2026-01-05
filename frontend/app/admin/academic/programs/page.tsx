@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { academicAPI } from "@/lib/api/endpoints";
+import { unwrapArray } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +31,7 @@ export default function AdminProgramsPage() {
     const fetchPrograms = async () => {
         try {
             const res: any = await academicAPI.getPrograms();
-            setPrograms(res.data || []);
+            setPrograms(unwrapArray(res?.data, "programs"));
         } catch (error) {
             toast.error("Failed to load programs");
         } finally {

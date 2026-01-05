@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, Plus, DollarSign, CreditCard, FileText, TrendingUp, Landmark, Calendar, PieChart, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export default function AdminFinancePage() {
@@ -58,12 +59,16 @@ export default function AdminFinancePage() {
                 academicAPI.getAcademicYears(),
             ]);
 
-            setFeeStructures(feesRes.data || []);
-            setClasses(classesRes.data || []);
-            setYears(yearsRes.data || []);
+            const feeStructures = unwrapArray(feesRes?.data, "feeStructures");
+            const classes = unwrapArray(classesRes?.data, "classes");
+            const years = unwrapArray(yearsRes?.data, "years");
 
-            if (yearsRes.data.length > 0) {
-                const active = yearsRes.data.find((y: any) => y.status === "active") || yearsRes.data[0];
+            setFeeStructures(feeStructures);
+            setClasses(classes);
+            setYears(years);
+
+            if (years.length > 0) {
+                const active = years.find((y: any) => y.status === "active") || years[0];
                 setSelectedYear(active._id);
             }
         } catch (error: any) {

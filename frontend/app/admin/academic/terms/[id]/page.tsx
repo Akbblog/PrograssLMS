@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminAPI } from "@/lib/api/endpoints";
+import { unwrapArray } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ export default function AcademicTermDetailPage() {
     const fetchTermData = useCallback(async () => {
         try {
             const res: any = await adminAPI.getAcademicTerms();
-            const allTerms = res.data || [];
+            const allTerms = unwrapArray(res?.data, "terms");
             const term = allTerms.find((t: any) => t._id === termId);
             if (term) {
                 setTermData(term);

@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Loader2, Plus, ArrowLeft, Save, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export default function CreateExamPage() {
@@ -62,11 +63,11 @@ export default function CreateExamPage() {
                     academicAPI.getClasses()
                 ]);
 
-                setSubjects(subjRes.data || []);
-                setPrograms(progRes.data || []);
-                setTerms(termRes.data || []);
-                setYears(yearRes.data || []);
-                setClasses(classRes.data || []);
+                setSubjects(unwrapArray(subjRes?.data, "subjects"));
+                setPrograms(unwrapArray(progRes?.data, "programs"));
+                setTerms(unwrapArray(termRes?.data, "terms"));
+                setYears(unwrapArray(yearRes?.data, "years"));
+                setClasses(unwrapArray(classRes?.data, "classes"));
             } catch (error) {
                 console.error("Failed to load dependencies:", error);
                 toast.error("Failed to load form data");
@@ -89,7 +90,7 @@ export default function CreateExamPage() {
             // The API might need query params. Assuming getAll supports basic filtering or returns all.
             // If backend supports filtering: questionAPI.getAll({ subject: formData.subject })
             const res = await questionAPI.getAll();
-            const allQuestions = (res as any).data || [];
+            const allQuestions = unwrapArray((res as any)?.data, "questions");
 
             // Filter client-side if API doesn't support generic filtering yet
             // Assuming question object has a populated 'subject' or subject ID

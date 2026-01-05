@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminAPI } from "@/lib/api/endpoints";
+import { unwrapArray } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,7 @@ export default function AcademicYearDetailPage() {
     const fetchYearData = useCallback(async () => {
         try {
             const res: any = await adminAPI.getAcademicYears();
-            const allYears = res.data || [];
+            const allYears = unwrapArray(res?.data, "years");
             const year = allYears.find((y: any) => y._id === yearId);
             if (year) {
                 setYearData(year);

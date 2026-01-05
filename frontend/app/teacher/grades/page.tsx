@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader2, Plus, Award } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function TeacherGradesPage() {
     const user = useAuthStore((state) => state.user);
@@ -67,12 +68,17 @@ export default function TeacherGradesPage() {
                 adminAPI.getAcademicTerms(),
             ]);
 
-            setClasses((classesRes as any).data || []);
-            setSubjects((subjectsRes as any).data || []);
-            setYears((yearsRes as any).data || []);
-            setTerms((termsRes as any).data || []);
+            const classesList = unwrapArray((classesRes as any)?.data, "classes");
+            const subjectsList = unwrapArray((subjectsRes as any)?.data, "subjects");
+            const yearsList = unwrapArray((yearsRes as any)?.data, "years");
+            const termsList = unwrapArray((termsRes as any)?.data, "terms");
 
-            const currentYear = ((yearsRes as any).data || []).find((y: any) => y.isCurrent);
+            setClasses(classesList);
+            setSubjects(subjectsList);
+            setYears(yearsList);
+            setTerms(termsList);
+
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
             if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
         } catch (error: any) {
             toast.error(error.message || "Failed to load data");
@@ -84,7 +90,7 @@ export default function TeacherGradesPage() {
     const fetchStudents = async () => {
         try {
             const response = await academicAPI.getStudentsByClass(selectedClass);
-            setStudents((response as any).data || []);
+            setStudents(unwrapArray((response as any)?.data, "students"));
         } catch (error: any) {
             console.error("Failed to fetch students:", error);
         }
@@ -96,7 +102,7 @@ export default function TeacherGradesPage() {
                 classLevel: selectedClass,
                 subject: selectedSubject,
             });
-            setGrades((response as any).data || []);
+            setGrades(unwrapArray((response as any)?.data, "grades"));
         } catch (error: any) {
             console.error("Failed to fetch grades:", error);
         }

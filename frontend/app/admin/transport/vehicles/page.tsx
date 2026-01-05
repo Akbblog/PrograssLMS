@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<any[]>([])
@@ -11,7 +12,7 @@ export default function VehiclesPage() {
   useEffect(() => {
     fetch('/api/v1/transport/vehicles')
       .then(r => r.json())
-      .then(d => setVehicles(d.data || []))
+      .then(d => setVehicles(unwrapArray(d, 'vehicles')))
       .catch(() => {})
   }, [])
 

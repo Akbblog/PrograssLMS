@@ -30,6 +30,7 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs"
 import { toast } from "sonner"
+import { unwrapArray } from "@/lib/utils"
 import {
     Plus,
     Library,
@@ -117,9 +118,9 @@ export default function LearningCoursesPage() {
                 academicAPI.getSubjects(),
                 academicAPI.getClasses()
             ])
-            setCourses((coursesRes as any).data || [])
-            setSubjects((subjectsRes as any).data || [])
-            setClasses((classesRes as any).data || [])
+            setCourses(unwrapArray((coursesRes as any)?.data, "courses"))
+            setSubjects(unwrapArray((subjectsRes as any)?.data, "subjects"))
+            setClasses(unwrapArray((classesRes as any)?.data, "classes"))
         } catch (error) {
             console.error("Failed to load data:", error)
             toast.error("Failed to load courses")

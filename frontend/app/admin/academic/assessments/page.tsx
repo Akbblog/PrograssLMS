@@ -31,6 +31,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
+import { unwrapArray } from "@/lib/utils"
 import {
     Plus,
     ClipboardCheck,
@@ -83,7 +84,7 @@ export default function AssessmentTypesPage() {
     const fetchAssessmentTypes = async () => {
         try {
             const res: any = await assessmentTypeAPI.getAll()
-            setAssessmentTypes(res.data || [])
+            setAssessmentTypes(unwrapArray(res?.data, "assessmentTypes"))
         } catch (error: any) {
             toast.error(error.message || "Failed to load assessment types")
         } finally {

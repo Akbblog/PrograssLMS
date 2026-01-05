@@ -26,6 +26,7 @@ import {
     X
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 interface ClassLevel {
     _id: string;
@@ -107,7 +108,7 @@ export default function ClassDetailPage() {
     const fetchAllSubjects = useCallback(async () => {
         try {
             const res: any = await academicAPI.getSubjects();
-            setAllSubjects(res.data || []);
+            setAllSubjects(unwrapArray(res?.data, "subjects"));
         } catch {
             setAllSubjects([]);
         }

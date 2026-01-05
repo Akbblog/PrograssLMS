@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Clock, Pencil, Trash2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 interface AcademicTerm {
     _id: string;
@@ -89,8 +90,8 @@ export default function AcademicTermsPage() {
                 adminAPI.getAcademicTerms(),
                 adminAPI.getAcademicYears()
             ]);
-            setTerms((termsRes as any).data || []);
-            setYears((yearsRes as any).data || []);
+            setTerms(unwrapArray((termsRes as any)?.data, "terms"));
+            setYears(unwrapArray((yearsRes as any)?.data, "years"));
         } catch (error) {
             console.error("Failed to load data:", error);
             toast.error("Failed to load academic terms");

@@ -1,6 +1,6 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
-const { hashPassword, isPassMatched } = require("../../handlers/passHash.handler");
-const generateToken = require("../../utils/tokenGenerator");
+const { hashPassword, isPassMatched } = require("../../handlers/passHash.handler.js");
+const generateToken = require("../../utils/tokenGenerator.js");
 
 /**
  * Super Admin Login Service
@@ -15,8 +15,9 @@ exports.superAdminLoginService = async (data, res) => {
 
     // For now, use hardcoded superadmin credentials from env (normalize email)
     // In production, store this in database
-    const SUPERADMIN_EMAIL = (process.env.SUPERADMIN_EMAIL || "superadmin@school.com").toLowerCase();
-    const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD || "superadmin123";
+    // Defaults match DEMO_CREDENTIALS.md; override via env in production.
+    const SUPERADMIN_EMAIL = (process.env.SUPERADMIN_EMAIL || "SA@progresslms.com").toLowerCase();
+    const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD || "Superpass";
     const SUPERADMIN_NAME = "System Administrator";
 
     // Normalize incoming email for comparison

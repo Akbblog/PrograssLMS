@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Plus, FileText, CheckCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function TeacherAssignmentsPage() {
     const user = useAuthStore((state) => state.user);
@@ -52,14 +53,20 @@ export default function TeacherAssignmentsPage() {
                 adminAPI.getAcademicTerms(),
             ]);
 
-            setAssignments((assignmentsRes as any).data || []);
-            setClasses((classesRes as any).data || []);
-            setSubjects((subjectsRes as any).data || []);
-            setYears((yearsRes as any).data || []);
-            setTerms((termsRes as any).data || []);
+            const assignmentsList = unwrapArray((assignmentsRes as any)?.data, "assignments");
+            const classesList = unwrapArray((classesRes as any)?.data, "classes");
+            const subjectsList = unwrapArray((subjectsRes as any)?.data, "subjects");
+            const yearsList = unwrapArray((yearsRes as any)?.data, "years");
+            const termsList = unwrapArray((termsRes as any)?.data, "terms");
+
+            setAssignments(assignmentsList);
+            setClasses(classesList);
+            setSubjects(subjectsList);
+            setYears(yearsList);
+            setTerms(termsList);
 
             // Set defaults
-            const currentYear = ((yearsRes as any).data || []).find((y: any) => y.isCurrent);
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
             if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
         } catch (error: any) {
             toast.error(error.message || "Failed to load data");

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 // Types
 interface ClassLevel {
@@ -148,11 +149,11 @@ export default function AdminAcademicPage() {
                 adminAPI.getAcademicTerms(),
             ]);
 
-            setClasses((classesRes as any).data || []);
-            setSubjects((subjectsRes as any).data || []);
-            setPrograms((programsRes as any).data || []);
-            setYears((yearsRes as any).data || []);
-            setTerms((termsRes as any).data || []);
+            setClasses(unwrapArray((classesRes as any)?.data, "classes"));
+            setSubjects(unwrapArray((subjectsRes as any)?.data, "subjects"));
+            setPrograms(unwrapArray((programsRes as any)?.data, "programs"));
+            setYears(unwrapArray((yearsRes as any)?.data, "years"));
+            setTerms(unwrapArray((termsRes as any)?.data, "terms"));
             if (showRefresh) toast.success("Data refreshed successfully");
         } catch (error: any) {
             toast.error(error.message || "Failed to load data");

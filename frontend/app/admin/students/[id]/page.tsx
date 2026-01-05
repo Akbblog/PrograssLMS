@@ -40,6 +40,7 @@ import {
     Contact
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 import Icon from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
 
@@ -78,11 +79,11 @@ export default function StudentProfilePage() {
             }
 
             if (enrollmentsRes.status === 'fulfilled') {
-                setEnrollments((enrollmentsRes.value as any).data || []);
+                setEnrollments(unwrapArray((enrollmentsRes.value as any)?.data, "enrollments"));
             }
 
             if (gradesRes.status === 'fulfilled') {
-                setGrades((gradesRes.value as any).data || []);
+                setGrades(unwrapArray((gradesRes.value as any)?.data, "grades"));
             }
 
             if (attendanceRes.status === 'fulfilled') {

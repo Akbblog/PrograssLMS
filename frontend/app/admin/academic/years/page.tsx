@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Plus, Calendar, Pencil, Trash2, Check } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 interface AcademicYear {
     _id: string;
@@ -42,7 +43,7 @@ export default function AcademicYearsPage() {
     const fetchYears = async () => {
         try {
             const res: any = await adminAPI.getAcademicYears();
-            setYears(res.data || []);
+            setYears(unwrapArray(res?.data, "years"));
         } catch (error) {
             console.error("Failed to load academic years:", error);
             toast.error("Failed to load academic years");

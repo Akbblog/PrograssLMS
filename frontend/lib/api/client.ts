@@ -20,7 +20,10 @@ apiClient.interceptors.request.use(
         if (typeof window !== 'undefined') {
             try {
                 const token = localStorage.getItem('token');
-                if (token) {
+                const url = (config.url || '').toString();
+                const isAuthRequest = url.includes('/login') || url.includes('/register');
+
+                if (token && !isAuthRequest) {
                     config.headers.Authorization = `Bearer ${token}`;
                 }
             } catch (e) {

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { unwrapArray } from '@/lib/utils'
 
 export default function AllocationsPage() {
   const [allocations, setAllocations] = useState<any[]>([])
@@ -11,7 +12,7 @@ export default function AllocationsPage() {
   useEffect(() => {
     fetch('/api/v1/transport/allocations')
       .then(r => r.json())
-      .then(d => setAllocations(d.data || []))
+      .then(d => setAllocations(unwrapArray(d, 'allocations')))
       .catch(() => {})
   }, [])
 

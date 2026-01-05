@@ -32,6 +32,7 @@ import {
     RefreshCw
 } from "lucide-react"
 import { roleAPI } from "@/lib/api/endpoints"
+import { unwrapArray } from "@/lib/utils"
 
 interface Permission {
     key: string
@@ -79,7 +80,7 @@ export default function RoleManagementPage() {
     const fetchRoles = async () => {
         try {
             const res: any = await roleAPI.getAll()
-            setRoles(res.data || [])
+            setRoles(unwrapArray(res?.data, "roles"))
         } catch (error) {
             console.error("Failed to load roles:", error)
             toast.error("Failed to load roles")

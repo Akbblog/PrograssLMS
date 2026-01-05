@@ -6,6 +6,7 @@ import { enrollmentAPI } from "@/lib/api/endpoints";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, BookOpen, Clock, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function StudentCoursesPage() {
     const user = useAuthStore((state) => state.user);
@@ -24,7 +25,7 @@ export default function StudentCoursesPage() {
         try {
             if (!userId) return;
             const response = await enrollmentAPI.getStudentEnrollments(userId);
-            setEnrollments((response as any).data || []);
+            setEnrollments(unwrapArray((response as any)?.data, "enrollments"));
         } catch (error: any) {
             toast.error(error.message || "Failed to load courses");
         } finally {

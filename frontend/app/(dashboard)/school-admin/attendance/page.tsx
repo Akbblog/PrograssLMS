@@ -11,6 +11,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Calendar } from 'lucide-react'
+import { unwrapArray } from '@/lib/utils'
 
 export default function AttendancePage() {
   const [summary, setSummary] = useState<any>({ totalPresent: 0, totalAbsent: 0 })
@@ -28,7 +29,7 @@ export default function AttendancePage() {
     try {
       // Use adminAPI to fetch classes then attendance summary per class
       const classesRes: any = await adminAPI.getClasses()
-      const classes = classesRes?.data || []
+      const classes = unwrapArray(classesRes?.data, 'classes')
       const recs = classes.map((c: any) => ({ id: c._id, className: c.name, present: c.studentCount ?? 0, absent: 0 }))
       setRecords(recs)
       setSummary({ totalPresent: recs.reduce((a:any,b:any)=>a+b.present,0), totalAbsent: 0 })

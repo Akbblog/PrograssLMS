@@ -21,7 +21,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Plus, MoreHorizontal, Phone } from "lucide-react"
-import { formatDate } from "@/lib/utils"
+import { formatDate, unwrapArray } from "@/lib/utils"
 import { adminAPI } from '@/lib/api/endpoints'
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -42,7 +42,7 @@ export default function TeachersPage() {
             setLoading(true)
             try {
                 const res: any = await adminAPI.getTeachers()
-                const data = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : (res?.teachers || res?.data || []))
+                const data = unwrapArray(res, "teachers")
                 setTeachers(data)
             } catch (err) {
                 console.warn('adminAPI.getTeachers failed, falling back to mock data', err)

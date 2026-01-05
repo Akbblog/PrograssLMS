@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 import {
     ArrowLeft,
     Loader2,
@@ -132,11 +133,14 @@ export default function CreateStudentPage() {
                 academicAPI.getClasses(),
                 adminAPI.getAcademicYears(),
             ]);
-            setClasses(classesData.data || []);
-            setAcademicYears(yearsData.data || []);
+            const classesList = unwrapArray((classesData as any)?.data, "classes");
+            const yearsList = unwrapArray((yearsData as any)?.data, "years");
+
+            setClasses(classesList);
+            setAcademicYears(yearsList);
 
             // Set default academic year to current
-            const currentYear = (yearsData.data || []).find((y: any) => y.isCurrent);
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
             if (currentYear) {
                 setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
             }

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import AdminPageLayout from '@/components/layouts/AdminPageLayout';
+import { unwrapArray } from "@/lib/utils";
 
 export default function AdminSchedulePage() {
     const [classes, setClasses] = useState<any[]>([]);
@@ -18,7 +19,7 @@ export default function AdminSchedulePage() {
         const fetchClasses = async () => {
             try {
                 const res: any = await academicAPI.getClasses();
-                setClasses(res.data || []);
+                setClasses(unwrapArray(res?.data, "classes"));
             } catch (error) {
                 toast.error("Failed to load classes");
             } finally {

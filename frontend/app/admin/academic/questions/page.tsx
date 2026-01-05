@@ -29,6 +29,7 @@ import {
     X
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 interface QuestionOption {
     text: string;
@@ -130,9 +131,9 @@ export default function QuestionBankPage() {
                 academicAPI.getSubjects(),
                 academicAPI.getClasses()
             ]);
-            setQuestions((questionsRes as any).data || []);
-            setSubjects((subjectsRes as any).data || []);
-            setClasses((classesRes as any).data || []);
+            setQuestions(unwrapArray((questionsRes as any)?.data, "questions"));
+            setSubjects(unwrapArray((subjectsRes as any)?.data, "subjects"));
+            setClasses(unwrapArray((classesRes as any)?.data, "classes"));
         } catch (error) {
             console.error("Failed to load data:", error);
             toast.error("Failed to load question bank data");

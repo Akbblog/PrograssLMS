@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, TrendingUp, Award, Calendar, Lightbulb, User } from "lucide-react";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+import { unwrapArray } from "@/lib/utils";
 
 export default function StudentGradesPage() {
     const user = useAuthStore((state) => state.user);
@@ -32,8 +33,11 @@ export default function StudentGradesPage() {
                 academicAPI.getAcademicTerms(),
             ]);
 
-            const currentYear = ((yearsRes as any).data || []).find((y: any) => y.isCurrent);
-            const currentTerm = ((termsRes as any).data || []).find((t: any) => t.isCurrent);
+            const yearsList = unwrapArray((yearsRes as any)?.data, "years");
+            const termsList = unwrapArray((termsRes as any)?.data, "terms");
+
+            const currentYear = yearsList.find((y: any) => y.isCurrent);
+            const currentTerm = termsList.find((t: any) => t.isCurrent);
 
             if (currentYear && currentTerm) {
                 const [perfRes, gradesRes] = await Promise.all([

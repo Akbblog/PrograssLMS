@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { toast } from "sonner"
+import { unwrapArray } from "@/lib/utils"
 import { format } from "date-fns"
 import {
     Calendar as CalendarIcon,
@@ -112,7 +113,7 @@ export default function AttendancePage() {
     const fetchClasses = async () => {
         try {
             const res: any = await academicAPI.getClasses()
-            setClasses(res.data || [])
+            setClasses(unwrapArray(res?.data, "classes"))
         } catch (error) {
             toast.error("Failed to load classes")
         }
@@ -124,8 +125,8 @@ export default function AttendancePage() {
                 academicAPI.getAcademicYears(),
                 academicAPI.getAcademicTerms()
             ])
-            const years = (yearsRes as any).data || []
-            const terms = (termsRes as any).data || []
+            const years = unwrapArray((yearsRes as any)?.data, "years")
+            const terms = unwrapArray((termsRes as any)?.data, "terms")
             setAcademicYears(years)
             setAcademicTerms(terms)
 
@@ -153,7 +154,7 @@ export default function AttendancePage() {
         setLoadingStudents(true)
         try {
             const res: any = await academicAPI.getStudentsByClass(selectedClass)
-            const studentList = res.data || []
+            const studentList = unwrapArray(res?.data, "students")
             setStudents(studentList)
 
             // Initialize attendance records
@@ -176,7 +177,7 @@ export default function AttendancePage() {
         setLoadingTeachers(true)
         try {
             const res: any = await attendanceAPI.getTeachersForAttendance()
-            const teacherList = res.data || []
+            const teacherList = unwrapArray(res?.data, "teachers")
             setTeachers(teacherList)
 
             // Initialize teacher attendance

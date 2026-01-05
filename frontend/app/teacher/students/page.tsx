@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, Users, TrendingUp, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function TeacherStudentsPage() {
     const user = useAuthStore((state) => state.user);
@@ -31,7 +32,7 @@ export default function TeacherStudentsPage() {
     const fetchClasses = async () => {
         try {
             const response = await academicAPI.getClasses();
-            setClasses((response as any).data || []);
+            setClasses(unwrapArray((response as any)?.data, "classes"));
         } catch (error: any) {
             toast.error(error.message || "Failed to load classes");
         } finally {
@@ -43,7 +44,7 @@ export default function TeacherStudentsPage() {
         try {
             setLoading(true);
             const response = await academicAPI.getStudentsByClass(selectedClass);
-            const studentList = (response as any).data || [];
+            const studentList = unwrapArray((response as any)?.data, "students");
             setStudents(studentList);
 
             // Fetch stats for each student
@@ -55,7 +56,7 @@ export default function TeacherStudentsPage() {
                         gradeAPI.getStudentGrades(student._id),
                     ]);
 
-                    const attendance = (attendanceRes as any).data || [];
+                    const attendance = unwrapArray((attendanceRes as any)?.data, "attendance");
                     const gradesData = (gradesRes as any).data;
 
                     stats[student._id] = {

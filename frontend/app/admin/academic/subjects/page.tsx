@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, BookOpen, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function AdminSubjectsPage() {
     const [subjects, setSubjects] = useState<any[]>([]);
@@ -34,8 +35,8 @@ export default function AdminSubjectsPage() {
                 academicAPI.getSubjects(),
                 academicAPI.getPrograms()
             ]);
-            setSubjects((subjectsRes as any).data || []);
-            setPrograms((programsRes as any).data || []);
+            setSubjects(unwrapArray((subjectsRes as any)?.data, "subjects"));
+            setPrograms(unwrapArray((programsRes as any)?.data, "programs"));
         } catch (error) {
             toast.error("Failed to load data");
         } finally {

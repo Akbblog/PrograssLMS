@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { academicAPI } from "@/lib/api/endpoints";
+import { unwrapArray } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,7 @@ export default function SubjectDetailPage() {
     const fetchSubjectData = useCallback(async () => {
         try {
             const res: any = await academicAPI.getSubjects();
-            const allSubjects = res.data || [];
+            const allSubjects = unwrapArray(res?.data, "subjects");
             const subject = allSubjects.find((s: any) => s._id === subjectId);
             if (subject) {
                 setSubjectData(subject);

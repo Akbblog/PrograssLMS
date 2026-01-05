@@ -37,6 +37,7 @@ import {
     AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 // Native Select Component
 function NativeSelect({ value, onChange, options, placeholder, disabled = false }: {
@@ -113,7 +114,7 @@ export default function EditTeacherPage() {
                 academicAPI.getSubjects()
             ]);
 
-            const teachers = (teachersRes as any).data || [];
+            const teachers = unwrapArray((teachersRes as any)?.data, "teachers");
             const teacher = teachers.find((t: any) => t._id === teacherId);
 
             if (!teacher) {
@@ -122,8 +123,8 @@ export default function EditTeacherPage() {
                 return;
             }
 
-            setClasses((classesRes as any).data || []);
-            setSubjects((subjectsRes as any).data || []);
+            setClasses(unwrapArray((classesRes as any)?.data, "classes"));
+            setSubjects(unwrapArray((subjectsRes as any)?.data, "subjects"));
 
             // Populate form with teacher data
             setFormData({

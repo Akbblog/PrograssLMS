@@ -37,6 +37,7 @@ import {
     Building
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function TeacherProfilePage() {
     const router = useRouter();
@@ -55,7 +56,7 @@ export default function TeacherProfilePage() {
         try {
             // Try to get individual teacher or from list
             const response = await adminAPI.getTeachers();
-            const teachers = (response as any).data || [];
+            const teachers = unwrapArray((response as any)?.data, "teachers");
             const found = teachers.find((t: any) => t._id === teacherId);
             if (found) {
                 setTeacher(found);

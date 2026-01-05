@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Loader2, DollarSign, CreditCard, CheckCircle2, AlertCircle, Calendar, ArrowRight, Wallet, History, Receipt } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn, unwrapArray } from "@/lib/utils";
 
 export default function StudentFeesPage() {
     const user = useAuthStore((state) => state.user);
@@ -33,8 +33,8 @@ export default function StudentFeesPage() {
                 financeAPI.getDueFees(userId),
                 financeAPI.getStudentPayments(userId),
             ]);
-            setDueFees((due as any).data || []);
-            setPayments((history as any).data || []);
+            setDueFees(unwrapArray((due as any)?.data, "dueFees"));
+            setPayments(unwrapArray((history as any)?.data, "payments"));
         } catch (error) {
             console.error("Failed to fetch fees:", error);
             toast.error("Failed to load fee information");

@@ -8,16 +8,16 @@ const {
     toggleSchoolStatusController,
     getAnalyticsController,
     deleteSchoolController,
-} = require("../../../controllers/superadmin/school.controller");
+} = require("../../../controllers/superadmin/school.controller.js");
 
-const { superAdminLoginController } = require("../../../controllers/superadmin/auth.controller");
+const { superAdminLoginController } = require("../../../controllers/superadmin/auth.controller.js");
 
 const superAdminRouter = express.Router();
 
 //middleware
-const isLoggedIn = require("../../../middlewares/isLoggedIn");
-const isSuperAdmin = require("../../../middlewares/isSuperAdmin");
-const { validateBody } = require("../../../middlewares/validateRequest");
+const isLoggedIn = require("../../../middlewares/isLoggedIn.js");
+const isSuperAdmin = require("../../../middlewares/isSuperAdmin.js");
+const { validateBody } = require("../../../middlewares/validateRequest.js");
 
 // Public route - Login (no auth needed) - MUST be before middleware
 superAdminRouter.post("/login", superAdminLoginController);

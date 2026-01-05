@@ -32,6 +32,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 export default function FeeManagementPage() {
     const [feeStructures, setFeeStructures] = useState<any[]>([]);
@@ -64,9 +65,9 @@ export default function FeeManagementPage() {
                 adminAPI.getAcademicYears(),
                 adminAPI.getAcademicTerms(),
             ]);
-            setFeeStructures((fees as any).data || []);
-            setAcademicYears((years as any).data || []);
-            setAcademicTerms((terms as any).data || []);
+            setFeeStructures(unwrapArray((fees as any)?.data, "feeStructures"));
+            setAcademicYears(unwrapArray((years as any)?.data, "years"));
+            setAcademicTerms(unwrapArray((terms as any)?.data, "terms"));
         } catch (error) {
             console.error("Failed to fetch data:", error);
             toast.error("Failed to load data");
