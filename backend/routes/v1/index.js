@@ -101,17 +101,89 @@ try {
     routeErrors.push({ path: './academic/teacherAttendance.router', error: e.message });
 }
 
+try {
+    router.use('/', require('./academic/subject.router'));
+    console.log('[ROUTES] ✅ Mounted: /subject (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load subject.router:', e);
+    routeErrors.push({ path: './academic/subject.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/program.router'));
+    console.log('[ROUTES] ✅ Mounted: /programs (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load program.router:', e);
+    routeErrors.push({ path: './academic/program.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/course.router'));
+    console.log('[ROUTES] ✅ Mounted: /courses (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load course.router:', e);
+    routeErrors.push({ path: './academic/course.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/question.router'));
+    console.log('[ROUTES] ✅ Mounted: /questions (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load question.router:', e);
+    routeErrors.push({ path: './academic/question.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/gradingPolicy.router'));
+    console.log('[ROUTES] ✅ Mounted: /grading-policies (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load gradingPolicy.router:', e);
+    routeErrors.push({ path: './academic/gradingPolicy.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/assessmentType.router'));
+    console.log('[ROUTES] ✅ Mounted: /assessment-types (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load assessmentType.router:', e);
+    routeErrors.push({ path: './academic/assessmentType.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/attendance.router'));
+    console.log('[ROUTES] ✅ Mounted: /attendance (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load attendance.router:', e);
+    routeErrors.push({ path: './academic/attendance.router', error: e.message });
+}
+
+try {
+    router.use('/academic/behavior', require('./academic/attendanceBehavior.router.js'));
+    console.log('[ROUTES] ✅ Mounted: /academic/behavior (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load attendanceBehavior.router:', e);
+    routeErrors.push({ path: './academic/attendanceBehavior.router', error: e.message });
+    // Mount placeholder for 503
+    router.use('/academic/behavior', (req, res) => {
+        res.status(503).json({ 
+            message: 'Service /academic/behavior temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
+
 // safeRequire('./academic/academicYear.router', '/');
 // safeRequire('./academic/academicTerm.router', '/');
 // safeRequire('./academic/class.router', '/');
-safeRequire('./academic/subject.router', '/');
-safeRequire('./academic/program.router', '/');
-safeRequire('./academic/course.router', '/');
-safeRequire('./academic/question.router', '/');
-safeRequire('./academic/gradingPolicy.router', '/');
-safeRequire('./academic/assessmentType.router', '/');
-safeRequire('./academic/attendance.router', '/');
-safeRequire('./academic/attendanceBehavior.router', '/academic/behavior');
+// safeRequire('./academic/subject.router', '/');
+// safeRequire('./academic/program.router', '/');
+// safeRequire('./academic/course.router', '/');
+// safeRequire('./academic/question.router', '/');
+// safeRequire('./academic/gradingPolicy.router', '/');
+// safeRequire('./academic/assessmentType.router', '/');
+// safeRequire('./academic/attendance.router', '/');
+// safeRequire('./academic/attendanceBehavior.router', '/academic/behavior');
 // safeRequire('./academic/teacherAttendance.router', '/');
 safeRequire('./academic/results.router', '/');
 safeRequire('./academic/exams.router', '/');

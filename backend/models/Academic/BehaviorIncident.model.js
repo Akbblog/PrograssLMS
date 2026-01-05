@@ -200,4 +200,4 @@ behaviorIncidentSchema.statics.getBehaviorAnalytics = async function (schoolId, 
     return analytics;
 };
 
-module.exports = mongoose.model("BehaviorIncident", behaviorIncidentSchema);
+module.exports = mongoose.models.BehaviorIncident || mongoose.model("BehaviorIncident", behaviorIncidentSchema);

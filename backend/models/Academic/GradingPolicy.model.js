@@ -52,4 +52,4 @@ const gradingPolicySchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model("GradingPolicy", gradingPolicySchema);
+module.exports = mongoose.models.GradingPolicy || mongoose.model("GradingPolicy", gradingPolicySchema);

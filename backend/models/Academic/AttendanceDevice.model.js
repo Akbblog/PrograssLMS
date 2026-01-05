@@ -14,5 +14,5 @@ const attendanceDeviceSchema = new mongoose.Schema({
   meta: { type: Object }
 }, { timestamps: true });
 
-const AttendanceDevice = mongoose.model('AttendanceDevice', attendanceDeviceSchema);
+const AttendanceDevice = mongoose.models.AttendanceDevice || mongoose.model('AttendanceDevice', attendanceDeviceSchema);
 module.exports = AttendanceDevice;

@@ -185,5 +185,5 @@ gradeSchema.statics.calculateClassStats = async function (
 gradeSchema.index({ student: 1, academicYear: 1, academicTerm: 1 });
 gradeSchema.index({ subject: 1, classLevel: 1 });
 
-module.exports = mongoose.model("Grade", gradeSchema);
+module.exports = mongoose.models.Grade || mongoose.model("Grade", gradeSchema);
 

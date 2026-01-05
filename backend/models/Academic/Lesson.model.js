@@ -102,6 +102,6 @@ const LessonSchema = new mongoose.Schema(
 // Compound index
 LessonSchema.index({ module: 1, sequence: 1 });
 
-const Lesson = mongoose.model("Lesson", LessonSchema);
+const Lesson = mongoose.models.Lesson || mongoose.model("Lesson", LessonSchema);
 
 module.exports = Lesson;

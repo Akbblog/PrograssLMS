@@ -57,6 +57,6 @@ const ModuleSchema = new mongoose.Schema(
 // Compound index
 ModuleSchema.index({ course: 1, sequence: 1 });
 
-const Module = mongoose.model("Module", ModuleSchema);
+const Module = mongoose.models.Module || mongoose.model("Module", ModuleSchema);
 
 module.exports = Module;

@@ -182,4 +182,4 @@ attendanceSchema.statics.analyzeTrends = function (attendances) {
     return trends;
 };
 
-module.exports = mongoose.model("Attendance", attendanceSchema);
+module.exports = mongoose.models.Attendance || mongoose.model("Attendance", attendanceSchema);

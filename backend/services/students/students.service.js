@@ -3,10 +3,10 @@ const {
   isPassMatched,
 } = require("../../handlers/passHash.handler");
 const mongoose = require("mongoose");
-const Admin = require("../../models/Staff/admin.model");
-const Student = require("../../models/Students/students.model");
-const Exam = require("../../models/Academic/exams.model");
-const Results = require("../../models/Academic/results.model");
+const Admin = require("../../models/Staff/admin.model.js");
+const Student = require("../../models/Students/students.model.js");
+const Exam = require("../../models/Academic/exams.model.js");
+const Results = require("../../models/Academic/results.model.js");
 const generateToken = require("../../utils/tokenGenerator");
 const { resultCalculate } = require("../../functions/result-calculate");
 const eventBus = require("../../utils/eventBus");

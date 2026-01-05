@@ -1,4 +1,4 @@
-const AttendanceBehaviorService = require("../../services/academic/attendanceBehavior.service");
+const AttendanceBehaviorService = require("../../services/academic/attendanceBehavior.service.js");
 
 const getSchoolId = (req) => req.schoolId;
 

@@ -114,6 +114,6 @@ const CourseSchema = new mongoose.Schema(
 CourseSchema.index({ title: "text", description: "text" });
 CourseSchema.index({ status: 1, schoolId: 1 });
 
-const Course = mongoose.model("Course", CourseSchema);
+const Course = mongoose.models.Course || mongoose.model("Course", CourseSchema);
 
 module.exports = Course;

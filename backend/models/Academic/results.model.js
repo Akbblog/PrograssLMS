@@ -91,6 +91,6 @@ const examResultSchema = new mongoose.Schema(
   }
 );
 
-const ExamResult = mongoose.model("ExamResult", examResultSchema);
+const ExamResult = mongoose.models.ExamResult || mongoose.model("ExamResult", examResultSchema);
 
 module.exports = ExamResult;

@@ -62,6 +62,6 @@ const AssessmentTypeSchema = new mongoose.Schema(
 // Compound index for unique assessment type names per school
 AssessmentTypeSchema.index({ name: 1, schoolId: 1 }, { unique: true });
 
-const AssessmentType = mongoose.model("AssessmentType", AssessmentTypeSchema);
+const AssessmentType = mongoose.models.AssessmentType || mongoose.model("AssessmentType", AssessmentTypeSchema);
 
 module.exports = AssessmentType;

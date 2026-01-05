@@ -1,6 +1,6 @@
-const Attendance = require("../../models/Academic/Attendance.model");
-const BehaviorIncident = require("../../models/Academic/BehaviorIncident.model");
-const Student = require("../../models/Students/students.model");
+const Attendance = require("../../models/Academic/Attendance.model.js");
+const BehaviorIncident = require("../../models/Academic/BehaviorIncident.model.js");
+const Student = require("../../models/Students/students.model.js");
 
 class AttendanceBehaviorService {
     constructor(schoolId) {

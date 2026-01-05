@@ -99,6 +99,6 @@ QuestionBankSchema.index({ subject: 1, schoolId: 1 });
 QuestionBankSchema.index({ tags: 1 });
 QuestionBankSchema.index({ difficulty: 1 });
 
-const QuestionBank = mongoose.model("QuestionBank", QuestionBankSchema);
+const QuestionBank = mongoose.models.QuestionBank || mongoose.model("QuestionBank", QuestionBankSchema);
 
 module.exports = QuestionBank;

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const attendanceBehaviorController = require("../../../controllers/academic/attendanceBehavior.controller");
+const attendanceBehaviorController = require("../../../controllers/academic/attendanceBehavior.controller.js");
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
 const isAdminOrTeacher = require("../../../middlewares/isAdminOrTeacher");
 

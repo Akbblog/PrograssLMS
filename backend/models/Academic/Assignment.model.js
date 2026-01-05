@@ -90,6 +90,6 @@ const assignmentSchema = new mongoose.Schema(
 assignmentSchema.index({ schoolId: 1, classLevel: 1, subject: 1 });
 assignmentSchema.index({ dueDate: 1 });
 
-const Assignment = mongoose.model("Assignment", assignmentSchema);
+const Assignment = mongoose.models.Assignment || mongoose.model("Assignment", assignmentSchema);
 
 module.exports = Assignment;

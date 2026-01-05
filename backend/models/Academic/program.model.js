@@ -68,6 +68,6 @@ const ProgramSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const Program = mongoose.model("Program", ProgramSchema);
+const Program = mongoose.models.Program || mongoose.model("Program", ProgramSchema);
 
 module.exports = Program;
