@@ -105,6 +105,6 @@ MessageSchema.index({ conversation: 1, createdAt: -1 });
 MessageSchema.index({ schoolId: 1, createdAt: -1 });
 MessageSchema.index({ sender: 1 });
 
-const Message = mongoose.model("Message", MessageSchema);
+const Message = mongoose.models.Message || mongoose.model("Message", MessageSchema);
 
 module.exports = Message;

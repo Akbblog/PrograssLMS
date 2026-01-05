@@ -109,6 +109,6 @@ ConversationSchema.index({ schoolId: 1, type: 1 });
 ConversationSchema.index({ "participants.user": 1 });
 ConversationSchema.index({ updatedAt: -1 });
 
-const Conversation = mongoose.model("Conversation", ConversationSchema);
+const Conversation = mongoose.models.Conversation || mongoose.model("Conversation", ConversationSchema);
 
 module.exports = Conversation;

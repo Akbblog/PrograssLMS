@@ -203,6 +203,6 @@ RoleSchema.statics.createDefaultRoles = async function (schoolId, adminId) {
     return await this.insertMany(defaultRoles);
 };
 
-const Role = mongoose.model("Role", RoleSchema);
+const Role = mongoose.models.Role || mongoose.model("Role", RoleSchema);
 
 module.exports = Role;

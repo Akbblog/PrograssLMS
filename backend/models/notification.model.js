@@ -37,7 +37,7 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Notification = mongoose.model('Notification', notificationSchema);
+const Notification = mongoose.models.Notification || mongoose.model('Notification', notificationSchema);
 
 const recipientSchema = new mongoose.Schema(
   {
@@ -56,7 +56,7 @@ const recipientSchema = new mongoose.Schema(
 
 recipientSchema.index({ userId: 1, readAt: 1 });
 
-const NotificationRecipient = mongoose.model('NotificationRecipient', recipientSchema);
+const NotificationRecipient = mongoose.models.NotificationRecipient || mongoose.model('NotificationRecipient', recipientSchema);
 
 module.exports = {
   Notification,

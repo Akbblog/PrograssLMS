@@ -122,4 +122,4 @@ const feeStructureSchema = new mongoose.Schema({
 // Index for efficient queries
 feeStructureSchema.index({ schoolId: 1, academicYear: 1, status: 1 });
 
-module.exports = mongoose.model("FeeStructure", feeStructureSchema);
+module.exports = mongoose.models.FeeStructure || mongoose.model("FeeStructure", feeStructureSchema);

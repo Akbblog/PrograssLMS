@@ -67,6 +67,6 @@ feePaymentSchema.statics.findOverduePayments = async function (schoolId) {
     }).populate('student', 'name guardian');
 };
 
-const FeePayment = mongoose.model("FeePayment", feePaymentSchema);
+const FeePayment = mongoose.models.FeePayment || mongoose.model("FeePayment", feePaymentSchema);
 
 module.exports = FeePayment;

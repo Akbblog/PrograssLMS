@@ -185,29 +185,129 @@ try {
 // safeRequire('./academic/attendance.router', '/');
 // safeRequire('./academic/attendanceBehavior.router', '/academic/behavior');
 // safeRequire('./academic/teacherAttendance.router', '/');
-safeRequire('./academic/results.router', '/');
-safeRequire('./academic/exams.router', '/');
-safeRequire('./academic/enrollment.router', '/');
-safeRequire('./academic/grade.router', '/');
-safeRequire('./academic/performance.router', '/');
-safeRequire('./academic/assignment.router', '/');
-safeRequire('./academic/yearGroup.router', '/');
+try {
+    router.use('/', require('./academic/results.router'));
+    console.log('[ROUTES] ✅ Mounted: /results (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load results.router:', e);
+    routeErrors.push({ path: './academic/results.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/exams.router'));
+    console.log('[ROUTES] ✅ Mounted: /exams (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load exams.router:', e);
+    routeErrors.push({ path: './academic/exams.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/enrollment.router'));
+    console.log('[ROUTES] ✅ Mounted: /enrollment (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load enrollment.router:', e);
+    routeErrors.push({ path: './academic/enrollment.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/grade.router'));
+    console.log('[ROUTES] ✅ Mounted: /grades (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load grade.router:', e);
+    routeErrors.push({ path: './academic/grade.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/performance.router'));
+    console.log('[ROUTES] ✅ Mounted: /performance (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load performance.router:', e);
+    routeErrors.push({ path: './academic/performance.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/assignment.router'));
+    console.log('[ROUTES] ✅ Mounted: /assignments (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load assignment.router:', e);
+    routeErrors.push({ path: './academic/assignment.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/yearGroup.router'));
+    console.log('[ROUTES] ✅ Mounted: /year-groups (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load yearGroup.router:', e);
+    routeErrors.push({ path: './academic/yearGroup.router', error: e.message });
+}
 
 // ============ FINANCE ROUTES ============
-safeRequire('./finance/finance.router', '/finance');
-safeRequire('./finance/fee.router', '/');
+try {
+    router.use('/finance', require('./finance/finance.router'));
+    console.log('[ROUTES] ✅ Mounted: /finance (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load finance.router:', e);
+    routeErrors.push({ path: './finance/finance.router', error: e.message });
+}
+
+try {
+    router.use('/finance', require('./finance/fee.router'));
+    console.log('[ROUTES] ✅ Mounted: /finance/fees (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load fee.router:', e);
+    routeErrors.push({ path: './finance/fee.router', error: e.message });
+}
 
 // ============ STAFF ROUTES ============
-safeRequire('./staff/admin.router', '/');
-safeRequire('./staff/teachers.router', '/');
-safeRequire('./staff/role.router', '/');
+try {
+    router.use('/', require('./staff/admin.router'));
+    console.log('[ROUTES] ✅ Mounted: /admin (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load admin.router:', e);
+    routeErrors.push({ path: './staff/admin.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./staff/teachers.router'));
+    console.log('[ROUTES] ✅ Mounted: /teachers (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load teachers.router:', e);
+    routeErrors.push({ path: './staff/teachers.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./staff/role.router'));
+    console.log('[ROUTES] ✅ Mounted: /roles (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load role.router:', e);
+    routeErrors.push({ path: './staff/role.router', error: e.message });
+}
 
 // ============ STUDENT ROUTES ============
-safeRequire('./students/students.router', '/');
+try {
+    router.use('/', require('./students/students.router'));
+    console.log('[ROUTES] ✅ Mounted: /students (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load students.router:', e);
+    routeErrors.push({ path: './students/students.router', error: e.message });
+}
 
 // ============ COMMUNICATION ROUTES ============
-safeRequire('./communication/chat.router', '/');
-safeRequire('./communication/notifications.router', '/communication/notifications');
+try {
+    router.use('/', require('./communication/chat.router'));
+    console.log('[ROUTES] ✅ Mounted: /conversations (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load chat.router:', e);
+    routeErrors.push({ path: './communication/chat.router', error: e.message });
+}
+
+try {
+    router.use('/communication/notifications', require('./communication/notifications.router'));
+    console.log('[ROUTES] ✅ Mounted: /communication/notifications (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load notifications.router:', e);
+    routeErrors.push({ path: './communication/notifications.router', error: e.message });
+}
 
 // ============ LIBRARY ROUTES ============
 safeRequire('./library/library.router', '/library');
