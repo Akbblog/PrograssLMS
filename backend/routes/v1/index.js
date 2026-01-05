@@ -1,120 +1,90 @@
 const router = require('express').Router();
 
-// Import all routers
-const academicYearRouter = require('./academic/academicYear.router');
-const academicTermRouter = require('./academic/academicTerm.router');
-const classRouter = require('./academic/class.router');
-const subjectRouter = require('./academic/subject.router');
-const programRouter = require('./academic/program.router');
-const courseRouter = require('./academic/course.router');
-const questionRouter = require('./academic/question.router');
-const gradingPolicyRouter = require('./academic/gradingPolicy.router');
-const assessmentTypeRouter = require('./academic/assessmentType.router');
-const attendanceRouter = require('./academic/attendance.router');
-const attendanceBehaviorRouter = require('./academic/attendanceBehavior.router');
-const teacherAttendanceRouter = require('./academic/teacherAttendance.router');
-const resultsRouter = require('./academic/results.router');
-const examsRouter = require('./academic/exams.router');
-const enrollmentRouter = require('./academic/enrollment.router');
-const gradeRouter = require('./academic/grade.router');
-const performanceRouter = require('./academic/performance.router');
-const assignmentRouter = require('./academic/assignment.router');
-const yearGroupRouter = require('./academic/yearGroup.router');
+/**
+ * Safely require a router with error handling
+ * @param {string} path - Router path
+ * @param {string} mountPath - Mount path for the router
+ */
+const safeRequire = (path, mountPath) => {
+  try {
+    const routerModule = require(path);
+    if (mountPath === '/') {
+        router.use(routerModule);
+    } else {
+        router.use(mountPath, routerModule);
+    }
+    console.log(`[ROUTES] ✅ Mounted: ${mountPath || '/'}`);
+  } catch (e) {
+    console.error(`[ROUTES] ❌ Failed to load ${path}: ${e.message}`);
+    // Create placeholder that returns 503
+    if (mountPath && mountPath !== '/') {
+        router.use(mountPath, (req, res) => {
+            res.status(503).json({ 
+                message: `Service ${mountPath} temporarily unavailable`,
+                error: e.message 
+            });
+        });
+    }
+  }
+};
 
-// Finance
-const feeRouter = require('./finance/fee.router');
-const financeRouter = require('./finance/finance.router');
+// ============ ACADEMIC ROUTES ============
+safeRequire('./academic/academicYear.router', '/');
+safeRequire('./academic/academicTerm.router', '/');
+safeRequire('./academic/class.router', '/');
+safeRequire('./academic/subject.router', '/');
+safeRequire('./academic/program.router', '/');
+safeRequire('./academic/course.router', '/');
+safeRequire('./academic/question.router', '/');
+safeRequire('./academic/gradingPolicy.router', '/');
+safeRequire('./academic/assessmentType.router', '/');
+safeRequire('./academic/attendance.router', '/');
+safeRequire('./academic/attendanceBehavior.router', '/academic/behavior');
+safeRequire('./academic/teacherAttendance.router', '/');
+safeRequire('./academic/results.router', '/');
+safeRequire('./academic/exams.router', '/');
+safeRequire('./academic/enrollment.router', '/');
+safeRequire('./academic/grade.router', '/');
+safeRequire('./academic/performance.router', '/');
+safeRequire('./academic/assignment.router', '/');
+safeRequire('./academic/yearGroup.router', '/');
 
-// Staff
-const adminRouter = require('./staff/admin.router');
-const teacherRouter = require('./staff/teachers.router');
-const roleRouter = require('./staff/role.router');
+// ============ FINANCE ROUTES ============
+safeRequire('./finance/finance.router', '/finance');
+safeRequire('./finance/fee.router', '/');
 
-// Students
-const studentsRouter = require('./students/students.router');
+// ============ STAFF ROUTES ============
+safeRequire('./staff/admin.router', '/');
+safeRequire('./staff/teachers.router', '/');
+safeRequire('./staff/role.router', '/');
 
-// Communication
-const chatRouter = require('./communication/chat.router');
-const notificationsRouter = require('./communication/notifications.router');
+// ============ STUDENT ROUTES ============
+safeRequire('./students/students.router', '/');
 
-// Library
-const libraryRouter = require('./library/library.router');
+// ============ COMMUNICATION ROUTES ============
+safeRequire('./communication/chat.router', '/');
+safeRequire('./communication/notifications.router', '/communication/notifications');
 
-// Transport
-const transportRouter = require('./transport/transport.router');
+// ============ LIBRARY ROUTES ============
+safeRequire('./library/library.router', '/library');
 
-// Attendance (QR)
-const attendanceQRRouter = require('./attendance/attendance.router');
+// ============ TRANSPORT ROUTES ============
+safeRequire('./transport/transport.router', '/transport');
 
-// HR
-const hrRouter = require('./hr/hr.router');
+// ============ ATTENDANCE (QR) ROUTES ============
+safeRequire('./attendance/attendance.router', '/attendance');
 
-// Documents
-const documentsRouter = require('./documents/documents.router');
+// ============ HR ROUTES ============
+safeRequire('./hr/hr.router', '/hr');
 
-// Superadmin
-const schoolRouter = require('./superadmin/school.router');
+// ============ DOCUMENT ROUTES ============
+safeRequire('./documents/documents.router', '/documents');
 
-// Contact
-const contactRouter = require('./contact.router');
+// ============ SUPERADMIN ROUTES ============
+safeRequire('./superadmin/school.router', '/superadmin');
 
-// Register ALL routes
-// Academic - mounted at root since they define their own paths
-router.use('/', academicYearRouter);
-router.use('/', academicTermRouter);
-router.use('/', classRouter);
-router.use('/', subjectRouter);
-router.use('/', programRouter);
-router.use('/', courseRouter);
-router.use('/', questionRouter);
-router.use('/', gradingPolicyRouter);
-router.use('/', assessmentTypeRouter);
-router.use('/', attendanceRouter);
-router.use('/academic/behavior', attendanceBehaviorRouter);
-router.use('/', teacherAttendanceRouter);
-router.use('/', resultsRouter);
-router.use('/', examsRouter);
-router.use('/', enrollmentRouter);
-router.use('/', gradeRouter);
-router.use('/', performanceRouter);
-router.use('/', assignmentRouter);
-router.use('/', yearGroupRouter);
+// ============ CONTACT ROUTES ============
+safeRequire('./contact.router', '/contact');
 
-// Finance
-router.use('/finance', financeRouter);
-router.use('/', feeRouter); // fee router defines /fees/... so mount at root
-
-// Staff
-router.use('/', adminRouter);
-router.use('/', teacherRouter);
-router.use('/', roleRouter);
-
-// Students
-router.use('/', studentsRouter);
-
-// Communication
-router.use('/', chatRouter); // defines /conversations
-router.use('/communication/notifications', notificationsRouter);
-
-// Library
-router.use('/library', libraryRouter);
-
-// Transport
-router.use('/transport', transportRouter);
-
-// Attendance (QR)
-router.use('/attendance', attendanceQRRouter);
-
-// HR
-router.use('/hr', hrRouter);
-
-// Documents
-router.use('/documents', documentsRouter);
-
-// Superadmin
-router.use('/superadmin', schoolRouter);
-
-// Contact
-router.use('/contact', contactRouter);
-
+console.log('[ROUTES] Route initialization complete');
 module.exports = router;

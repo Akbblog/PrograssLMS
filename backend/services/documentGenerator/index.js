@@ -1,5 +1,18 @@
 const React = require('react');
-const ReactPDF = require('@react-pdf/renderer');
+// const ReactPDF = require('@react-pdf/renderer'); // Removed to fix ESM import issue
+
+let ReactPDF = null;
+const loadReactPDF = async () => {
+  if (!ReactPDF) {
+    try {
+      ReactPDF = await import('@react-pdf/renderer');
+    } catch (e) {
+      console.error('Failed to load @react-pdf/renderer:', e);
+      throw new Error('PDF generation not available in this environment');
+    }
+  }
+  return ReactPDF;
+};
 
 // server-side generators
 async function generateFeeVoucher(payload) {
@@ -27,8 +40,12 @@ async function generateFeeVoucher(payload) {
   // Render to Buffer using react-pdf
   // Debug: ensure element is not null
   if (!element) throw new Error('Document element is null');
+  
+  // Load ReactPDF dynamically
+  const pdfRenderer = await loadReactPDF();
+  
   // Render to a stream and collect into a buffer (more robust across versions)
-  const stream = await ReactPDF.renderToStream(element);
+  const stream = await pdfRenderer.renderToStream(element);
   const chunks = [];
   for await (const chunk of stream) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
