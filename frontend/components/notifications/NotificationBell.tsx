@@ -43,9 +43,13 @@ export default function NotificationBell() {
     })();
 
     // Connect SSE directly to backend
-    const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://progresslms-backend.vercel.app/api/v1';
+    const backend = process.env.NEXT_PUBLIC_API_URL || 'https://progresslms-backend.vercel.app/api/v1';
     try {
-      const url = `${backend}/communication/notifications/stream`;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!token) return;
+
+      const apiBase = backend.endsWith('/') ? backend.slice(0, -1) : backend;
+      const url = `${apiBase}/communication/notifications/stream?token=${encodeURIComponent(token)}`;
       const es = new EventSource(url, { withCredentials: true } as any);
       es.onmessage = (e) => {
         try {

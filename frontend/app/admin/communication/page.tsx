@@ -158,9 +158,13 @@ export default function CommunicationPage() {
         fetchTeachers()
 
         // Setup SSE for receiving real-time messages (and notifications)
-        const backend = process.env.NEXT_PUBLIC_BACKEND_URL || ''
+        const backend = process.env.NEXT_PUBLIC_API_URL || 'https://progresslms-backend.vercel.app/api/v1'
         try {
-            const url = `${backend}/api/v1/communication/notifications/stream`;
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+            if (!token) return
+
+            const apiBase = backend.endsWith('/') ? backend.slice(0, -1) : backend
+            const url = `${apiBase}/communication/notifications/stream?token=${encodeURIComponent(token)}`;
             const es = new EventSource(url, { withCredentials: true } as any);
 
             const handleMessageEvent = (e: MessageEvent) => {
@@ -184,7 +188,6 @@ export default function CommunicationPage() {
                 }
             }
 
-            es.addEventListener('message', handleMessageEvent)
             es.addEventListener('message', handleMessageEvent)
             es.onerror = () => {
                 try { es.close(); } catch (err) {}
@@ -456,13 +459,13 @@ export default function CommunicationPage() {
         return colors[index]
     }
 
-    const filteredConversations = conversations.filter(c => {
+    const filteredConversations = (Array.isArray(conversations) ? conversations : []).filter(c => {
         const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase())
         const matchesTab = activeTab === "direct" ? c.type === "private" : c.type !== "private"
         return matchesSearch && matchesTab
     })
 
-    const availableTeachers = teachers.filter(teacher =>
+    const availableTeachers = (Array.isArray(teachers) ? teachers : []).filter(teacher =>
         !activeConversation?.participants?.some(p => p.user?._id === teacher._id)
     )
 
