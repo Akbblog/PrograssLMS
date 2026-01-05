@@ -66,7 +66,7 @@ const staffSchema = z.object({
   qualifications: z.array(z.object({
     degree: z.string().min(1, "Required"),
     institution: z.string().min(1, "Required"),
-    year: z.coerce.number().min(1900).max(new Date().getFullYear()),
+    year: z.number().min(1900).max(2100),
     grade: z.string().optional(),
   })),
   bankDetails: z.object({
@@ -76,14 +76,14 @@ const staffSchema = z.object({
     ifscCode: z.string().min(1, "Required"),
   }),
   salary: z.object({
-    basicSalary: z.coerce.number().min(0),
+    basicSalary: z.number().min(0),
     allowances: z.array(z.object({
       type: z.string().min(1),
-      amount: z.coerce.number().min(0),
+      amount: z.number().min(0),
     })),
     deductions: z.array(z.object({
       type: z.string().min(1),
-      amount: z.coerce.number().min(0),
+      amount: z.number().min(0),
     })),
   }),
   documents: z.array(z.object({
@@ -409,7 +409,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                                <div className="grid grid-cols-2 gap-4">
                                   <div className="space-y-2">
                                       <Label>Year of Completion <span className="text-red-500">*</span></Label>
-                                      <Input type="number" {...register(`qualifications.${index}.year`)} />
+                                      <Input type="number" {...register(`qualifications.${index}.year`, { valueAsNumber: true })} />
                                   </div>
                                   <div className="space-y-2">
                                       <Label>Grade/Percentage</Label>
@@ -454,7 +454,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                  <h4 className="font-semibold text-sm">Salary Structure</h4>
                   <div className="space-y-2">
                         <Label>Basic Salary <span className="text-red-500">*</span></Label>
-                        <Input type="number" {...register("salary.basicSalary")} />
+                        <Input type="number" {...register("salary.basicSalary", { valueAsNumber: true })} />
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -463,7 +463,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                           {allowFields.map((field, index) => (
                               <div key={field.id} className="flex gap-2">
                                   <Input placeholder="Type" {...register(`salary.allowances.${index}.type`)} />
-                                  <Input type="number" placeholder="Amount" {...register(`salary.allowances.${index}.amount`)} />
+                                  <Input type="number" placeholder="Amount" {...register(`salary.allowances.${index}.amount`, { valueAsNumber: true })} />
                                   <Button type="button" variant="ghost" size="icon" onClick={() => removeAllow(index)}><X className="h-4 w-4" /></Button>
                               </div>
                           ))}
@@ -475,7 +475,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                           {deducFields.map((field, index) => (
                               <div key={field.id} className="flex gap-2">
                                   <Input placeholder="Type" {...register(`salary.deductions.${index}.type`)} />
-                                  <Input type="number" placeholder="Amount" {...register(`salary.deductions.${index}.amount`)} />
+                                  <Input type="number" placeholder="Amount" {...register(`salary.deductions.${index}.amount`, { valueAsNumber: true })} />
                                   <Button type="button" variant="ghost" size="icon" onClick={() => removeDeduc(index)}><X className="h-4 w-4" /></Button>
                               </div>
                           ))}

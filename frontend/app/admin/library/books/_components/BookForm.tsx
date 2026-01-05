@@ -22,9 +22,9 @@ const bookSchema = z.object({
   title: z.string().min(1, "Title is required"),
   subtitle: z.string().optional(),
   isbn: z.string().optional(),
-  authors: z.array(z.string().min(1)).min(1, "At least one author is required"),
+  authors: z.array(z.object({ name: z.string().min(1) })).min(1, "At least one author is required"),
   publisher: z.string().min(1, "Publisher is required"),
-  publishedYear: z.coerce.number().min(1000).max(new Date().getFullYear()+1),
+  publishedYear: z.number().min(1000).max(2100).optional(),
   edition: z.string().optional(),
   language: z.string().default("English"),
   category: z.string().min(1, "Category is required"),
@@ -32,8 +32,8 @@ const bookSchema = z.object({
   description: z.string().optional(),
   coverImage: z.string().optional(),
   
-  totalCopies: z.coerce.number().min(1),
-  availableCopies: z.coerce.number().min(0),
+  totalCopies: z.number().min(1),
+  availableCopies: z.number().min(0).optional(),
   location: z.object({
       shelf: z.string().min(1, "Shelf required"),
       row: z.string().min(1, "Row required")
@@ -43,7 +43,7 @@ const bookSchema = z.object({
       dateReceived: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid Date"),
       source: z.enum(['purchased', 'donated', 'sponsored']),
       vendor: z.string().optional(),
-      price: z.coerce.number().optional()
+      price: z.number().optional()
   })
 });
 
@@ -51,12 +51,19 @@ type BookFormValues = z.infer<typeof bookSchema>;
 
 interface BookFormProps {
   defaultValues?: Partial<BookFormValues>;
-  onSubmit: (data: BookFormValues) => void;
+  onSubmit: (data: any) => void; // Change to any for now
   onCancel: () => void;
   isLoading?: boolean;
 }
 
 export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading }: BookFormProps) {
+  // Transform defaultValues if authors are strings
+  const transformedDefaults = defaultValues ? {
+      ...defaultValues,
+      authors: Array.isArray(defaultValues.authors) && defaultValues.authors.length > 0 && typeof (defaultValues.authors[0] as any) === 'string'
+          ? (defaultValues.authors as unknown as string[]).map((name: string) => ({ name }))
+          : defaultValues.authors || [{ name: "" }]
+  } : undefined;
   const {
       register,
       control,
@@ -65,9 +72,9 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
       setValue,
       formState: { errors }
   } = useForm<BookFormValues>({
-      resolver: zodResolver(bookSchema),
-      defaultValues: defaultValues || {
-          authors: [""],
+      // resolver: zodResolver(bookSchema),
+      defaultValues: transformedDefaults || {
+          authors: [{ name: "" }],
           language: "English",
           totalCopies: 1,
           availableCopies: 1,
@@ -77,7 +84,7 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
 
   const { fields: authorFields, append: appendAuthor, remove: removeAuthor } = useFieldArray({
       control,
-      name: "authors" as any // Type assertion for simple array of strings
+      name: "authors"
   });
 
   // Auto-sync available with total if creating new
@@ -88,8 +95,17 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
       }
   }, [totalCopies, setValue, defaultValues]);
 
+  const onFormSubmit = (data: BookFormValues) => {
+      // Transform authors from array of objects to array of strings
+      const transformedData = {
+          ...data,
+          authors: data.authors.map(a => a.name)
+      };
+      onSubmit(transformedData);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 pb-10">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8 pb-10">
         
         {/* Section 1: Basic Info */}
         <Card>
@@ -125,13 +141,13 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                      <Label>Authors <span className="text-red-500">*</span></Label>
                      {authorFields.map((field, index) => (
                          <div key={field.id} className="flex gap-2">
-                             <Input {...register(`authors.${index}` as any)} placeholder="Author Name" />
+                             <Input {...register(`authors.${index}.name`)} placeholder="Author Name" />
                              <Button type="button" variant="ghost" size="icon" onClick={() => removeAuthor(index)} disabled={authorFields.length === 1}>
                                  <Trash2 className="h-4 w-4" />
                              </Button>
                          </div>
                      ))}
-                     <Button type="button" variant="link" size="sm" className="px-0" onClick={() => appendAuthor("")}>
+                     <Button type="button" variant="link" size="sm" className="px-0" onClick={() => appendAuthor({ name: "" })}>
                          + Add Another Author
                      </Button>
                      {errors.authors && <span className="text-xs text-red-500">{errors.authors.message}</span>}
@@ -145,7 +161,7 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                      </div>
                      <div className="space-y-2">
                          <Label>Published Year</Label>
-                         <Input type="number" {...register("publishedYear")} />
+                         <Input type="number" {...register("publishedYear", { valueAsNumber: true })} />
                      </div>
                      <div className="space-y-2">
                          <Label>Edition</Label>
@@ -185,11 +201,11 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                          <Label>Total Copies <span className="text-red-500">*</span></Label>
-                         <Input type="number" {...register("totalCopies")} />
+                         <Input type="number" {...register("totalCopies", { valueAsNumber: true })} />
                      </div>
                      <div className="space-y-2">
                          <Label>Available Copies</Label>
-                         <Input type="number" {...register("availableCopies")} />
+                         <Input type="number" {...register("availableCopies", { valueAsNumber: true })} />
                      </div>
                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -240,7 +256,7 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                  </div>
                  <div className="space-y-2">
                      <Label>Price</Label>
-                     <Input type="number" {...register("acquisitionInfo.price")} />
+                     <Input type="number" {...register("acquisitionInfo.price", { valueAsNumber: true })} />
                  </div>
             </CardContent>
         </Card>
