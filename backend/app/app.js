@@ -71,7 +71,13 @@ app.use(limiter);
 
 // Serve uploaded files (attachments) - local development fallback
 const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+const fs = require('fs');
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+if (fs.existsSync(uploadsDir)) {
+  app.use('/uploads', express.static(uploadsDir));
+} else {
+  console.warn('[APP] Uploads directory not found; skipping static /uploads route');
+}
 
 try {
   // --- Route Initialization ---

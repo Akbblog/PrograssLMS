@@ -7,18 +7,30 @@ const unlink = util.promisify(fs.unlink);
 
 // Ensure upload directory exists
 const UPLOAD_BASE = path.join(__dirname, '..', 'uploads', 'communication');
-fs.mkdirSync(UPLOAD_BASE, { recursive: true });
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 
-// Multer storage to disk (fallback for dev)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, UPLOAD_BASE);
-  },
-  filename: function (req, file, cb) {
-    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, unique + '-' + file.originalname.replace(/\s+/g, '-'));
+let storage;
+if (isServerless) {
+  console.warn('[fileUpload] Running in serverless environment, using memory storage for uploads');
+  storage = multer.memoryStorage();
+} else {
+  try {
+    fs.mkdirSync(UPLOAD_BASE, { recursive: true });
+    // Multer storage to disk (fallback for dev)
+    storage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, UPLOAD_BASE);
+      },
+      filename: function (req, file, cb) {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, unique + '-' + file.originalname.replace(/\s+/g, '-'));
+      }
+    });
+  } catch (err) {
+    console.warn('[fileUpload] Failed to create upload directory, falling back to memory storage:', err.message);
+    storage = multer.memoryStorage();
   }
-});
+}
 
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit per file
 
@@ -59,10 +71,11 @@ exports.processAttachments = async (req, res, next) => {
     }
 
     for (const f of req.files) {
-      const fileBuffer = await readFile(f.path);
+      // support memoryStorage (buffer) or disk storage (path)
+      const fileBuffer = f.buffer ? f.buffer : await readFile(f.path);
 
       if (s3) {
-        const key = `communication/${path.basename(f.path)}`;
+        const key = f.path ? `communication/${path.basename(f.path)}` : `communication/${Date.now()}-${f.originalname.replace(/\s+/g, '-')}`;
         try {
           const uploadRes = await s3
             .upload({
@@ -82,10 +95,32 @@ exports.processAttachments = async (req, res, next) => {
             type: (f.mimetype || '').split('/')[0],
           });
 
-          // remove local copy
-          await unlink(f.path);
+          // remove local copy if present
+          if (f.path) await unlink(f.path);
         } catch (err) {
-          console.warn('[fileUpload] S3 upload failed, keeping local file', err.message);
+          console.warn('[fileUpload] S3 upload failed, keeping local file info', err.message);
+          if (f.path) {
+            attachments.push({
+              url: `${process.env.BACKEND_URL || 'http://localhost:' + (process.env.PORT || 3001)}/uploads/communication/${path.basename(f.path)}`,
+              name: f.originalname,
+              size: f.size,
+              mimeType: f.mimetype,
+              type: (f.mimetype || '').split('/')[0],
+            });
+          } else {
+            attachments.push({
+              url: null,
+              name: f.originalname,
+              size: f.size,
+              mimeType: f.mimetype,
+              type: (f.mimetype || '').split('/')[0],
+              note: 'No persistent storage available for this upload (running in serverless without S3 configured)'
+            });
+          }
+        }
+      } else {
+        // local fallback - disk storage path expected
+        if (f.path) {
           attachments.push({
             url: `${process.env.BACKEND_URL || 'http://localhost:' + (process.env.PORT || 3001)}/uploads/communication/${path.basename(f.path)}`,
             name: f.originalname,
@@ -93,16 +128,17 @@ exports.processAttachments = async (req, res, next) => {
             mimeType: f.mimetype,
             type: (f.mimetype || '').split('/')[0],
           });
+        } else {
+          // memory uploads without S3 in serverless environment
+          attachments.push({
+            url: null,
+            name: f.originalname,
+            size: f.size,
+            mimeType: f.mimetype,
+            type: (f.mimetype || '').split('/')[0],
+            note: 'No persistent storage available for this upload (running in serverless without S3 configured)'
+          });
         }
-      } else {
-        // local fallback - build a URL to the uploads path
-        attachments.push({
-          url: `${process.env.BACKEND_URL || 'http://localhost:' + (process.env.PORT || 3001)}/uploads/communication/${path.basename(f.path)}`,
-          name: f.originalname,
-          size: f.size,
-          mimeType: f.mimetype,
-          type: (f.mimetype || '').split('/')[0],
-        });
       }
     }
 
