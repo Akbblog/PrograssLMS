@@ -68,9 +68,42 @@ router.get('/debug/routes', (req, res) => {
 });
 
 // ============ ACADEMIC ROUTES ============
-safeRequire('./academic/academicYear.router', '/');
-safeRequire('./academic/academicTerm.router', '/');
-safeRequire('./academic/class.router', '/');
+// Explicitly require critical routes to ensure they load
+try {
+    router.use('/', require('./academic/academicYear.router'));
+    console.log('[ROUTES] ✅ Mounted: /academic-years (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load academicYear.router:', e);
+    routeErrors.push({ path: './academic/academicYear.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/academicTerm.router'));
+    console.log('[ROUTES] ✅ Mounted: /academic-term (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load academicTerm.router:', e);
+    routeErrors.push({ path: './academic/academicTerm.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/class.router'));
+    console.log('[ROUTES] ✅ Mounted: /class-levels (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load class.router:', e);
+    routeErrors.push({ path: './academic/class.router', error: e.message });
+}
+
+try {
+    router.use('/', require('./academic/teacherAttendance.router'));
+    console.log('[ROUTES] ✅ Mounted: /teacher-attendance (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load teacherAttendance.router:', e);
+    routeErrors.push({ path: './academic/teacherAttendance.router', error: e.message });
+}
+
+// safeRequire('./academic/academicYear.router', '/');
+// safeRequire('./academic/academicTerm.router', '/');
+// safeRequire('./academic/class.router', '/');
 safeRequire('./academic/subject.router', '/');
 safeRequire('./academic/program.router', '/');
 safeRequire('./academic/course.router', '/');
@@ -79,7 +112,7 @@ safeRequire('./academic/gradingPolicy.router', '/');
 safeRequire('./academic/assessmentType.router', '/');
 safeRequire('./academic/attendance.router', '/');
 safeRequire('./academic/attendanceBehavior.router', '/academic/behavior');
-safeRequire('./academic/teacherAttendance.router', '/');
+// safeRequire('./academic/teacherAttendance.router', '/');
 safeRequire('./academic/results.router', '/');
 safeRequire('./academic/exams.router', '/');
 safeRequire('./academic/enrollment.router', '/');
