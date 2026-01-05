@@ -1,6 +1,7 @@
 const http = require("http");
 const app = require("./app/app");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 require("colors");
 // database connection
 const dbConnect = require("./config/dbConnect");

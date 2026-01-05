@@ -30,7 +30,8 @@ import {
     MessageSquare,
     UserCog,
     Menu,
-    X
+    X,
+    Bus
 } from "lucide-react"
 import GraduationCap from "@/components/icons/GraduationCap"
 
@@ -54,7 +55,49 @@ const sidebarItems = [
     },
     { title: "Teachers", href: "/admin/teachers", icon: Users },
     { title: "Students", href: "/admin/students", icon: GraduationCap },
-    { title: "Attendance", href: "/admin/academic/attendance", icon: Calendar },
+    {
+        title: "Attendance",
+        href: "/admin/attendance",
+        icon: Calendar,
+        subItems: [
+            { title: "Overview", href: "/admin/attendance" },
+            { title: "QR Scanner", href: "/admin/attendance/qr-scanner" },
+            { title: "Live Attendance", href: "/admin/attendance/live" },
+            { title: "Attendance Reports", href: "/admin/attendance/reports" },
+        ],
+    },
+    {
+        title: "HR",
+        href: "/admin/hr",
+        icon: Users,
+        subItems: [
+            { title: "Staff Directory", href: "/admin/hr/staff-directory" },
+            { title: "Payroll", href: "/admin/hr/payroll" },
+            { title: "Performance Reviews", href: "/admin/hr/performance" },
+            { title: "Leave Management", href: "/admin/hr/leave" },
+        ],
+    },
+    {
+        title: "Library",
+        href: "/admin/library",
+        icon: BookOpen,
+        subItems: [
+            { title: "Books Catalog", href: "/admin/library/books" },
+            { title: "Issue / Return", href: "/admin/library/transactions" },
+            { title: "Reports", href: "/admin/library/reports" },
+        ],
+    },
+    {
+        title: "Transport",
+        href: "/admin/transport",
+        icon: Bus,
+        subItems: [
+            { title: "Routes", href: "/admin/transport/routes" },
+            { title: "Vehicles", href: "/admin/transport/vehicles" },
+            { title: "Allocations", href: "/admin/transport/allocations" },
+            { title: "Reports", href: "/admin/transport/reports" },
+        ],
+    },
     { title: "Communication", href: "/admin/communication", icon: MessageSquare },
     { title: "Exams", href: "/admin/exams", icon: FileText },
     { title: "Finance", href: "/admin/finance", icon: CreditCard },

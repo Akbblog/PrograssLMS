@@ -26,7 +26,8 @@ import {
     MessageSquare,
     Bell,
     Sparkles,
-    TrendingUp
+    TrendingUp,
+    Bus
 } from "lucide-react";
 import GraduationCap from "@/components/icons/GraduationCap"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card";
@@ -140,6 +141,34 @@ export default function AdminDashboard() {
         { title: "Messages", icon: MessageSquare, href: "/admin/communication", color: "text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20", feature: "canManageCommunication" },
     ].filter(action => !action.feature || (user?.features as any)?.[action.feature] !== false);
 
+    const quickAccess = [
+        {
+            title: "QR Attendance",
+            description: "Scan QR codes",
+            icon: Calendar,
+            href: "/admin/attendance/qr-scanner",
+            feature: "canManageAttendance",
+        },
+        {
+            title: "HR",
+            description: "Staff & payroll",
+            icon: Users,
+            href: "/admin/hr",
+        },
+        {
+            title: "Library",
+            description: "Books & circulation",
+            icon: BookOpen,
+            href: "/admin/library",
+        },
+        {
+            title: "Transport",
+            description: "Routes & vehicles",
+            icon: Bus,
+            href: "/admin/transport",
+        },
+    ].filter(item => !item.feature || (user?.features as any)?.[item.feature] !== false);
+
     const upcomingEvents = [
         { title: "Staff Meeting", date: "Today, 10:00 AM", type: "meeting" },
         { title: "Parent-Teacher Conference", date: "Tomorrow, 2:00 PM", type: "event" },
@@ -227,6 +256,35 @@ export default function AdminDashboard() {
                     </LuminaCard>
                 ))}
             </div>
+
+            {/* Quick Access */}
+            <LuminaCard variant="default" className="border-none shadow-card bg-card animate-fadeInUp" style={{ animationDelay: '150ms' }}>
+                <LuminaCardHeader className="pb-2">
+                    <LuminaCardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+                        <ArrowUpRight className="w-5 h-5 text-primary" />
+                        Quick Access
+                    </LuminaCardTitle>
+                </LuminaCardHeader>
+                <LuminaCardContent className="pt-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {quickAccess.map((item) => (
+                            <button
+                                key={item.href}
+                                onClick={() => router.push(item.href)}
+                                className="group flex items-center gap-3 p-4 rounded-xl bg-muted/50 border border-transparent hover:border-primary/20 hover:bg-primary/5 transition-all duration-300 text-left"
+                            >
+                                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                    <item.icon className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="font-bold text-sm text-foreground truncate">{item.title}</div>
+                                    <div className="text-xs text-muted-foreground truncate">{item.description}</div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </LuminaCardContent>
+            </LuminaCard>
 
             {/* Main Grid - Mobile optimized to single column */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
