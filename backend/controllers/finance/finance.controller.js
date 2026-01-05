@@ -1,7 +1,7 @@
 const FinanceService = require("../../services/finance/finance.service");
 
 // Helper to get schoolId from req
-const getSchoolId = (req) => req.user.schoolId;
+const getSchoolId = (req) => req.userAuth.schoolId;
 
 exports.generateStudentFee = async (req, res) => {
     try {

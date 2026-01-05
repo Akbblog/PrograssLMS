@@ -100,7 +100,7 @@ exports.renewBook = async (req, res) => {
 
 exports.listIssues = async (req, res) => {
   try {
-    const schoolId = req.user.schoolId;
+    const schoolId = req.userAuth.schoolId;
     const issues = await BookIssue.find({ schoolId }).populate('book').populate('borrower');
     res.status(200).json({ status: 'success', data: issues });
   } catch (error) {
@@ -110,7 +110,7 @@ exports.listIssues = async (req, res) => {
 
 exports.listOverdue = async (req, res) => {
   try {
-    const schoolId = req.user.schoolId;
+    const schoolId = req.userAuth.schoolId;
     const now = new Date();
     const overdue = await BookIssue.find({ schoolId, status: 'issued', dueDate: { $lt: now } }).populate('book').populate('borrower');
     res.status(200).json({ status: 'success', data: overdue });
@@ -122,7 +122,7 @@ exports.listOverdue = async (req, res) => {
 exports.borrowerHistory = async (req, res) => {
   try {
     const { id } = req.params; // borrower id
-    const schoolId = req.user.schoolId;
+    const schoolId = req.userAuth.schoolId;
     const history = await BookIssue.find({ schoolId, borrower: id }).populate('book');
     res.status(200).json({ status: 'success', data: history });
   } catch (error) {

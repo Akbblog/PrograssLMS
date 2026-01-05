@@ -4,8 +4,8 @@ const Assignment = require("../../models/Academic/Assignment.model");
 exports.createAssignment = async (req, res) => {
     try {
         const { title, description, subject, classLevel, dueDate, totalPoints, attachments, academicYear, academicTerm } = req.body;
-        const schoolId = req.user.schoolId;
-        const teacher = req.user._id;
+        const schoolId = req.userAuth.schoolId;
+        const teacher = req.userAuth._id;
 
         const assignment = await Assignment.create({
             title,
@@ -34,7 +34,7 @@ exports.createAssignment = async (req, res) => {
 exports.getAssignments = async (req, res) => {
     try {
         const { classLevel, subject, studentId } = req.query;
-        const schoolId = req.user.schoolId;
+        const schoolId = req.userAuth.schoolId;
 
         let query = { schoolId };
         if (classLevel) query.classLevel = classLevel;
@@ -71,7 +71,7 @@ exports.submitAssignment = async (req, res) => {
     try {
         const { assignmentId } = req.params;
         const { content, fileUrl } = req.body;
-        const studentId = req.user._id;
+        const studentId = req.userAuth._id;
 
         const assignment = await Assignment.findById(assignmentId);
         if (!assignment) {

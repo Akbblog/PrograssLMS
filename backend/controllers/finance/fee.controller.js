@@ -9,8 +9,8 @@ exports.createFeeStructure = async (req, res) => {
         const { name, amount, dueDate, academicYear, academicTerm, classLevels, type } = req.body;
 
         // Assuming req.user is populated by auth middleware
-        const schoolId = req.user.schoolId;
-        const createdBy = req.user._id;
+        const schoolId = req.userAuth.schoolId;
+        const createdBy = req.userAuth._id;
 
         const feeStructure = await FeeStructure.create({
             name,
@@ -38,7 +38,7 @@ exports.createFeeStructure = async (req, res) => {
 
 exports.getFeeStructures = async (req, res) => {
     try {
-        const schoolId = req.user.schoolId;
+        const schoolId = req.userAuth.schoolId;
         const feeStructures = await FeeStructure.find({ schoolId })
             .populate("academicYear", "name")
             .populate("academicTerm", "name")
@@ -61,8 +61,8 @@ exports.getFeeStructures = async (req, res) => {
 exports.recordPayment = async (req, res) => {
     try {
         const { studentId, feeStructureId, amountPaid, paymentMethod, remarks } = req.body;
-        const schoolId = req.user.schoolId;
-        const recordedBy = req.user._id;
+        const schoolId = req.userAuth.schoolId;
+        const recordedBy = req.userAuth._id;
 
         const feeStructure = await FeeStructure.findById(feeStructureId);
         if (!feeStructure) {
@@ -115,7 +115,7 @@ exports.getStudentPayments = async (req, res) => {
     try {
         const { studentId } = req.params;
         // If student is requesting, ensure they can only see their own
-        if (req.user.role === "student" && req.user._id.toString() !== studentId) {
+        if (req.userRole === "student" && req.userAuth._id.toString() !== studentId) {
             return res.status(403).json({ status: "fail", message: "Unauthorized" });
         }
 
@@ -139,7 +139,7 @@ exports.getDueFees = async (req, res) => {
     try {
         const { studentId } = req.params;
         // If student is requesting, ensure they can only see their own
-        if (req.user.role === "student" && req.user._id.toString() !== studentId) {
+        if (req.userRole === "student" && req.userAuth._id.toString() !== studentId) {
             return res.status(403).json({ status: "fail", message: "Unauthorized" });
         }
 

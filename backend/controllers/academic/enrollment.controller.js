@@ -4,7 +4,7 @@ const Enrollment = require("../../models/Academic/Enrollment.model");
 exports.createEnrollment = async (req, res) => {
     try {
         const { student, subject, classLevel, academicYear, academicTerm } = req.body;
-        const schoolId = req.user.schoolId;
+        const schoolId = req.userAuth.schoolId;
 
         const enrollment = await Enrollment.create({
             student,
@@ -28,7 +28,7 @@ exports.createEnrollment = async (req, res) => {
 exports.getStudentEnrollments = async (req, res) => {
     try {
         const { studentId } = req.params;
-        const schoolId = req.user.schoolId;
+        const schoolId = req.userAuth.schoolId;
 
         const enrollments = await Enrollment.find({ student: studentId, schoolId, status: "active" })
             .populate("subject", "name description")
