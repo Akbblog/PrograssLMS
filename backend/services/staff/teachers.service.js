@@ -6,7 +6,7 @@ const Teacher = require("../../models/Staff/teachers.model");
 const Admin = require("../../models/Staff/admin.model");
 const generateToken = require("../../utils/tokenGenerator");
 // Import responseStatus handler
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Service to create a new teacher

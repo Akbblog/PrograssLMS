@@ -1,4 +1,4 @@
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const { superAdminLoginService } = require("../../services/superadmin/auth.service");
 
 /**

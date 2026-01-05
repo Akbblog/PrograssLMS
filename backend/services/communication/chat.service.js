@@ -2,7 +2,7 @@ const Conversation = require("../../models/Communication/Conversation.model");
 const Message = require("../../models/Communication/Message.model");
 const Admin = require("../../models/Staff/admin.model");
 const Teacher = require("../../models/Staff/teachers.model");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const eventBus = require("../../utils/eventBus");
 
 /**

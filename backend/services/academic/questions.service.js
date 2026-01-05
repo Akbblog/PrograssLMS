@@ -1,5 +1,5 @@
 // Import necessary models
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const Exam = require("../../models/Academic/exams.model.js");
 const Questions = require("../../models/Academic/questions.model.js");
 

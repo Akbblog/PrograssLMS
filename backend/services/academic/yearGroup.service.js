@@ -2,7 +2,7 @@
 const YearGroup = require("../../models/Academic/yearGroup.model");
 const Admin = require("../../models/Staff/admin.model");
 // Import responseStatus handler
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Create YearGroup service.

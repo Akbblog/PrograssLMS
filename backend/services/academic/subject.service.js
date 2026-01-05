@@ -4,7 +4,7 @@ const Subject = require("../../models/Academic/subject.model");
 const Program = require("../../models/Academic/program.model");
 const Admin = require("../../models/Staff/admin.model");
 // Import responseStatus handler
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Create Subject service (Simple - without program requirement).

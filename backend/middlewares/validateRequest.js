@@ -2,7 +2,7 @@
 // Schema format:
 // { fieldName: { type: 'string'|'number'|'boolean'|'object'|'email', required: true } }
 
-const responseStatus = require("../handlers/responseStatus.handler");
+const responseStatus = require("../handlers/responseStatus.handler.js");
 
 const typeCheckers = {
   string: (v) => typeof v === "string",

@@ -1,4 +1,4 @@
-const responseStatus = require("../handlers/responseStatus.handler");
+const responseStatus = require("../handlers/responseStatus.handler.js");
 const Admin = require("../models/Staff/admin.model");
 
 // permissionName is a key under admin.permissions object

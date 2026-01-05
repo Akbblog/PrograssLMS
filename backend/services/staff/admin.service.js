@@ -3,7 +3,7 @@ const {
   hashPassword,
   isPassMatched,
 } = require("../../handlers/passHash.handler");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const Admin = require("../../models/Staff/admin.model");
 const generateToken = require("../../utils/tokenGenerator");
 const eventBus = require("../../utils/eventBus");

@@ -2,7 +2,7 @@ const Course = require("../../models/Academic/Course.model");
 const Module = require("../../models/Academic/Module.model");
 const Lesson = require("../../models/Academic/Lesson.model");
 const Admin = require("../../models/Staff/admin.model");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Create Course Service

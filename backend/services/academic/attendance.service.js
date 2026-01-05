@@ -2,7 +2,7 @@ const Attendance = require("../../models/Academic/attendance.model");
 const Student = require("../../models/Students/students.model");
 const Admin = require("../../models/Staff/admin.model");
 const Teacher = require("../../models/Staff/teachers.model");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const mongoose = require("mongoose");
 
 /**

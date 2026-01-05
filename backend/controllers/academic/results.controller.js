@@ -1,5 +1,5 @@
 // Response Handler
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const {
   studentCheckExamResultService,
   getAllExamResultsService,

@@ -1,6 +1,6 @@
 const QuestionBank = require("../../models/Academic/Question.model");
 const Admin = require("../../models/Staff/admin.model");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Create Question Service

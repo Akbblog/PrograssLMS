@@ -1,4 +1,4 @@
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const { hashPassword, isPassMatched } = require("../../handlers/passHash.handler");
 const generateToken = require("../../utils/tokenGenerator");
 

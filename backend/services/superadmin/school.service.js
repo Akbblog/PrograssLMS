@@ -1,7 +1,7 @@
 const School = require("../../models/School.model");
 const Admin = require("../../models/Staff/admin.model");
 const bcrypt = require("bcryptjs");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 const eventBus = require("../../utils/eventBus");
 const EVENTS = require("../../utils/events");
 

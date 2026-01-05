@@ -11,6 +11,7 @@ const generateToken = require("../../utils/tokenGenerator");
 const { resultCalculate } = require("../../functions/result-calculate");
 const eventBus = require("../../utils/eventBus");
 const EVENTS = require("../../utils/events");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Admin registration service for creating a new student.

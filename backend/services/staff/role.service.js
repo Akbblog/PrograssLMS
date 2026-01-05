@@ -1,7 +1,7 @@
 const Role = require("../../models/Staff/Role.model");
 const Admin = require("../../models/Staff/admin.model");
 const Teacher = require("../../models/Staff/teachers.model");
-const responseStatus = require("../../handlers/responseStatus.handler");
+const responseStatus = require("../../handlers/responseStatus.handler.js");
 
 /**
  * Create Role Service

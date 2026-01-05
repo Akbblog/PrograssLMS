@@ -289,6 +289,6 @@ schoolSchema.methods.hasFeature = function (featureName) {
   return this.features[featureName] === true;
 };
 
-const School = mongoose.model("School", schoolSchema);
+const School = mongoose.models.School || mongoose.models.School || mongoose.model("School", schoolSchema);
 
 module.exports = School;
