@@ -15,13 +15,28 @@ const dbConnect = async () => {
     return;
   }
 
+  const uri = process.env.DB || process.env.MONGO_URI;
+  if (!uri) {
+    throw new Error(
+      "Database connection string missing. Set env var DB (or MONGO_URI)."
+    );
+  }
+
+  // If we can't connect, don't allow Mongoose to buffer operations.
+  // Buffering causes confusing timeouts like: admins.findOne() buffering timed out.
+  mongoose.set("bufferCommands", false);
+
   try {
-    await mongoose.connect(process.env.DB);
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+    });
     isConnected = true;
     console.log("Database connected to:", mongoose.connection.db.databaseName);
   } catch (err) {
+    isConnected = false;
     console.error(`Failed to connect database: ${err}`.red.bold);
-    console.error(err.stack);
+    throw err;
   }
 };
 

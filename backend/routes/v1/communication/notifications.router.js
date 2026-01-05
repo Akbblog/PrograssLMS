@@ -5,6 +5,7 @@ const isAdmin = require('../../../middlewares/isAdmin');
 const notificationsLib = require('../../../lib/notifications');
 const eventBus = require('../../../utils/eventBus');
 const { NotificationRecipient } = require('../../../models/notification.model');
+const verifyToken = require('../../../utils/verifyToken');
 
 // In-memory SSE connections: userId -> res
 const sseConnections = new Map();
@@ -19,8 +20,44 @@ function sendSSE(res, event, data) {
   }
 }
 
+// EventSource can't reliably send Authorization headers.
+// Support token auth via query string for the SSE endpoint only.
+function isLoggedInSSE(req, res, next) {
+  const headerObj = req.headers || {};
+  const authorization = headerObj.authorization || headerObj.Authorization;
+
+  let token = null;
+  if (authorization) {
+    const parts = String(authorization).split(' ');
+    if (parts.length === 2 && parts[0] === 'Bearer') token = parts[1];
+  }
+
+  if (!token && req.query && typeof req.query.token === 'string') {
+    token = req.query.token;
+  }
+
+  if (!token) {
+    return res.status(401).json({ success: false, data: null, message: 'No token provided' });
+  }
+
+  const verify = verifyToken(token);
+  if (verify && verify._id) {
+    req.userAuth = {
+      ...verify,
+      id: verify._id,
+      _id: verify._id,
+    };
+    req.userId = verify._id || verify.id;
+    req.userRole = verify.role;
+    req.schoolId = verify.schoolId || null;
+    return next();
+  }
+
+  return res.status(401).json({ success: false, data: null, message: 'Invalid/expired token' });
+}
+
 // SSE endpoint for real-time updates
-router.get('/stream', isLoggedIn, (req, res) => {
+router.get('/stream', isLoggedInSSE, (req, res) => {
   const userId = req.userId;
 
   // Headers for SSE
