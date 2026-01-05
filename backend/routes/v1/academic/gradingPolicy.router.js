@@ -10,13 +10,12 @@ const {
 const isAdmin = require("../../../middlewares/isAdmin");
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
 
-router.use(isLoggedIn);
-router.use(isAdmin); // Typically admin handles policies
-
-router.post("/grading-policies", createGradingPolicy);
-router.get("/grading-policies", getAllGradingPolicies);
-router.get("/grading-policies/active", getActivePolicy);
-router.patch("/grading-policies/:id", updateGradingPolicy);
-router.delete("/grading-policies/:id", deleteGradingPolicy);
+// NOTE: This router is mounted at '/' in routes/v1/index.js.
+// Avoid router-wide auth middleware here, otherwise it intercepts *all* /api/v1 requests.
+router.post("/grading-policies", isLoggedIn, isAdmin, createGradingPolicy);
+router.get("/grading-policies", isLoggedIn, isAdmin, getAllGradingPolicies);
+router.get("/grading-policies/active", isLoggedIn, isAdmin, getActivePolicy);
+router.patch("/grading-policies/:id", isLoggedIn, isAdmin, updateGradingPolicy);
+router.delete("/grading-policies/:id", isLoggedIn, isAdmin, deleteGradingPolicy);
 
 module.exports = router;

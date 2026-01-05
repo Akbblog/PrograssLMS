@@ -41,9 +41,13 @@ export default function AdminReportsPage() {
             ]);
 
             setStats((statsRes as any).data || { totalStudents: 0, totalTeachers: 0, totalClasses: 0, totalRevenue: 0 });
-            setStudents((studentsRes as any).data || []);
-            setTeachers((teachersRes as any).data || []);
-            setClasses((classesRes as any).data || []);
+            const studentsData = (studentsRes as any)?.data;
+            const teachersData = (teachersRes as any)?.data;
+            const classesData = (classesRes as any)?.data;
+
+            setStudents(Array.isArray(studentsData) ? studentsData : (studentsData?.students || []));
+            setTeachers(Array.isArray(teachersData) ? teachersData : (teachersData?.teachers || []));
+            setClasses(Array.isArray(classesData) ? classesData : (classesData?.classes || []));
         } catch (error) {
             toast.error("Failed to load report data");
         } finally {

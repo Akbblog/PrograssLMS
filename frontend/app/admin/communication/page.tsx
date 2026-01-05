@@ -175,10 +175,22 @@ export default function CommunicationPage() {
                         const convId = payload.conversationId
                         // If belongs to active conversation, append
                         if (convId === activeConversation?._id) {
-                            setMessages(prev => [...prev, payload.message])
+                            setMessages(prev => Array.isArray(prev) ? [...prev, payload.message] : [payload.message])
                         } else {
                             // update conversations listing (lastMessage / unread)
-                            setConversations(prev => prev.map(c => c._id === convId ? ({ ...c, lastMessage: { content: payload.message.content, sender: payload.message.sender?._id || payload.message.sender || '', sentAt: payload.message.createdAt }, unreadCount: (((c as any).unreadCount || 0) + 1) } as any) : c))
+                            setConversations(prev => Array.isArray(prev)
+                                ? prev.map(c => c._id === convId
+                                    ? ({
+                                        ...c,
+                                        lastMessage: {
+                                            content: payload.message.content,
+                                            sender: payload.message.sender?._id || payload.message.sender || '',
+                                            sentAt: payload.message.createdAt,
+                                        },
+                                        unreadCount: (((c as any).unreadCount || 0) + 1),
+                                    } as any)
+                                    : c)
+                                : prev)
                         }
                     }
 
@@ -217,9 +229,10 @@ export default function CommunicationPage() {
     const fetchConversations = async () => {
         try {
             const res: any = await communicationAPI.getConversations()
-            setConversations(res.data || [])
-            if (!activeConversation && res.data?.length > 0) {
-                setActiveConversation(res.data[0])
+            const list = Array.isArray(res?.data) ? res.data : []
+            setConversations(list)
+            if (!activeConversation && list.length > 0) {
+                setActiveConversation(list[0])
             }
         } catch (error) {
             console.error("Failed to load conversations:", error)
@@ -232,7 +245,11 @@ export default function CommunicationPage() {
     const fetchTeachers = async () => {
         try {
             const res: any = await adminAPI.getTeachers()
-            setTeachers(res.data || [])
+            const teachersData = res?.data
+            const list = Array.isArray(teachersData)
+                ? teachersData
+                : (Array.isArray(teachersData?.teachers) ? teachersData.teachers : [])
+            setTeachers(list)
         } catch (error) {
             console.error("Failed to load teachers:", error)
         }
@@ -242,7 +259,8 @@ export default function CommunicationPage() {
         setLoadingMessages(true)
         try {
             const res: any = await communicationAPI.getConversation(conversationId)
-            setMessages(res.data?.messages || [])
+            const list = Array.isArray(res?.data?.messages) ? res.data.messages : []
+            setMessages(list)
             await communicationAPI.markAsRead(conversationId)
         } catch (error) {
             console.error("Failed to load messages:", error)

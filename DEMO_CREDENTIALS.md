@@ -1,54 +1,55 @@
 # 🚀 Demo Account Credentials
 
-This file contains credentials for the Progress LMS Demo School populated with authentic Muslim-focused data.
+This file contains credentials for the Progress LMS Demo School populated with 10 teachers and 25 students.
 
-## 🔑 School Admin
+## 🔑 Central Roles
 
-| Role | Name | Email | Password |
-| :--- | :--- | :--- | :--- |
-| **School Admin** | Ahmad Farooq | `admin@school.demo` | `progresslmspass` |
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Super Admin** | `SA@progresslms.com` | `Superpass` |
+| **School Admin** | `admin@school.com` | `admin123` |
 
 ## 👨‍🏫 Teachers (10 Created)
 
-| Name | Email | Password | Assigned Grade |
+| Name | Email | Password | Primary Subject |
 | :--- | :--- | :--- | :--- |
-| Fatimah Hasan | `fatimah.hasan@school.demo` | `progresslmspass` | Grade 1 |
-| Yusuf Rahman | `yusuf.rahman@school.demo` | `progresslmspass` | Grade 2 |
-| Amina Siddiqui | `amina.siddiqui@school.demo` | `progresslmspass` | Grade 3 |
-| Khalid Noor | `khalid.noor@school.demo` | `progresslmspass` | Grade 4 |
-| Layla Zahra | `layla.zahra@school.demo` | `progresslmspass` | Grade 5 |
-| Omar Qureshi | `omar.qureshi@school.demo` | `progresslmspass` | Grade 1 |
-| Maryam Idris | `maryam.idris@school.demo` | `progresslmspass` | Grade 2 |
-| Bilal Kareem | `bilal.kareem@school.demo` | `progresslmspass` | Grade 3 |
-| Zainab Malik | `zainab.malik@school.demo` | `progresslmspass` | Grade 4 |
-| Hamza Abdullah | `hamza.abdullah@school.demo` | `progresslmspass` | Grade 5 |
+| Robert Smith | `teacher1@progress.edu` | `password123` | Mathematics |
+| Maria Garcia | `teacher2@progress.edu` | `password123` | English Literature |
+| Suresh Kumar | `teacher3@progress.edu` | `password123` | Physics |
+| Elena Petrova | `teacher4@progress.edu` | `password123` | History |
+| Aisha Diallo | `teacher5@progress.edu` | `password123` | Biology |
+| Kenji Tanaka | `teacher6@progress.edu` | `password123` | Computer Science |
+| Sophie Martin | `teacher7@progress.edu` | `password123` | Art & Design |
+| Thomas Muller | `teacher8@progress.edu` | `password123` | Physical Education |
+| Isabella Rossi | `teacher9@progress.edu` | `password123` | Chemistry |
+| Liam O'Connor | `teacher10@progress.edu` | `password123` | Music |
 
 ## 🎓 Students (25 Created)
 
-| Name | Email | Password | Grade |
+| Name | Email | Password | Class |
 | :--- | :--- | :--- | :--- |
-| Aaliyah Khan | `aaliyah.khan@school.demo` | `progresslmspass` | Grade 1 |
-| Ibrahim Malik | `ibrahim.malik@school.demo` | `progresslmspass` | Grade 2 |
-| Noor Alvi | `noor.alvi@school.demo` | `progresslmspass` | Grade 3 |
-| Rayan Siddiq | `rayan.siddiq@school.demo` | `progresslmspass` | Grade 4 |
-| Huda Qadir | `huda.qadir@school.demo` | `progresslmspass` | Grade 5 |
-| Zayd Rahim | `zayd.rahim@school.demo` | `progresslmspass` | Grade 1 |
-| Mariam Omar | `mariam.omar@school.demo` | `progresslmspass` | Grade 2 |
-| Taha Karim | `taha.karim@school.demo` | `progresslmspass` | Grade 3 |
-| Safiya Idris | `safiya.idris@school.demo` | `progresslmspass` | Grade 4 |
-| Yahya Saleh | `yahya.saleh@school.demo` | `progresslmspass` | Grade 5 |
-| Hafsa Rauf | `hafsa.rauf@school.demo` | `progresslmspass` | Grade 1 |
-| Elias Farid | `elias.farid@school.demo` | `progresslmspass` | Grade 2 |
-| Amna Jamil | `amna.jamil@school.demo` | `progresslmspass` | Grade 3 |
-| Zara Yasin | `zara.yasin@school.demo` | `progresslmspass` | Grade 4 |
-| Sami Naeem | `sami.naeem@school.demo` | `progresslmspass` | Grade 5 |
-| Aisha Basit | `aisha.basit@school.demo` | `progresslmspass` | Grade 1 |
-| Usman Tariq | `usman.tariq@school.demo` | `progresslmspass` | Grade 2 |
-| Lina Habib | `lina.habib@school.demo` | `progresslmspass` | Grade 3 |
-| Farah Imran | `farah.imran@school.demo` | `progresslmspass` | Grade 4 |
-| Nabil Khan | `nabil.khan@school.demo` | `progresslmspass` | Grade 5 |
-| Sumayyah Ali | `sumayyah.ali@school.demo` | `progresslmspass` | Grade 1 |
-| Junaid Iqbal | `junaid.iqbal@school.demo` | `progresslmspass` | Grade 2 |
-| Sara Latif | `sara.latif@school.demo` | `progresslmspass` | Grade 3 |
-| Mahmoud Saeed | `mahmoud.saeed@school.demo` | `progresslmspass` | Grade 4 |
-| Anisa Parvez | `anisa.parvez@school.demo` | `progresslmspass` | Grade 5 |
+| Liam Martinez | `student1@progress.edu` | `password123` | Grade 1 |
+| Noah Miller | `student2@progress.edu` | `password123` | Grade 2 |
+| Oliver Wilson | `student3@progress.edu` | `password123` | Grade 3 |
+| James Hernandez | `student4@progress.edu` | `password123` | Grade 4 |
+| Elijah Martinez | `student5@progress.edu` | `password123` | Grade 5 |
+| William Johnson | `student6@progress.edu` | `password123` | Grade 1 |
+| Henry Johnson | `student7@progress.edu` | `password123` | Grade 2 |
+| Lucas Martinez | `student8@progress.edu` | `password123` | Grade 3 |
+| Benjamin Lopez | `student9@progress.edu` | `password123` | Grade 4 |
+| Theodore Hernandez | `student10@progress.edu` | `password123` | Grade 5 |
+| Emma Anderson | `student11@progress.edu` | `password123` | Grade 1 |
+| Olivia Garcia | `student12@progress.edu` | `password123` | Grade 2 |
+| Ava Lopez | `student13@progress.edu` | `password123` | Grade 3 |
+| Sophia Thomas | `student14@progress.edu` | `password123` | Grade 4 |
+| Charlotte Miller | `student15@progress.edu` | `password123` | Grade 5 |
+| Amelia Jones | `student16@progress.edu` | `password123` | Grade 1 |
+| Mia Rodriguez | `student17@progress.edu` | `password123` | Grade 2 |
+| Harper Gonzalez | `student18@progress.edu` | `password123` | Grade 3 |
+| Evelyn Jones | `student19@progress.edu` | `password123` | Grade 4 |
+| Abigail Davis | `student20@progress.edu` | `password123` | Grade 5 |
+| Daniel Gonzalez | `student21@progress.edu` | `password123` | Grade 1 |
+| Matthew Rodriguez | `student22@progress.edu` | `password123` | Grade 2 |
+| Jacob Brown | `student23@progress.edu` | `password123` | Grade 3 |
+| Michael Wilson | `student24@progress.edu` | `password123` | Grade 4 |
+| Alexander Lopez | `student25@progress.edu` | `password123` | Grade 5 |

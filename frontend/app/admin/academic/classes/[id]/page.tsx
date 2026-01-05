@@ -72,7 +72,8 @@ export default function ClassDetailPage() {
             // Fetch students by class level
             try {
                 const studentsRes: any = await academicAPI.getStudentsByClass(classId);
-                setStudents(studentsRes.data || []);
+                const studentsData = studentsRes?.data;
+                setStudents(Array.isArray(studentsData) ? studentsData : (studentsData?.students || []));
             } catch {
                 setStudents(data.students || []);
             }
@@ -80,7 +81,8 @@ export default function ClassDetailPage() {
             // Fetch subjects by class level
             try {
                 const subjectsRes: any = await academicAPI.getSubjectsByClass(classId);
-                setSubjects(subjectsRes.data || []);
+                const subjectsData = subjectsRes?.data;
+                setSubjects(Array.isArray(subjectsData) ? subjectsData : (subjectsData?.subjects || []));
             } catch {
                 setSubjects(data.subjects || []);
             }
@@ -88,7 +90,8 @@ export default function ClassDetailPage() {
             // Fetch teachers by class level
             try {
                 const teachersRes: any = await academicAPI.getTeachersByClass(classId);
-                setTeachers(teachersRes.data || []);
+                const teachersData = teachersRes?.data;
+                setTeachers(Array.isArray(teachersData) ? teachersData : (teachersData?.teachers || []));
             } catch {
                 setTeachers(data.teachers || []);
             }
