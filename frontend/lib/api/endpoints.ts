@@ -354,6 +354,78 @@ export const roleAPI = {
   getPermissions: () => api.get('/permissions'),
 };
 
+// HR API
+export const hrAPI = {
+  // Staff
+  getStaff: (params?: any) => api.get('/hr/staff', { params }),
+  getStaffById: (id: string) => api.get(`/hr/staff/${id}`),
+  createStaff: (data: any) => api.post('/hr/staff', data),
+  updateStaff: (id: string, data: any) => api.put(`/hr/staff/${id}`, data),
+  deleteStaff: (id: string) => api.delete(`/hr/staff/${id}`),
+  // Leaves
+  getLeaves: (params?: any) => api.get('/hr/leaves', { params }),
+  applyLeave: (data: any) => api.post('/hr/leaves', data),
+  approveLeave: (id: string) => api.put(`/hr/leaves/${id}/approve`),
+  rejectLeave: (id: string, reason?: string) => api.put(`/hr/leaves/${id}/reject`, { reason }),
+  getLeaveBalance: (staffId: string) => api.get(`/hr/leaves/balance/${staffId}`),
+  // Payroll
+  getPayrolls: (params?: any) => api.get('/hr/payroll', { params }),
+  generatePayroll: (data: any) => api.post('/hr/payroll/generate', data),
+  processPayroll: (id: string) => api.post(`/hr/payroll/${id}/process`),
+  getPayslip: (id: string) => api.get(`/hr/payroll/${id}/payslip`, { responseType: 'blob' as any }),
+  // Appraisals
+  getAppraisals: (params?: any) => api.get('/hr/appraisals', { params }),
+  createAppraisal: (data: any) => api.post('/hr/appraisals', data),
+  updateAppraisal: (id: string, data: any) => api.put(`/hr/appraisals/${id}`, data),
+  deleteAppraisal: (id: string) => api.delete(`/hr/appraisals/${id}`),
+};
+
+// Library API
+export const libraryAPI = {
+  // Books
+  getBooks: (params?: any) => api.get('/library/books', { params }),
+  getBookById: (id: string) => api.get(`/library/books/${id}`),
+  createBook: (data: any) => api.post('/library/books', data),
+  updateBook: (id: string, data: any) => api.put(`/library/books/${id}`, data),
+  deleteBook: (id: string) => api.delete(`/library/books/${id}`),
+  // Issues
+  getIssues: (params?: any) => api.get('/library/issues', { params }),
+  issueBook: (data: any) => api.post('/library/issue', data),
+  returnBook: (issueId: string, data?: any) => api.post(`/library/return/${issueId}`, data),
+  renewBook: (issueId: string) => api.post(`/library/renew/${issueId}`),
+  getOverdue: () => api.get('/library/overdue'),
+  getBorrowerHistory: (borrowerId: string) => api.get(`/library/borrower/${borrowerId}`),
+  // Settings & Stats
+  getSettings: () => api.get('/library/settings'),
+  updateSettings: (data: any) => api.put('/library/settings', data),
+  getStats: () => api.get('/library/stats'),
+};
+
+// Transport API
+export const transportAPI = {
+  // Vehicles
+  getVehicles: (params?: any) => api.get('/transport/vehicles', { params }),
+  getVehicleById: (id: string) => api.get(`/transport/vehicles/${id}`),
+  createVehicle: (data: any) => api.post('/transport/vehicles', data),
+  updateVehicle: (id: string, data: any) => api.put(`/transport/vehicles/${id}`, data),
+  deleteVehicle: (id: string) => api.delete(`/transport/vehicles/${id}`),
+  // Routes
+  getRoutes: (params?: any) => api.get('/transport/routes', { params }),
+  getRouteById: (id: string) => api.get(`/transport/routes/${id}`),
+  createRoute: (data: any) => api.post('/transport/routes', data),
+  updateRoute: (id: string, data: any) => api.put(`/transport/routes/${id}`, data),
+  deleteRoute: (id: string) => api.delete(`/transport/routes/${id}`),
+  // Allocations
+  getAllocations: (params?: any) => api.get('/transport/allocations', { params }),
+  createAllocation: (data: any) => api.post('/transport/allocations', data),
+  updateAllocation: (id: string, data: any) => api.put(`/transport/allocations/${id}`, data),
+  deleteAllocation: (id: string) => api.delete(`/transport/allocations/${id}`),
+  getStudentAllocation: (studentId: string) => api.get(`/transport/allocations/student/${studentId}`),
+  getRouteAllocations: (routeId: string) => api.get(`/transport/allocations/route/${routeId}`),
+  // Stats
+  getStats: () => api.get('/transport/stats'),
+};
+
 export default api;
 
 
