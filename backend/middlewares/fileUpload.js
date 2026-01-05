@@ -7,17 +7,41 @@ const unlink = util.promisify(fs.unlink);
 
 // Ensure upload directory exists
 const UPLOAD_BASE = path.join(__dirname, '..', 'uploads', 'communication');
-const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const serverlessEnvKeys = [
+  'VERCEL',
+  'VERCEL_ENV',
+  'VERCEL_URL',
+  'AWS_LAMBDA_FUNCTION_NAME',
+  'AWS_EXECUTION_ENV',
+  'NOW_REGION',
+  'FUNCTIONS_WORKER_RUNTIME',
+  'FUNCTION_NAME',
+  'GCF_FUNCTION'
+];
 
-let storage;
-if (isServerless) {
-  console.warn('[fileUpload] Running in serverless environment, using memory storage for uploads');
-  storage = multer.memoryStorage();
-} else {
+const isRunningInServerless = serverlessEnvKeys.some((key) => Boolean(process.env[key]));
+if (isRunningInServerless) {
+  console.warn('[fileUpload] Serverless runtime detected – uploads keep working in memory storage');
+}
+
+const ensureUploadDirectory = () => {
+  if (isRunningInServerless) {
+    return false;
+  }
   try {
-    fs.mkdirSync(UPLOAD_BASE, { recursive: true });
-    // Multer storage to disk (fallback for dev)
-    storage = multer.diskStorage({
+    if (!fs.existsSync(UPLOAD_BASE)) {
+      fs.mkdirSync(UPLOAD_BASE, { recursive: true });
+    }
+    return true;
+  } catch (err) {
+    console.warn('[fileUpload] Failed to prepare upload directory, falling back to memory storage:', err.message);
+    return false;
+  }
+};
+
+const diskStorageAvailable = ensureUploadDirectory();
+const storage = diskStorageAvailable
+  ? multer.diskStorage({
       destination: function (req, file, cb) {
         cb(null, UPLOAD_BASE);
       },
@@ -25,12 +49,8 @@ if (isServerless) {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, unique + '-' + file.originalname.replace(/\s+/g, '-'));
       }
-    });
-  } catch (err) {
-    console.warn('[fileUpload] Failed to create upload directory, falling back to memory storage:', err.message);
-    storage = multer.memoryStorage();
-  }
-}
+    })
+  : multer.memoryStorage();
 
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit per file
 
