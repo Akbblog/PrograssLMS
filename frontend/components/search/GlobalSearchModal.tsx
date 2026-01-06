@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useRef } from 'react';
 import { Dialog } from '@radix-ui/react-dialog';
 import { useSearchStore } from '../../store/searchStore';
@@ -5,7 +7,7 @@ import { CategoryHeader } from './CategoryHeader';
 import { SearchResultItem } from './SearchResultItem';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
-export const GlobalSearchModal: React.FC = () => {
+export default function GlobalSearchModal() {
   const {
     isOpen,
     query,
