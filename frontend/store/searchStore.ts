@@ -62,7 +62,8 @@ export const useSearchStore = create<SearchState & SearchActions>((set, get) => 
     set({ isLoading: true });
     try {
       const categories = get().activeCategory || undefined;
-      const data = await searchAPI.global(query, categories as any);
+      const raw = await searchAPI.global(query, categories as any);
+      const data: any = raw as any;
       // Ensure data is an object with array values
       const safeData: SearchResults = {};
       if (data && typeof data === 'object') {
