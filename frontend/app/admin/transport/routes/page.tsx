@@ -405,15 +405,13 @@ export default function RoutesPage() {
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <Route className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                                    <Route className="h-6 w-6 text-white" />
                                 </div>
                                 <div>
-                                    <DialogTitle>{editingRoute ? 'Edit Route' : 'Create Route'}</DialogTitle>
-                                    <DialogDescription>
-                                        {editingRoute ? 'Update route details' : 'Add a new transport route'}
-                                    </DialogDescription>
+                                    <DialogTitle>{editingRoute ? 'Edit Route' : 'Add Route'}</DialogTitle>
+                                    <DialogDescription>{editingRoute ? 'Update route details' : 'Create a new route and its stops'}</DialogDescription>
                                 </div>
                             </div>
                         </DialogHeader>
@@ -426,6 +424,7 @@ export default function RoutesPage() {
                                         value={formData.routeName}
                                         onChange={(e) => setFormData({ ...formData, routeName: e.target.value })}
                                         placeholder="e.g., North City Route"
+                                        className="h-10"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -434,6 +433,7 @@ export default function RoutesPage() {
                                         value={formData.routeCode}
                                         onChange={(e) => setFormData({ ...formData, routeCode: e.target.value })}
                                         placeholder="e.g., R001"
+                                        className="h-10"
                                     />
                                 </div>
                             </div>
@@ -456,7 +456,7 @@ export default function RoutesPage() {
                                             type="number"
                                             value={formData.monthlyFee}
                                             onChange={(e) => setFormData({ ...formData, monthlyFee: parseFloat(e.target.value) || 0 })}
-                                            className="pl-10"
+                                            className="pl-10 h-10"
                                             placeholder="0.00"
                                         />
                                     </div>
@@ -490,13 +490,13 @@ export default function RoutesPage() {
                                                 value={stop.name}
                                                 onChange={(e) => updateStop(index, 'name', e.target.value)}
                                                 placeholder="Stop name..."
-                                                className="flex-1"
+                                                className="flex-1 h-10"
                                             />
                                             <Input
                                                 type="time"
                                                 value={stop.time}
                                                 onChange={(e) => updateStop(index, 'time', e.target.value)}
-                                                className="w-28"
+                                                className="w-28 h-10"
                                             />
                                             {formData.stops.length > 1 && (
                                                 <Button
@@ -522,10 +522,10 @@ export default function RoutesPage() {
                             <Button
                                 onClick={handleSubmit}
                                 disabled={processing}
-                                className="bg-purple-600 hover:bg-purple-700"
+                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {editingRoute ? 'Update Route' : 'Create Route'}
+                                {editingRoute ? 'Update Route' : 'Save Route'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>

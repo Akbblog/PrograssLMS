@@ -15,8 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Plus, Trash2, BookOpen, Tag, Loader2 } from "lucide-react";
 
 const bookSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -108,20 +108,30 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8 pb-10">
         
         {/* Section 1: Basic Info */}
-        <Card>
-            <CardHeader><CardTitle className="text-lg">Basic Information</CardTitle></CardHeader>
-            <CardContent className="grid gap-6">
+        <Card className="border-0 shadow-lg">
+            <CardHeader className="border-b bg-slate-50/50 p-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <BookOpen className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                        <CardTitle>Basic Information</CardTitle>
+                        <CardDescription>Core metadata for the book</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                          <Label>ISBN</Label>
                          <div className="flex gap-2">
-                             <Input {...register("isbn")} placeholder="978-..." />
-                             <Button type="button" variant="outline">Lookup</Button>
+                             <Input {...register("isbn")} placeholder="978-..." className="h-10" />
+                             <Button type="button" variant="outline" className="h-10">Lookup</Button>
                          </div>
                      </div>
                      <div className="space-y-2">
                          <Label>Language <span className="text-red-500">*</span></Label>
-                         <Input {...register("language")} />
+                         <Input {...register("language")} className="h-10" />
                      </div>
                  </div>
 
@@ -177,46 +187,66 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
         </Card>
 
         {/* Section 2: Classification */}
-        <Card>
-            <CardHeader><CardTitle className="text-lg">Classification</CardTitle></CardHeader>
-            <CardContent className="grid gap-6">
+        <Card className="border-0 shadow-lg">
+            <CardHeader className="border-b bg-slate-50/50 p-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                        <Tag className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <div>
+                        <CardTitle>Classification</CardTitle>
+                        <CardDescription>Categorize the book for easier discovery</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                          <Label>Category <span className="text-red-500">*</span></Label>
-                         <Input {...register("category")} placeholder="e.g. Science, Fiction" />
+                         <Input {...register("category")} placeholder="e.g. Science, Fiction" className="h-10" />
                          {errors.category && <span className="text-xs text-red-500">{errors.category.message}</span>}
                      </div>
                      <div className="space-y-2">
                          <Label>Subcategory</Label>
-                         <Input {...register("subcategory")} />
+                         <Input {...register("subcategory")} className="h-10" />
                      </div>
                  </div>
             </CardContent>
         </Card>
 
         {/* Section 3: Inventory */}
-        <Card>
-            <CardHeader><CardTitle className="text-lg">Inventory & Location</CardTitle></CardHeader>
-            <CardContent className="grid gap-6">
+        <Card className="border-0 shadow-lg">
+            <CardHeader className="border-b bg-slate-50/50 p-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                        <BookOpen className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <div>
+                        <CardTitle>Inventory & Location</CardTitle>
+                        <CardDescription>Track copies and shelving information</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                          <Label>Total Copies <span className="text-red-500">*</span></Label>
-                         <Input type="number" {...register("totalCopies", { valueAsNumber: true })} />
+                         <Input type="number" {...register("totalCopies", { valueAsNumber: true })} className="h-10" />
                      </div>
                      <div className="space-y-2">
                          <Label>Available Copies</Label>
-                         <Input type="number" {...register("availableCopies", { valueAsNumber: true })} />
+                         <Input type="number" {...register("availableCopies", { valueAsNumber: true })} className="h-10" />
                      </div>
                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                          <Label>Shelf Location <span className="text-red-500">*</span></Label>
-                         <Input {...register("location.shelf")} />
+                         <Input {...register("location.shelf")} className="h-10" />
                          {errors.location?.shelf && <span className="text-xs text-red-500">{errors.location.shelf.message}</span>}
                      </div>
                      <div className="space-y-2">
                          <Label>Row Number <span className="text-red-500">*</span></Label>
-                         <Input {...register("location.row")} />
+                         <Input {...register("location.row")} className="h-10" />
                          {errors.location?.row && <span className="text-xs text-red-500">{errors.location.row.message}</span>}
                      </div>
                  </div>
@@ -224,13 +254,23 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
         </Card>
 
         {/* Section 4: Acquisition */}
-        <Card>
-            <CardHeader><CardTitle className="text-lg">Acquisition Details</CardTitle></CardHeader>
-            <CardContent className="grid gap-6">
+        <Card className="border-0 shadow-lg">
+            <CardHeader className="border-b bg-slate-50/50 p-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                        <BookOpen className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <div>
+                        <CardTitle>Acquisition Details</CardTitle>
+                        <CardDescription>How the book was acquired and cost details</CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      <div className="space-y-2">
                          <Label>Date Received</Label>
-                         <Input type="date" {...register("acquisitionInfo.dateReceived")} />
+                         <Input type="date" {...register("acquisitionInfo.dateReceived")} className="h-10" />
                      </div>
                      <div className="space-y-2">
                          <Label>Source</Label>
@@ -239,7 +279,7 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                             name="acquisitionInfo.source"
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="purchased">Purchased</SelectItem>
                                         <SelectItem value="donated">Donated</SelectItem>
@@ -251,19 +291,21 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                      </div>
                      <div className="space-y-2">
                          <Label>Vendor</Label>
-                         <Input {...register("acquisitionInfo.vendor")} />
+                         <Input {...register("acquisitionInfo.vendor")} className="h-10" />
                      </div>
                  </div>
                  <div className="space-y-2">
                      <Label>Price</Label>
-                     <Input type="number" {...register("acquisitionInfo.price", { valueAsNumber: true })} />
+                     <Input type="number" {...register("acquisitionInfo.price", { valueAsNumber: true })} className="h-10" />
                  </div>
             </CardContent>
         </Card>
 
         <div className="flex items-center justify-end gap-3 sticky bottom-0 bg-white p-4 border-t z-10">
             <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button type="submit" disabled={isLoading}>{isLoading ? "Saving..." : "Save Book"}</Button>
+            <Button type="submit" disabled={isLoading} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                {isLoading ? (<> <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>) : 'Save Book'}
+            </Button>
         </div>
     </form>
   );

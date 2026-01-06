@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Calendar, Users, CheckCircle2, XCircle, Clock, Search, Filter } from "lucide-react";
+import { Loader2, Calendar, Users, CheckCircle2, XCircle, Clock, Search, Filter, ArrowLeft } from "lucide-react";
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { toast } from "sonner";
 import Icon from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { unwrapArray } from "@/lib/utils";
 
 export default function AdminAttendancePage() {
@@ -20,6 +22,8 @@ export default function AdminAttendancePage() {
     const [selectedClass, setSelectedClass] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [attendanceData, setAttendanceData] = useState<any[]>([]);
+    const [isMarkOpen, setIsMarkOpen] = useState(false);
+    const [markLoading, setMarkLoading] = useState(false);
 
     useEffect(() => {
         fetchInitialData();
@@ -74,7 +78,7 @@ export default function AdminAttendancePage() {
         <AdminPageLayout
             title="Attendance"
             description="Record and review student attendance"
-            actions={<Button>Mark Attendance</Button>}
+            actions={<Button onClick={() => setIsMarkOpen(true)} className="bg-primary text-white">Mark Attendance</Button>}
             stats={(
                 <>
                     <SummaryStatCard title="Present" value={present} icon={<CheckCircle2 className="h-4 w-4 text-white" />} variant="green" />
@@ -153,6 +157,103 @@ export default function AdminAttendancePage() {
                         Manual overrides by admins are logged for auditing purposes.
                     </p>
                 </div>
+
+                {/* Mark Attendance Dialog */}
+                <Dialog open={isMarkOpen} onOpenChange={setIsMarkOpen}>
+                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                                    <Calendar className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>Mark Attendance</DialogTitle>
+                                    <DialogDescription>Quickly mark attendance for a class and date</DialogDescription>
+                                </div>
+                            </div>
+                        </DialogHeader>
+
+                        <div className="p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div className="space-y-2">
+                                    <Label>Class</Label>
+                                    <Select onValueChange={(v:any) => setSelectedClass(v)}>
+                                        <SelectTrigger className="h-10"><SelectValue placeholder="Select class" /></SelectTrigger>
+                                        <SelectContent>
+                                            {classes.map(c => <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Date</Label>
+                                    <Input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="h-10" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Academic Year</Label>
+                                    <Select onValueChange={(v:any) => { /* keep existing selectedAcademicYear state */ setSelectedAcademicYear(v) }}>
+                                        <SelectTrigger className="h-10"><SelectValue placeholder="Select year" /></SelectTrigger>
+                                        <SelectContent>
+                                            {academicYears.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="mb-4">
+                                <Card className="border-0 shadow-lg">
+                                    <CardHeader className="p-4 border-b">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <CardTitle>Students</CardTitle>
+                                                <CardDescription>Toggle status for each student below</CardDescription>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button variant="outline" size="sm" onClick={() => handleMarkAllStudents('present')}>Mark All Present</Button>
+                                                <Button variant="outline" size="sm" onClick={() => handleMarkAllStudents('absent')}>Mark All Absent</Button>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-4">
+                                        {loading && students.length === 0 ? (
+                                            <div className="flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
+                                        ) : students.length === 0 ? (
+                                            <p className="text-sm text-muted-foreground">No students for selected class.</p>
+                                        ) : (
+                                            <div className="grid gap-3">
+                                                {students.map(s => (
+                                                    <div key={s._id} className="flex items-center justify-between p-2 rounded-lg border">
+                                                        <div>
+                                                            <div className="font-medium">{s.name}</div>
+                                                            <div className="text-xs text-muted-foreground">{s.rollNumber || s.studentId}</div>
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <Button size="sm" variant={studentAttendance[s._id]?.status === 'present' ? 'primary' : 'ghost'} onClick={() => handleStudentStatusChange(s._id, 'present')}>Present</Button>
+                                                            <Button size="sm" variant={studentAttendance[s._id]?.status === 'absent' ? 'destructive' : 'ghost'} onClick={() => handleStudentStatusChange(s._id, 'absent')}>Absent</Button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+
+                        <DialogFooter className="gap-2 mt-4">
+                            <Button variant="outline" onClick={() => setIsMarkOpen(false)}>Cancel</Button>
+                            <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700" onClick={async () => {
+                                setMarkLoading(true);
+                                try {
+                                    // reuse existing save handler
+                                    await handleSaveStudentAttendance();
+                                    setIsMarkOpen(false);
+                                } finally { setMarkLoading(false); }
+                            }} disabled={markLoading || !selectedClass}>
+                                {markLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>) : 'Save Attendance'}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AdminPageLayout>
     );

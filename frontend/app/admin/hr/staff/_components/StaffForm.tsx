@@ -154,15 +154,18 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
       {/* Stepper Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b bg-gray-50/50">
         {STEPS.map((step) => (
-          <div
+          <button
             key={step.id}
-            className={`flex flex-col items-center gap-1 ${
+            type="button"
+            onClick={() => setCurrentStep(step.id)}
+            className={`flex flex-col items-center gap-1 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded p-1 ${
               step.id === currentStep
                 ? "text-primary font-bold"
                 : step.id < currentStep
                 ? "text-green-600"
                 : "text-muted-foreground"
             }`}
+            aria-current={step.id === currentStep ? 'step' : undefined}
           >
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center border-2 text-xs transition-colors ${
@@ -178,7 +181,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
             <span className="text-[10px] uppercase tracking-wider hidden md:block">
               {step.title}
             </span>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -507,17 +510,18 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
           type="button"
           variant="outline"
           onClick={currentStep === 1 ? onCancel : prevStep}
+          className="flex items-center gap-2"
         >
-          {currentStep === 1 ? "Cancel" : "Previous"}
+          {currentStep === 1 ? (<>Cancel</>) : (<><ChevronsLeft className="h-4 w-4" /> Previous</>)}
         </Button>
         <div className="flex gap-2">
             {currentStep < STEPS.length ? (
-                <Button type="button" onClick={nextStep} className="gap-2">
-                    Next <ChevronsRight className="h-4 w-4" />
+                <Button type="button" onClick={nextStep} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center gap-2">
+                    Next Step <ChevronsRight className="h-4 w-4" />
                 </Button>
             ) : (
-                <Button type="button" onClick={handleSubmit(onSubmit)} className="gap-2" disabled={isLoading}>
-                    {isLoading ? "Submitting..." : "Submit Staff Profile"} <Check className="h-4 w-4" />
+                <Button type="button" onClick={handleSubmit(onSubmit)} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 flex items-center gap-2" disabled={isLoading}>
+                    {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>) : (<>Submit Staff Profile <Check className="h-4 w-4" /></>)}
                 </Button>
             )}
         </div>

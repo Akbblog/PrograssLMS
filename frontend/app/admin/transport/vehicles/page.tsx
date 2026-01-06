@@ -610,10 +610,10 @@ export default function VehiclesPage() {
                             <Button
                                 onClick={handleSubmit}
                                 disabled={processing}
-                                className="bg-purple-600 hover:bg-purple-700"
+                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {editingVehicle ? 'Update Vehicle' : 'Add Vehicle'}
+                                {editingVehicle ? 'Update Vehicle' : 'Save Vehicle'}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
