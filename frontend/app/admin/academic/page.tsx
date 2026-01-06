@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import {
     Loader2,
     Plus,
@@ -22,7 +22,9 @@ import {
     Clock,
     School,
     RefreshCw,
-    CheckCircle2
+    CheckCircle2,
+    Users,
+    FileText
 } from "lucide-react";
 import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
@@ -841,172 +843,516 @@ export default function AdminAcademicPage() {
 
             {/* Class Dialog */}
             <Dialog open={classDialogOpen} onOpenChange={(open) => { setClassDialogOpen(open); if (!open) resetClassForm(); }}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <GraduationCap className="h-5 w-5 text-blue-600" />
-                            {editingClass ? "Edit Class" : "Create New Class"}
-                        </DialogTitle>
-                        <DialogDescription>{editingClass ? "Update class details" : "Add a new class level to your school"}</DialogDescription>
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
+                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-blue-50/50">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                                <GraduationCap className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-semibold text-slate-900">
+                                    {editingClass ? "Edit Class" : "Create New Class"}
+                                </DialogTitle>
+                                <DialogDescription className="text-slate-500">
+                                    {editingClass ? "Update class details" : "Add a new class level to your school"}
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <form onSubmit={handleSubmitClass} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-1">Class Name <span className="text-red-500">*</span></Label>
-                            <Input required placeholder="e.g. Grade 10, Class 5A" value={classForm.name} onChange={(e) => setClassForm({ ...classForm, name: e.target.value })} />
+                    <form onSubmit={handleSubmitClass} className="px-6 py-6 space-y-6">
+                        {/* Basic Information Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <BookOpen className="h-4 w-4 text-blue-500" />
+                                Basic Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="className" className="text-sm font-medium flex items-center gap-1">
+                                        Class Name <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                        id="className"
+                                        required
+                                        placeholder="e.g., Grade 10, Class 5A"
+                                        value={classForm.name}
+                                        onChange={(e) => setClassForm({ ...classForm, name: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="capacity" className="text-sm font-medium">
+                                        Capacity
+                                    </Label>
+                                    <div className="relative">
+                                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                        <Input
+                                            id="capacity"
+                                            type="number"
+                                            placeholder="Max students"
+                                            value={classForm.capacity}
+                                            onChange={(e) => setClassForm({ ...classForm, capacity: e.target.value })}
+                                            className="h-11 pl-10"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-slate-500">Maximum number of students</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Capacity</Label>
-                            <Input type="number" placeholder="Maximum number of students" value={classForm.capacity} onChange={(e) => setClassForm({ ...classForm, capacity: e.target.value })} />
+                        {/* Description Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-blue-500" />
+                                Additional Details
+                            </h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                                <Textarea
+                                    id="description"
+                                    placeholder="Optional description for the class..."
+                                    value={classForm.description}
+                                    onChange={(e) => setClassForm({ ...classForm, description: e.target.value })}
+                                    rows={3}
+                                    className="resize-none"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Textarea placeholder="Optional description for the class" value={classForm.description} onChange={(e) => setClassForm({ ...classForm, description: e.target.value })} />
-                        </div>
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={submitting}>
+                    </form>
+                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+                        <Button variant="ghost" type="button" onClick={() => setClassDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={submitting}
+                            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 min-w-[140px]"
+                            onClick={handleSubmitClass}
+                        >
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {editingClass ? "Update Class" : "Create Class"}
                         </Button>
-                    </form>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Subject Dialog */}
             <Dialog open={subjectDialogOpen} onOpenChange={(open) => { setSubjectDialogOpen(open); if (!open) resetSubjectForm(); }}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <BookOpen className="h-5 w-5 text-purple-600" />
-                            {editingSubject ? "Edit Subject" : "Create New Subject"}
-                        </DialogTitle>
-                        <DialogDescription>{editingSubject ? "Update subject details" : "Add a new subject to your school"}</DialogDescription>
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
+                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-purple-50/50">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+                                <BookOpen className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-semibold text-slate-900">
+                                    {editingSubject ? "Edit Subject" : "Create New Subject"}
+                                </DialogTitle>
+                                <DialogDescription className="text-slate-500">
+                                    {editingSubject ? "Update subject details" : "Add a new subject to your school"}
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <form onSubmit={handleSubmitSubject} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-1">Subject Name <span className="text-red-500">*</span></Label>
-                            <Input required placeholder="e.g. Mathematics, English" value={subjectForm.name} onChange={(e) => setSubjectForm({ ...subjectForm, name: e.target.value })} />
+                    <form onSubmit={handleSubmitSubject} className="px-6 py-6 space-y-6">
+                        {/* Basic Information Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <BookOpen className="h-4 w-4 text-purple-500" />
+                                Basic Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="subjectName" className="text-sm font-medium flex items-center gap-1">
+                                        Subject Name <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                        id="subjectName"
+                                        required
+                                        placeholder="e.g., Mathematics, English"
+                                        value={subjectForm.name}
+                                        onChange={(e) => setSubjectForm({ ...subjectForm, name: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="subjectCode" className="text-sm font-medium">
+                                        Subject Code
+                                    </Label>
+                                    <Input
+                                        id="subjectCode"
+                                        placeholder="e.g., MATH101"
+                                        value={subjectForm.code}
+                                        onChange={(e) => setSubjectForm({ ...subjectForm, code: e.target.value })}
+                                        className="h-11"
+                                    />
+                                    <p className="text-xs text-slate-500">Unique identifier for the subject</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Subject Code</Label>
-                            <Input placeholder="e.g. MATH101" value={subjectForm.code} onChange={(e) => setSubjectForm({ ...subjectForm, code: e.target.value })} />
+                        {/* Description Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-purple-500" />
+                                Additional Details
+                            </h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="subjectDescription" className="text-sm font-medium">Description</Label>
+                                <Textarea
+                                    id="subjectDescription"
+                                    placeholder="Optional description for the subject..."
+                                    value={subjectForm.description}
+                                    onChange={(e) => setSubjectForm({ ...subjectForm, description: e.target.value })}
+                                    rows={3}
+                                    className="resize-none"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Textarea placeholder="Optional description for the subject" value={subjectForm.description} onChange={(e) => setSubjectForm({ ...subjectForm, description: e.target.value })} />
-                        </div>
-                        <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={submitting}>
+                    </form>
+                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+                        <Button variant="ghost" type="button" onClick={() => setSubjectDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={submitting}
+                            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 min-w-[140px]"
+                            onClick={handleSubmitSubject}
+                        >
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {editingSubject ? "Update Subject" : "Create Subject"}
                         </Button>
-                    </form>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Program Dialog */}
             <Dialog open={programDialogOpen} onOpenChange={(open) => { setProgramDialogOpen(open); if (!open) resetProgramForm(); }}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <School className="h-5 w-5 text-indigo-600" />
-                            {editingProgram ? "Edit Program" : "Create New Program"}
-                        </DialogTitle>
-                        <DialogDescription>{editingProgram ? "Update program details" : "Add a new academic program"}</DialogDescription>
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
+                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-indigo-50/50">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                                <School className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-semibold text-slate-900">
+                                    {editingProgram ? "Edit Program" : "Create New Program"}
+                                </DialogTitle>
+                                <DialogDescription className="text-slate-500">
+                                    {editingProgram ? "Update program details" : "Add a new academic program"}
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <form onSubmit={handleSubmitProgram} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-1">Program Name <span className="text-red-500">*</span></Label>
-                            <Input required placeholder="e.g. Science, Arts, Commerce" value={programForm.name} onChange={(e) => setProgramForm({ ...programForm, name: e.target.value })} />
+                    <form onSubmit={handleSubmitProgram} className="px-6 py-6 space-y-6">
+                        {/* Basic Information Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <School className="h-4 w-4 text-indigo-500" />
+                                Basic Information
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="programName" className="text-sm font-medium flex items-center gap-1">
+                                        Program Name <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                        id="programName"
+                                        required
+                                        placeholder="e.g., Science, Arts, Commerce"
+                                        value={programForm.name}
+                                        onChange={(e) => setProgramForm({ ...programForm, name: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="duration" className="text-sm font-medium">
+                                        Duration
+                                    </Label>
+                                    <div className="relative">
+                                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                        <Input
+                                            id="duration"
+                                            placeholder="e.g., 4 years"
+                                            value={programForm.duration}
+                                            onChange={(e) => setProgramForm({ ...programForm, duration: e.target.value })}
+                                            className="h-11 pl-10"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-slate-500">Program duration period</p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Duration</Label>
-                            <Input placeholder="e.g. 4 years" value={programForm.duration} onChange={(e) => setProgramForm({ ...programForm, duration: e.target.value })} />
+                        {/* Description Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-indigo-500" />
+                                Additional Details
+                            </h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="programDescription" className="text-sm font-medium">Description</Label>
+                                <Textarea
+                                    id="programDescription"
+                                    placeholder="Optional description for the program..."
+                                    value={programForm.description}
+                                    onChange={(e) => setProgramForm({ ...programForm, description: e.target.value })}
+                                    rows={3}
+                                    className="resize-none"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Textarea placeholder="Optional description for the program" value={programForm.description} onChange={(e) => setProgramForm({ ...programForm, description: e.target.value })} />
-                        </div>
-                        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={submitting}>
+                    </form>
+                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+                        <Button variant="ghost" type="button" onClick={() => setProgramDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={submitting}
+                            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 min-w-[140px]"
+                            onClick={handleSubmitProgram}
+                        >
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {editingProgram ? "Update Program" : "Create Program"}
                         </Button>
-                    </form>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Year Dialog */}
             <Dialog open={yearDialogOpen} onOpenChange={(open) => { setYearDialogOpen(open); if (!open) resetYearForm(); }}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Calendar className="h-5 w-5 text-green-600" />
-                            {editingYear ? "Edit Academic Year" : "Create Academic Year"}
-                        </DialogTitle>
-                        <DialogDescription>{editingYear ? "Update academic year details" : "Define a new academic year for your school"}</DialogDescription>
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
+                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-green-50/50">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                                <Calendar className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-semibold text-slate-900">
+                                    {editingYear ? "Edit Academic Year" : "Create Academic Year"}
+                                </DialogTitle>
+                                <DialogDescription className="text-slate-500">
+                                    {editingYear ? "Update academic year details" : "Define a new academic year for your school"}
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <form onSubmit={handleSubmitYear} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-1">Year Name <span className="text-red-500">*</span></Label>
-                            <Input required placeholder="e.g. 2024-2025" value={yearForm.name} onChange={(e) => setYearForm({ ...yearForm, name: e.target.value })} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmitYear} className="px-6 py-6 space-y-6">
+                        {/* Basic Information Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-green-500" />
+                                Basic Information
+                            </h3>
                             <div className="space-y-2">
-                                <Label className="flex items-center gap-1">Start Date <span className="text-red-500">*</span></Label>
-                                <Input required type="date" value={yearForm.fromYear} onChange={(e) => setYearForm({ ...yearForm, fromYear: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label className="flex items-center gap-1">End Date <span className="text-red-500">*</span></Label>
-                                <Input required type="date" value={yearForm.toYear} onChange={(e) => setYearForm({ ...yearForm, toYear: e.target.value })} />
+                                <Label htmlFor="yearName" className="text-sm font-medium flex items-center gap-1">
+                                    Year Name <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="yearName"
+                                    required
+                                    placeholder="e.g., 2024-2025"
+                                    value={yearForm.name}
+                                    onChange={(e) => setYearForm({ ...yearForm, name: e.target.value })}
+                                    className="h-11"
+                                />
+                                <p className="text-xs text-slate-500">Display name for the academic year</p>
                             </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <input type="checkbox" id="isCurrent" checked={yearForm.isCurrent} onChange={(e) => setYearForm({ ...yearForm, isCurrent: e.target.checked })} className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500" />
-                            <Label htmlFor="isCurrent" className="cursor-pointer">Set as current academic year</Label>
+                        {/* Date Range Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-green-500" />
+                                Date Range
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="fromYear" className="text-sm font-medium flex items-center gap-1">
+                                        Start Date <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                        id="fromYear"
+                                        required
+                                        type="date"
+                                        value={yearForm.fromYear}
+                                        onChange={(e) => setYearForm({ ...yearForm, fromYear: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="toYear" className="text-sm font-medium flex items-center gap-1">
+                                        End Date <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input
+                                        id="toYear"
+                                        required
+                                        type="date"
+                                        value={yearForm.toYear}
+                                        onChange={(e) => setYearForm({ ...yearForm, toYear: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={submitting}>
+                        {/* Settings Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                Settings
+                            </h3>
+                            <div className="flex items-center space-x-3">
+                                <input
+                                    type="checkbox"
+                                    id="isCurrent"
+                                    checked={yearForm.isCurrent}
+                                    onChange={(e) => setYearForm({ ...yearForm, isCurrent: e.target.checked })}
+                                    className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                                />
+                                <Label htmlFor="isCurrent" className="cursor-pointer text-sm font-medium">
+                                    Set as current academic year
+                                </Label>
+                            </div>
+                            <p className="text-xs text-slate-500">Only one academic year can be marked as current</p>
+                        </div>
+                    </form>
+                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+                        <Button variant="ghost" type="button" onClick={() => setYearDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={submitting}
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 min-w-[140px]"
+                            onClick={handleSubmitYear}
+                        >
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {editingYear ? "Update Academic Year" : "Create Academic Year"}
                         </Button>
-                    </form>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Term Dialog */}
             <Dialog open={termDialogOpen} onOpenChange={(open) => { setTermDialogOpen(open); if (!open) resetTermForm(); }}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <Clock className="h-5 w-5 text-amber-600" />
-                            {editingTerm ? "Edit Academic Term" : "Create Academic Term"}
-                        </DialogTitle>
-                        <DialogDescription>{editingTerm ? "Update academic term details" : "Add a new academic term or semester"}</DialogDescription>
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
+                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-amber-50/50">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
+                                <Clock className="h-6 w-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-xl font-semibold text-slate-900">
+                                    {editingTerm ? "Edit Academic Term" : "Create Academic Term"}
+                                </DialogTitle>
+                                <DialogDescription className="text-slate-500">
+                                    {editingTerm ? "Update academic term details" : "Add a new academic term or semester"}
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <form onSubmit={handleSubmitTerm} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="flex items-center gap-1">Term Name <span className="text-red-500">*</span></Label>
-                            <Input required placeholder="e.g. Term 1, First Semester" value={termForm.name} onChange={(e) => setTermForm({ ...termForm, name: e.target.value })} />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Duration</Label>
-                            <Input placeholder="e.g. 3 months" value={termForm.duration} onChange={(e) => setTermForm({ ...termForm, duration: e.target.value })} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmitTerm} className="px-6 py-6 space-y-6">
+                        {/* Basic Information Section */}
+                        <div className="space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-amber-500" />
+                                Basic Information
+                            </h3>
                             <div className="space-y-2">
-                                <Label>Start Date</Label>
-                                <Input type="date" value={termForm.startDate} onChange={(e) => setTermForm({ ...termForm, startDate: e.target.value })} />
+                                <Label htmlFor="termName" className="text-sm font-medium flex items-center gap-1">
+                                    Term Name <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    id="termName"
+                                    required
+                                    placeholder="e.g., Term 1, First Semester"
+                                    value={termForm.name}
+                                    onChange={(e) => setTermForm({ ...termForm, name: e.target.value })}
+                                    className="h-11"
+                                />
+                                <p className="text-xs text-slate-500">Display name for the academic term</p>
                             </div>
                             <div className="space-y-2">
-                                <Label>End Date</Label>
-                                <Input type="date" value={termForm.endDate} onChange={(e) => setTermForm({ ...termForm, endDate: e.target.value })} />
+                                <Label htmlFor="duration" className="text-sm font-medium">
+                                    Duration
+                                </Label>
+                                <Input
+                                    id="duration"
+                                    placeholder="e.g., 3 months"
+                                    value={termForm.duration}
+                                    onChange={(e) => setTermForm({ ...termForm, duration: e.target.value })}
+                                    className="h-11"
+                                />
+                                <p className="text-xs text-slate-500">Duration of this academic term</p>
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Textarea placeholder="Optional description" value={termForm.description} onChange={(e) => setTermForm({ ...termForm, description: e.target.value })} />
+                        {/* Date Range Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-amber-500" />
+                                Date Range
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="startDate" className="text-sm font-medium">
+                                        Start Date
+                                    </Label>
+                                    <Input
+                                        id="startDate"
+                                        type="date"
+                                        value={termForm.startDate}
+                                        onChange={(e) => setTermForm({ ...termForm, startDate: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="endDate" className="text-sm font-medium">
+                                        End Date
+                                    </Label>
+                                    <Input
+                                        id="endDate"
+                                        type="date"
+                                        value={termForm.endDate}
+                                        onChange={(e) => setTermForm({ ...termForm, endDate: e.target.value })}
+                                        className="h-11"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <Button type="submit" className="w-full bg-amber-600 hover:bg-amber-700" disabled={submitting}>
+                        {/* Additional Details Section */}
+                        <div className="border-t pt-6 space-y-4">
+                            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-amber-500" />
+                                Additional Details
+                            </h3>
+                            <div className="space-y-2">
+                                <Label htmlFor="description" className="text-sm font-medium">
+                                    Description
+                                </Label>
+                                <Textarea
+                                    id="description"
+                                    placeholder="Optional description for this academic term..."
+                                    value={termForm.description}
+                                    onChange={(e) => setTermForm({ ...termForm, description: e.target.value })}
+                                    rows={3}
+                                    className="resize-none"
+                                />
+                                <p className="text-xs text-slate-500">Additional information about this term</p>
+                            </div>
+                        </div>
+                    </form>
+                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+                        <Button variant="ghost" type="button" onClick={() => setTermDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={submitting}
+                            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 min-w-[140px]"
+                            onClick={handleSubmitTerm}
+                        >
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {editingTerm ? "Update Academic Term" : "Create Academic Term"}
                         </Button>
-                    </form>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

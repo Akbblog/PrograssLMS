@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import PageToolbar from '@/components/admin/PageToolbar'
 import EmptyState from '@/components/admin/EmptyState'
 import { attendanceAPI, adminAPI } from '@/lib/api/endpoints'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,7 +16,6 @@ export default function AttendancePage() {
   const [summary, setSummary] = useState<any>({ totalPresent: 0, totalAbsent: 0 })
   const [loading, setLoading] = useState(true)
   const [records, setRecords] = useState<any[]>([])
-  const [search, setSearch] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -56,10 +54,6 @@ export default function AttendancePage() {
         </>
       )}
     >
-      <div>
-        <PageToolbar query={search} setQuery={setSearch} onExport={() => {}} />
-      </div>
-
       <div className="rounded-md border bg-white overflow-hidden">
         {loading ? (
           <div className="p-6">

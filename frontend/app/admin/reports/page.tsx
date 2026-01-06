@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import PageToolbar from '@/components/admin/PageToolbar'
 
 export default function AdminReportsPage() {
     const [stats, setStats] = useState({
@@ -111,10 +110,6 @@ export default function AdminReportsPage() {
                 </>
             )}
         >
-            <div>
-                <PageToolbar onExport={handleExportReport} />
-            </div>
-
             <div className="rounded-md border bg-white overflow-hidden">
                 <Card>
                     <CardHeader>

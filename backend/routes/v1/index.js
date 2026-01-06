@@ -39,6 +39,22 @@ router.get('/debug/routes', (req, res) => {
     res.json({ count: routes.length, routes });
 });
 
+// ============ SEARCH ROUTES ============
+try {
+    router.use('/search', require('./search.router'));
+    console.log('[ROUTES] ✅ Mounted: /search (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load search.router:', e);
+    routeErrors.push({ path: './search.router', mountPath: '/search', error: e.message, stack: e.stack });
+    router.use('/search', (req, res) => {
+        res.status(503).json({
+            message: 'Service /search temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
+}
+
 // ============ ACADEMIC ROUTES ============
 // Explicitly require critical routes to ensure they load
 try {

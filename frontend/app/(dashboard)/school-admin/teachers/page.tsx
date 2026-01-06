@@ -27,14 +27,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import PageToolbar from '@/components/admin/PageToolbar'
 import EmptyState from '@/components/admin/EmptyState'
 import { Users } from 'lucide-react'
 
 export default function TeachersPage() {
     const [teachers, setTeachers] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const [searchQuery, setSearchQuery] = useState("")
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -60,12 +58,6 @@ export default function TeachersPage() {
         fetchTeachers()
     }, [])
 
-    const filteredTeachers = teachers.filter(teacher =>
-        teacher.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        teacher.subject?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-
     const total = teachers.length
     const active = teachers.filter(t => t.status === 'active').length
     const onLeave = teachers.filter(t => t.status === 'on_leave').length
@@ -84,8 +76,11 @@ export default function TeachersPage() {
                 </>
             )}
         >
-            <div className="">
-                <PageToolbar onAdd={() => window.location.href = '/school-admin/teachers/create'} query={searchQuery} setQuery={setSearchQuery} onExport={async () => { try { const res:any = await adminAPI.exportTeachers(); const blob = new Blob([res], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'teachers.csv'; a.click(); URL.revokeObjectURL(url); } catch (err:any) { console.error('Export failed', err); } }} />
+            <div className="flex justify-end mb-4">
+                <Button onClick={() => window.location.href = '/school-admin/teachers/create'}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Teacher
+                </Button>
             </div>
 
             <div className="rounded-md border bg-white overflow-hidden">
@@ -112,14 +107,14 @@ export default function TeachersPage() {
                                     <TableCell><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
                                 </TableRow>
                             ))
-                        ) : filteredTeachers.length === 0 ? (
+                        ) : teachers.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="p-8">
                                     <EmptyState title="No teachers yet" description="Add teachers to see them here." cta={<Link href="/school-admin/teachers/create"><Button>Add Teacher</Button></Link>} />
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            filteredTeachers.map((teacher) => (
+                            teachers.map((teacher) => (
                                 <TableRow key={teacher._id} className="hover:bg-slate-50 transition-colors">
                                     <TableCell className="font-medium py-4">
                                         <div className="flex flex-col">

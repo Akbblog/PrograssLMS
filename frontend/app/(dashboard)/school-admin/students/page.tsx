@@ -27,14 +27,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import PageToolbar from '@/components/admin/PageToolbar'
 import EmptyState from '@/components/admin/EmptyState'
 import GraduationCap from '@/components/icons/GraduationCap'
 
 export default function StudentsPage() {
     const [students, setStudents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const [searchQuery, setSearchQuery] = useState("")
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -61,12 +59,6 @@ export default function StudentsPage() {
         fetchStudents()
     }, [])
 
-    const filteredStudents = students.filter(student =>
-        student.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.studentId?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-
     const total = students.length
     const active = students.filter(s => s.status === 'active').length
     const inactive = students.filter(s => s.status !== 'active').length
@@ -85,8 +77,11 @@ export default function StudentsPage() {
                 </>
             )}
         >
-            <div className="">
-                <PageToolbar onAdd={() => window.location.href = '/school-admin/students/create'} query={searchQuery} setQuery={setSearchQuery} onExport={async () => { try { const res:any = await adminAPI.exportStudents(); const blob = new Blob([res], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'students.csv'; a.click(); URL.revokeObjectURL(url); } catch (err:any) { console.error('Export failed', err); } }} />
+            <div className="flex justify-end mb-4">
+                <Button onClick={() => window.location.href = '/school-admin/students/create'}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Student
+                </Button>
             </div>
 
             <div className="rounded-md border bg-white overflow-hidden">
@@ -113,14 +108,14 @@ export default function StudentsPage() {
                                     <TableCell><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
                                 </TableRow>
                             ))
-                        ) : filteredStudents.length === 0 ? (
+                        ) : students.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="p-8">
                                     <EmptyState title="No students yet" description="Add students to see them here. Use the Add button to register a new student." cta={<Link href="/school-admin/students/create"><Button>Add Student</Button></Link>} />
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            filteredStudents.map((student) => (
+                            students.map((student) => (
                                 <TableRow key={student._id} className="hover:bg-slate-50 transition-colors">
                                     <TableCell className="font-medium py-4">
                                         <div className="flex flex-col">

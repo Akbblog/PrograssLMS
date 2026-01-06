@@ -14,7 +14,6 @@ import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import PageToolbar from '@/components/admin/PageToolbar'
 import EmptyState from '@/components/admin/EmptyState'
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -90,8 +89,11 @@ export default function AdminClassesPage() {
                 </>
             )}
         >
-            <div>
-                <PageToolbar onAdd={() => setCreateDialogOpen(true)} query={""} setQuery={() => { }} onExport={() => { /* TODO */ }} />
+            <div className="flex justify-end mb-4">
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Class
+                </Button>
             </div>
 
             <div className="rounded-md border bg-white overflow-hidden">
