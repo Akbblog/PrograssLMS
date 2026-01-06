@@ -65,13 +65,47 @@ export const useSearchStore = create<SearchState & SearchActions>((set, get) => 
       const raw = await searchAPI.global(query, categories as any);
       const data: any = raw as any;
       // Ensure data is an object with array values
-      const safeData: SearchResults = {};
+      const safeDataRaw: { [k: string]: any[] } = {};
       if (data && typeof data === 'object') {
-        Object.keys(data).forEach(key => {
-          safeData[key] = Array.isArray(data[key]) ? data[key] : [];
+        Object.keys(data).forEach((key) => {
+          safeDataRaw[key] = Array.isArray(data[key]) ? data[key] : [];
         });
       }
-      set({ results: safeData, isLoading: false });
+
+      // Map backend documents into frontend-friendly SearchResult objects
+      const mapped: SearchResults = {};
+      Object.keys(safeDataRaw).forEach((cat) => {
+        mapped[cat] = safeDataRaw[cat].map((doc: any) => {
+          const id = doc._id || doc.id || String(Math.random());
+          // Determine title heuristics
+          const title = doc.name || doc.title || (doc.firstName && doc.lastName ? `${doc.firstName} ${doc.lastName}` : doc.studentId) || doc.code || 'Untitled';
+          // Subtitle heuristics
+          const subtitle = doc.email || doc.description || doc.section || doc.subject || '';
+          // Build sensible routes per category
+          let route: string | undefined;
+          if (cat === 'students') route = `/admin/students/${id}`;
+          else if (cat === 'teachers') route = `/admin/teachers/${id}`;
+          else if (cat === 'classes') route = `/admin/academic/classes/${id}`;
+          else if (cat === 'subjects') route = `/admin/academic/subjects/${id}`;
+          else if (cat === 'exams') route = `/admin/exams/${id}`;
+          else if (cat === 'courses') route = `/admin/academic/programs/${id}`;
+          else if (cat === 'books') route = `/admin/library/books/${id}`;
+          else if (cat === 'staff') route = `/admin/hr/staff/${id}`;
+          else if (cat === 'routes') route = `/admin/transport/routes/${id}`;
+
+          const result: SearchResult = {
+            id: String(id),
+            category: cat,
+            title,
+            subtitle,
+            route,
+            photo: doc.avatar || doc.photo || doc.image || undefined,
+          };
+          return result;
+        });
+      });
+
+      set({ results: mapped, isLoading: false });
     } catch (e) {
       console.error('Search error:', e);
       set({ results: {}, isLoading: false });
