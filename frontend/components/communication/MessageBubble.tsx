@@ -73,6 +73,11 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
     const [showMenu, setShowMenu] = useState(false)
     const { setReplyingTo, deleteMessage, addReaction } = useChatStore()
 
+    // Early return if message is undefined or malformed
+    if (!message || !message.id) {
+        return null
+    }
+
     // Mock sender data - this would come from API
     const sender = {
         name: "John Doe",
@@ -80,7 +85,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
     }
 
     const isOutgoing = message.senderType === 'admin' // Assuming current user is admin
-    const isRead = message.status.readBy.length > 0
+    const isRead = message.status?.readBy?.length > 0
 
     const formatTime = (dateString: string) => {
         return format(new Date(dateString), 'HH:mm')
@@ -119,7 +124,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
             case 'image':
                 return (
                     <div className="space-y-2">
-                        {message.attachments.map((attachment, index) => (
+                        {message.attachments?.map((attachment, index) => (
                             <div key={index} className="relative">
                                 <img
                                     src={attachment.url}
@@ -138,7 +143,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
             case 'file':
                 return (
                     <div className="space-y-2">
-                        {message.attachments.map((attachment, index) => (
+                        {message.attachments?.map((attachment, index) => (
                             <div key={index} className="flex items-center gap-3 p-3 bg-slate-100 rounded-lg">
                                 <File className="w-8 h-8 text-slate-500 flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
@@ -191,7 +196,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
     const renderStatusIcon = () => {
         if (!isOutgoing) return null
 
-        if (!message.status.sent) {
+        if (!message.status?.sent) {
             return <Clock className="w-3 h-3 text-slate-400" />
         } else if (!isRead) {
             return <Check className="w-3 h-3 text-slate-400" />
@@ -237,9 +242,9 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                     {renderMessageContent()}
 
                     {/* Reactions */}
-                    {message.reactions.length > 0 && (
+                    {message.reactions?.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
-                            {message.reactions.map((reaction, index) => (
+                            {message.reactions?.map((reaction, index) => (
                                 <span
                                     key={index}
                                     className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full"
@@ -308,7 +313,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                 <div className={`flex items-center gap-1 mt-1 text-xs text-slate-500 ${
                     isOutgoing ? 'justify-end' : 'justify-start'
                 }`}>
-                    <span>{formatTime(message.createdAt)}</span>
+                    <span>{message.createdAt ? formatTime(message.createdAt) : ''}</span>
                     {renderStatusIcon()}
                 </div>
             </div>
