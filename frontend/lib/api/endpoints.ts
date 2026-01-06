@@ -141,6 +141,7 @@ export const adminAPI = {
   createTeacher: (data: any) => api.post('/teachers', data),
   updateTeacher: (id: string, data: any) => api.patch(`/teachers/${id}`, data),
   deleteTeacher: (id: string) => api.delete(`/teachers/${id}`),
+  getAdmins: () => api.get('/admins'),
   withdrawTeacher: (id: string) => api.put(`/admins/withdraw/teacher/${id}`),
   restoreTeacher: (id: string) => api.put(`/admins/unwithdraw/teacher/${id}`),
   getClasses: () => api.get('/class-levels'),

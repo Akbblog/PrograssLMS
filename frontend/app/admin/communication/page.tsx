@@ -5,6 +5,7 @@ import { useChatStore } from "@/store/chatStore"
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import ConversationList from "@/components/communication/ConversationList"
 import ChatWindow from "@/components/communication/ChatWindow"
+import NewChatDialog from "@/components/communication/NewChatDialog"
 import { Button } from "@/components/ui/button"
 import { Plus, MessageSquare } from "lucide-react"
 
@@ -13,6 +14,7 @@ export default function CommunicationPage() {
     const [isMobile, setIsMobile] = useState(false)
     const [showConversationList, setShowConversationList] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
+    const [isNewChatOpen, setIsNewChatOpen] = useState(false)
 
     const { conversations, fetchConversations, unreadCounts } = useChatStore()
 
@@ -43,6 +45,17 @@ export default function CommunicationPage() {
         setSelectedConversationId(null)
     }
 
+    const handleNewChat = () => {
+        setIsNewChatOpen(true)
+    }
+
+    const handleConversationCreated = (conversation: any) => {
+        setSelectedConversationId(conversation.id)
+        if (isMobile) {
+            setShowConversationList(false)
+        }
+    }
+
     return (
         <AdminPageLayout
             title="Communication"
@@ -56,7 +69,7 @@ export default function CommunicationPage() {
                             <div className="p-4 border-b border-slate-200">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-lg font-semibold">Messages</h2>
-                                    <Button size="sm" className="bg-blue-500 hover:bg-blue-600">
+                                    <Button size="sm" className="bg-blue-500 hover:bg-blue-600" onClick={handleNewChat}>
                                         <Plus className="w-4 h-4 mr-2" />
                                         New Chat
                                     </Button>
@@ -67,7 +80,7 @@ export default function CommunicationPage() {
                                 activeConversationId={selectedConversationId}
                                 unreadCounts={unreadCounts}
                                 onConversationSelect={handleSelectConversation}
-                                onNewChat={() => {}}
+                                onNewChat={handleNewChat}
                                 searchTerm={searchTerm}
                                 onSearchChange={setSearchTerm}
                             />
@@ -102,6 +115,13 @@ export default function CommunicationPage() {
                     )}
                 </div>
             </div>
+
+            {/* New Chat Dialog */}
+            <NewChatDialog
+                open={isNewChatOpen}
+                onOpenChange={setIsNewChatOpen}
+                onConversationCreated={handleConversationCreated}
+            />
         </AdminPageLayout>
     )
 }

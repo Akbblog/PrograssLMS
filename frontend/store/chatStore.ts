@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { communicationAPI } from '@/lib/api/endpoints'
 
 interface User {
     _id: string
@@ -113,11 +114,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
     fetchConversations: async () => {
         try {
             set({ isLoading: true })
-            const response = await fetch('/api/v1/conversations')
-            const result = await response.json()
-            if (result.status === 'success') {
-                set({ conversations: result.data })
-            }
+            const response = await communicationAPI.getConversations()
+            // Map backend response (_id -> id, type mapping, etc.)
+            const conversations = response.data.map((conv: any) => ({
+                ...conv,
+                id: conv._id,
+                type: conv.type === 'private' ? 'direct' : conv.type,
+                lastMessage: conv.lastMessage ? {
+                    ...conv.lastMessage,
+                    senderId: conv.lastMessage.sender,
+                    sentAt: conv.lastMessage.createdAt
+                } : undefined
+            }))
+            set({ conversations })
         } catch (error) {
             console.error('Failed to fetch conversations:', error)
         } finally {
@@ -127,18 +136,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     fetchMessages: async (conversationId: string, page = 1) => {
         try {
-            const response = await fetch(`/api/v1/conversations/${conversationId}/messages?page=${page}`)
-            const result = await response.json()
-            if (result.status === 'success') {
-                set((state) => ({
-                    messages: {
-                        ...state.messages,
-                        [conversationId]: page === 1
-                            ? result.data
-                            : [...result.data, ...(state.messages[conversationId] || [])]
-                    }
-                }))
-            }
+            const response = await communicationAPI.getConversation(conversationId)
+            // Backend returns { conversation, messages }
+            const messages = response.data.messages.map((msg: any) => ({
+                ...msg,
+                id: msg._id,
+                senderId: msg.sender,
+                senderType: msg.senderModel,
+                type: msg.messageType,
+                createdAt: msg.createdAt
+            }))
+            set((state) => ({
+                messages: {
+                    ...state.messages,
+                    [conversationId]: page === 1
+                        ? messages
+                        : [...messages, ...(state.messages[conversationId] || [])]
+                }
+            }))
         } catch (error) {
             console.error('Failed to fetch messages:', error)
         }
@@ -146,30 +161,36 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     sendMessage: async (conversationId: string, content: string, attachments?: File[]) => {
         try {
-            const formData = new FormData()
-            formData.append('content', content)
-            if (attachments) {
+            let data: any = { content, messageType: 'text' }
+
+            if (attachments && attachments.length > 0) {
+                const formData = new FormData()
+                formData.append('content', content)
+                formData.append('messageType', 'text')
                 attachments.forEach((file, index) => {
-                    formData.append(`attachments`, file)
+                    formData.append('attachments', file)
                 })
+                data = formData
             }
 
-            const response = await fetch(`/api/v1/conversations/${conversationId}/messages`, {
-                method: 'POST',
-                body: formData
-            })
+            const response = await communicationAPI.sendMessage(conversationId, data)
 
-            const result = await response.json()
-            if (result.status === 'success') {
-                // Add message to local state
-                const newMessage = result.data
-                set((state) => ({
-                    messages: {
-                        ...state.messages,
-                        [conversationId]: [...(state.messages[conversationId] || []), newMessage]
-                    }
-                }))
+            // Add message to local state
+            const newMessage = {
+                ...response.data,
+                id: response.data._id,
+                senderId: response.data.sender,
+                senderType: response.data.senderModel,
+                type: response.data.messageType,
+                createdAt: response.data.createdAt
             }
+
+            set((state) => ({
+                messages: {
+                    ...state.messages,
+                    [conversationId]: [...(state.messages[conversationId] || []), newMessage]
+                }
+            }))
         } catch (error) {
             console.error('Failed to send message:', error)
         }
@@ -177,7 +198,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     markAsRead: async (conversationId: string) => {
         try {
-            await fetch(`/api/v1/conversations/${conversationId}/read`, { method: 'POST' })
+            await communicationAPI.markAsRead(conversationId)
             set((state) => ({
                 unreadCounts: {
                     ...state.unreadCounts,
@@ -202,11 +223,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     deleteMessage: async (messageId: string, forEveryone = false) => {
         try {
-            await fetch(`/api/messages/${messageId}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ forEveryone })
-            })
+            await communicationAPI.deleteMessage(messageId)
 
             // Update local state
             set((state) => {
@@ -239,25 +256,35 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
     createConversation: async (participantIds: string[], name?: string) => {
         try {
-            const response = await fetch('/api/v1/conversations', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    participants: participantIds,
-                    name,
-                    type: participantIds.length > 2 ? 'group' : 'direct'
-                })
-            })
+            // For now, assume all participants are Admins. In a real app, you'd need to determine the user type
+            // This should be enhanced to look up user types from the user data
+            const participants = participantIds.map(id => ({
+                user: id,
+                userModel: 'Admin' // TODO: Determine actual user model (Admin, Teacher, Student)
+            }))
 
-            const result = await response.json()
-            if (result.status === 'success') {
-                const newConversation = result.data
-                set((state) => ({
-                    conversations: [newConversation, ...state.conversations]
-                }))
-                return newConversation
+            const payload = {
+                type: participantIds.length > 2 ? 'group' : 'private',
+                name: name || undefined,
+                participants
             }
-            throw new Error('Failed to create conversation')
+
+            const response = await communicationAPI.createConversation(payload)
+            const newConversation = {
+                ...response.data,
+                id: response.data._id,
+                type: response.data.type === 'private' ? 'direct' : response.data.type,
+                lastMessage: response.data.lastMessage ? {
+                    ...response.data.lastMessage,
+                    senderId: response.data.lastMessage.sender,
+                    sentAt: response.data.lastMessage.createdAt
+                } : undefined
+            }
+
+            set((state) => ({
+                conversations: [newConversation, ...state.conversations]
+            }))
+            return newConversation
         } catch (error) {
             console.error('Failed to create conversation:', error)
             throw error
