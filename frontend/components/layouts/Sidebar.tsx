@@ -417,7 +417,3 @@ export default function Sidebar({ className }: SidebarProps) {
         </TooltipProvider>
     )
 }
-            </div>
-        </TooltipProvider>
-    )
-}
