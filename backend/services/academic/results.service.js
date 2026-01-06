@@ -1,6 +1,11 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
 const Results = require("../../models/Academic/results.model");
 
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+  module.exports = require('./results.service.prisma_impl');
+  return;
+}
+
 /**
  * Service to check exam result for a student
  * @param {string} examId - The ID of the exam

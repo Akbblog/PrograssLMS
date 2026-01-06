@@ -241,14 +241,16 @@ export const assignmentAPI = {
 
 // Enrollment endpoints
 export const enrollmentAPI = {
-  getStudentEnrollments: (studentId: string) => api.get(`/academic/enrollments/student/${studentId}`),
+  // Backend routes for enrollments are mounted at `/enrollments/...` (not `/academic/enrollments/...`)
+  getStudentEnrollments: (studentId: string) => api.get(`/enrollments/student/${studentId}`),
   createEnrollment: (data: any) => api.post('/academic/enrollments', data),
   updateProgress: (enrollmentId: string, progress: number) => api.patch(`/academic/enrollments/${enrollmentId}/progress`, { progress }),
 };
 
 // Grade endpoints
 export const gradeAPI = {
-  getStudentGrades: (studentId: string, params?: any) => api.get(`/academic/grades/student/${studentId}`, { params }),
+  // Backend routes for grades are mounted at `/grades/...`
+  getStudentGrades: (studentId: string, params?: any) => api.get(`/grades/student/${studentId}`, { params }),
   getClassGrades: (params: any) => api.get('/academic/grades/class', { params }),
   createGrade: (data: any) => api.post('/academic/grades', data),
 };

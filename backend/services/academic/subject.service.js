@@ -6,6 +6,11 @@ const Admin = require("../../models/Staff/admin.model");
 // Import responseStatus handler
 const responseStatus = require("../../handlers/responseStatus.handler.js");
 
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+  module.exports = require('./subject.service.prisma_impl');
+  return;
+}
+
 /**
  * Create Subject service (Simple - without program requirement).
  * This is used when creating subjects on-the-fly during teacher creation.

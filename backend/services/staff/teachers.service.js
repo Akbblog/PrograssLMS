@@ -8,6 +8,11 @@ const generateToken = require("../../utils/tokenGenerator");
 // Import responseStatus handler
 const responseStatus = require("../../handlers/responseStatus.handler.js");
 
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+  module.exports = require('./teachers.service.prisma_impl');
+  return;
+}
+
 /**
  * Service to create a new teacher
  * @param {Object} data - Teacher data including name, email, and password

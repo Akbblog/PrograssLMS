@@ -11,6 +11,105 @@ const {
   studentSelfRegisterService,
 } = require("../../services/students/students.service");
 
+const { uploadSingle, processAttachments } = require('../../middlewares/fileUpload');
+const ProfileQRCode = require('../../models/ProfileQRCode.model');
+
+// For card generation
+const qrGenerator = require('../../services/qrcode/qrGenerator.service');
+const documentGenerator = require('../../services/documentGenerator');
+
+// Generate student card PDF
+exports.generateStudentCardController = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    // Authorization: allow admin/teacher or the student themself
+    const requesterRole = req.userRole;
+    const requesterId = req.userAuth && req.userAuth.id;
+    if (requesterRole === 'student' && requesterId !== studentId) {
+      return responseStatus(res, 403, 'failed', 'Unauthorized');
+    }
+
+    // Fetch student depending on DB driver
+    let student = null;
+    if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      student = await prisma.student.findUnique({ where: { id: studentId } });
+      await prisma.$disconnect();
+    } else {
+      const Student = require('../../models/Students/students.model');
+      student = await Student.findById(studentId).lean();
+    }
+    if (!student) return responseStatus(res, 404, 'failed', 'Student not found');
+
+    const { dataUrl } = await qrGenerator.generateQRCodeImage({ id: student.id || student._id, type: 'student' });
+    const pdfBuffer = await documentGenerator.generateStudentCard({ student, qrDataUrl: dataUrl });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="student-${studentId}-card.pdf"`);
+    return res.send(pdfBuffer);
+  } catch (error) {
+    return responseStatus(res, 500, 'failed', error.message);
+  }
+};
+
+// Upload or update student avatar and generate QR linking to the avatar URL
+exports.uploadStudentAvatarController = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    // Authorization: student can update own, admin can update any
+    const requesterRole = req.userRole;
+    const requesterId = req.userAuth && req.userAuth.id;
+    if (requesterRole === 'student' && requesterId !== studentId) {
+      return responseStatus(res, 403, 'failed', 'Unauthorized');
+    }
+
+    // Use multer single middleware then reuse processAttachments by putting req.file into req.files
+    // Note: router will call uploadSingle and then this handler; here we assume req.file exists
+    if (!req.file) return responseStatus(res, 400, 'failed', 'No avatar file uploaded');
+    // Reuse existing processAttachments by temporarily setting req.files
+    req.files = [req.file];
+    await processAttachments(req, res, async () => {});
+    const attachments = req.body.attachments || [];
+    if (attachments.length === 0) return responseStatus(res, 500, 'failed', 'Failed to process uploaded avatar');
+    const avatarUrl = attachments[0].url;
+
+    // Update Student record (mongoose or prisma)
+    if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      await prisma.student.update({ where: { id: studentId }, data: { avatar: avatarUrl } });
+      await prisma.$disconnect();
+    } else {
+      const Student = require('../../models/Students/students.model');
+      await Student.findByIdAndUpdate(studentId, { avatar: avatarUrl }, { new: true });
+    }
+
+    // Generate QR payload linking to avatar URL
+    const qrGenerator = require('../../services/qrcode/qrGenerator.service');
+    const payload = { id: studentId, type: 'student', avatarUrl };
+    const { data, dataUrl } = await qrGenerator.generateQRCodeImage(payload);
+
+    // Persist QR mapping in ProfileQRCode for later lookup
+    try {
+      const ProfileQRCodeModel = ProfileQRCode;
+      // Upsert-like behavior for mongoose
+      await ProfileQRCodeModel.findOneAndUpdate(
+        { entityType: 'student', entityId: studentId },
+        { qrCodeData: data, qrCodeImage: dataUrl, entityType: 'student', entityId: studentId },
+        { upsert: true, new: true }
+      );
+    } catch (e) {
+      console.warn('Failed to persist ProfileQRCode for student', e.message || e);
+    }
+
+    return responseStatus(res, 200, 'success', { avatar: avatarUrl, qrData: data, qrImage: dataUrl });
+  } catch (error) {
+    console.error('uploadStudentAvatarController error', error);
+    return responseStatus(res, 500, 'failed', error.message);
+  }
+};
+
 /**
  * @desc Admin Register Student
  * @route POST /api/students/admin/register

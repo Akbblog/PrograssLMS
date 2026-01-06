@@ -219,3 +219,9 @@ class FinanceService {
 }
 
 module.exports = FinanceService;
+
+// If USE_PRISMA is enabled, delegate exports to Prisma implementation
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+    module.exports = require('./finance.service.prisma_impl');
+    return;
+}

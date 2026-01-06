@@ -5,6 +5,11 @@ const Exams = require("../../models/Academic/exams.model.js");
 // Import responseStatus handler
 const responseStatus = require("../../handlers/responseStatus.handler.js");
 
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+  module.exports = require('./exams.service.prisma_impl');
+  return;
+}
+
 /**
  * Create exam service (Teacher or Admin)
  */

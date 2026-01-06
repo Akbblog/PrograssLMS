@@ -1,0 +1,145 @@
+// Prisma schema for initial MySQL migration scaffolding
+// Provider: mysql. Adjust `DATABASE_URL` in backend/.env when ready.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(255)
+  studentId  String?  @db.VarChar(100)
+  phone      String?  @db.VarChar(50)
+  avatar     String?  @db.Text
+  schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Teacher {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  firstName String   @db.VarChar(255)
+  lastName  String?  @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  phone     String?  @db.VarChar(50)
+  avatar    String?  @db.Text
+  schoolId  String   @db.VarChar(36)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ClassLevel {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  name      String   @db.VarChar(255)
+  section   String?  @db.VarChar(50)
+  schoolId  String   @db.VarChar(36)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  name      String   @db.VarChar(255)
+  code      String?  @db.VarChar(100)
+  schoolId  String   @db.VarChar(36)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Exam {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  description String? @db.Text
+  subject    String?  @db.VarChar(36)
+  passMark   Int?
+  totalMark  Int?
+  academicTerm String? @db.VarChar(36)
+  duration   Int?
+  examDate   DateTime?
+  examTime   String? @db.VarChar(50)
+  classLevel String? @db.VarChar(36)
+  questions  String?  @db.Text
+  createdBy  String?  @db.VarChar(36)
+  schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Result {
+  id               String   @id @default(uuid()) @db.VarChar(36)
+  studentId        String   @db.VarChar(36)
+  examId           String   @db.VarChar(36)
+  score            Float?
+  grade            String?  @db.VarChar(50)
+  passMark         Int?
+  status           String?  @db.VarChar(50)
+  remarks          String?  @db.Text
+  answeredQuestions String? @db.Text
+  classLevel       String?  @db.VarChar(36)
+  academicTerm     String?  @db.VarChar(36)
+  academicYear     String?  @db.VarChar(36)
+  isPublished      Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Vehicle {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  registration String @db.VarChar(100)
+  make       String?  @db.VarChar(100)
+  model      String?  @db.VarChar(100)
+  capacity   Int?
+  driver     String?  @db.VarChar(36)
+  schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Route {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  stops      String?  @db.Text
+  vehicleId  String?  @db.VarChar(36)
+  schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TransportAllocation {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  studentId       String   @db.VarChar(36)
+  routeId         String   @db.VarChar(36)
+  vehicleAssignedId String? @db.VarChar(36)
+  pickupPoint     String?  @db.VarChar(255)
+  dropPoint       String?  @db.VarChar(255)
+  schoolId        String   @db.VarChar(36)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model DriverAttendance {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  driverId   String   @db.VarChar(36)
+  vehicleId  String   @db.VarChar(36)
+  routeId    String   @db.VarChar(36)
+  date       DateTime @default(now())
+  schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model DocumentTemplate {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  type       String?  @db.VarChar(100)
+  template   String?  @db.Text
+  schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

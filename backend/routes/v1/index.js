@@ -256,6 +256,14 @@ try {
 }
 
 try {
+    router.use('/', require('./admin/cards.router'));
+    console.log('[ROUTES] ✅ Mounted: /admin/cards (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load admin/cards.router:', e);
+    routeErrors.push({ path: './admin/cards.router', error: e.message });
+}
+
+try {
     router.use('/', require('./staff/teachers.router'));
     console.log('[ROUTES] ✅ Mounted: /teachers (Explicit)');
 } catch (e) {

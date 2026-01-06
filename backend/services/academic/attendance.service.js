@@ -68,6 +68,12 @@ exports.markAttendanceService = async (data, userId, userRole, res) => {
     });
 };
 
+// If USE_PRISMA is enabled, delegate exports to Prisma implementation
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+    module.exports = require('./attendance.service.prisma_impl');
+    return;
+}
+
 /**
  * Get Attendance by Class and Date Service
  */

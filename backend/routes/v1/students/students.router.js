@@ -43,6 +43,8 @@ const {
   getStudentByIdController,
   updateStudentByIdController,
   deleteStudentByIdController,
+  generateStudentCardController,
+  uploadStudentAvatarController,
 } = require("../../../controllers/students/students.controller");
 
 // Student self-registration (public - no auth required)
@@ -94,6 +96,18 @@ studentsRouter
   .patch(isLoggedIn, isAdmin, hasPermission('manageStudents'), validateBody(studentUpdateSchema), updateStudentByIdController)
   .delete(isLoggedIn, isAdmin, hasPermission('manageStudents'), deleteStudentByIdController);
 
+// Student card generation (PDF)
+studentsRouter
+  .route('/students/:id/card')
+  .get(isLoggedIn, (req, res, next) => {
+    // allow admin/teacher through default middlewares, otherwise check student ownership
+    if (req.userRole === 'student' && req.userAuth && req.userAuth.id !== req.params.id) {
+      const responseStatus = require('../../../handlers/responseStatus.handler');
+      return responseStatus(res, 403, 'failed', 'Unauthorized');
+    }
+    next();
+  }, generateStudentCardController);
+
 // Backwards compatible routes (deprecated but still available)
 // Get All Students by Admin - legacy
 studentsRouter
@@ -137,5 +151,21 @@ studentsRouter
 studentsRouter
   .route('/students/:examId/exam-write')
   .post(isLoggedIn, isStudent, studentWriteExamController);
+
+// Upload student avatar (single file) and generate QR
+const { uploadSingle, processAttachments } = require('../../../middlewares/fileUpload');
+studentsRouter
+  .route('/students/:id/avatar')
+  .patch(isLoggedIn, (req, res, next) => {
+    // Allow student updating own avatar or admin
+    if (req.userRole === 'student' && req.userAuth && req.userAuth.id !== req.params.id) {
+      const responseStatus = require('../../../handlers/responseStatus.handler');
+      return responseStatus(res, 403, 'failed', 'Unauthorized');
+    }
+    next();
+  }, uploadSingle('avatar'), async (req, res, next) => {
+    // delegate to controller which will call processAttachments internally
+    return uploadStudentAvatarController(req, res, next);
+  });
 
 module.exports = studentsRouter;

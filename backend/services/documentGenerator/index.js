@@ -55,6 +55,40 @@ async function generateFeeVoucher(payload) {
   return pdfBuffer;
 }
 
+// Generate student/staff ID card
+async function generateStudentCard(payload) {
+  const { student = {}, school = {} , qrDataUrl = null } = payload || {};
+  const StudentCardTemplate = require('./templates/StudentCardTemplate');
+  const element = StudentCardTemplate({ student, qrDataUrl, school });
+  if (!element) throw new Error('Document element is null');
+  const pdfRenderer = await loadReactPDF();
+  const stream = await pdfRenderer.renderToStream(element);
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  const pdfBuffer = Buffer.concat(chunks);
+  if (!pdfBuffer || pdfBuffer.length === 0) throw new Error('Failed to generate PDF buffer for student card');
+  return pdfBuffer;
+}
+
+// Generate staff/teacher ID card
+async function generateStaffCard(payload) {
+  const { staff = {}, school = {}, qrDataUrl = null } = payload || {};
+  const StaffCardTemplate = require('./templates/StaffCardTemplate');
+  const element = StaffCardTemplate({ staff, qrDataUrl, school });
+  if (!element) throw new Error('Document element is null');
+  const pdfRenderer = await loadReactPDF();
+  const stream = await pdfRenderer.renderToStream(element);
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  const pdfBuffer = Buffer.concat(chunks);
+  if (!pdfBuffer || pdfBuffer.length === 0) throw new Error('Failed to generate PDF buffer for staff card');
+  return pdfBuffer;
+}
+
 // Add more generators (marksheet, idCard, salarySlip) as needed
 async function generateDocument(templateType, payload) {
   switch (templateType) {
@@ -65,4 +99,5 @@ async function generateDocument(templateType, payload) {
   }
 }
 
-module.exports = { generateDocument, generateFeeVoucher };
+module.exports = { generateDocument, generateFeeVoucher, generateStudentCard, generateStaffCard };
+

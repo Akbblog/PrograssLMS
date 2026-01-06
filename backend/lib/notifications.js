@@ -1,3 +1,9 @@
+// If USE_PRISMA is enabled, delegate to Prisma-backed implementation
+if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+  module.exports = require('./notifications.prisma_impl');
+  return;
+}
+
 const { Notification, NotificationRecipient } = require('../models/notification.model');
 const Admin = require('../models/Staff/admin.model');
 const Teacher = require('../models/Staff/teachers.model');

@@ -18,6 +18,9 @@ const {
   adminUpdateTeacherProfileController,
   deleteTeacherController,
 } = require("../../../controllers/staff/teachers.controller");
+
+const { uploadSingle } = require('../../../middlewares/fileUpload');
+const { uploadTeacherAvatarController } = require('../../../controllers/staff/teachers.controller');
 // RESTful Teacher routes
 teachersRouter
   .route('/teachers')
@@ -29,6 +32,28 @@ teachersRouter
   .get(isLoggedIn, isAdminOrTeacher, getTeacherProfileController)
   .patch(isLoggedIn, isAdmin, hasPermission('manageTeachers'), validateBody(teacherUpdateSchema), adminUpdateTeacherProfileController)
   .delete(isLoggedIn, isAdmin, hasPermission('manageTeachers'), deleteTeacherController);
+
+// Upload teacher avatar
+teachersRouter
+  .route('/teachers/:id/avatar')
+  .patch(isLoggedIn, (req, res, next) => {
+    if (req.userRole === 'teacher' && req.userAuth && req.userAuth.id !== req.params.id) {
+      const responseStatus = require('../../../handlers/responseStatus.handler');
+      return responseStatus(res, 403, 'failed', 'Unauthorized');
+    }
+    next();
+  }, uploadSingle('avatar'), uploadTeacherAvatarController);
+
+// Staff card generation (PDF)
+teachersRouter
+  .route('/teachers/:id/card')
+  .get(isLoggedIn, (req, res, next) => {
+    if (req.userRole === 'teacher' && req.userAuth && req.userAuth.id !== req.params.id) {
+      const responseStatus = require('../../../handlers/responseStatus.handler');
+      return responseStatus(res, 403, 'failed', 'Unauthorized');
+    }
+    next();
+  }, require('../../../controllers/staff/teachers.controller').generateTeacherCardController);
 
 // Legacy and utility routes
 teachersRouter.route('/teachers/login').post(teacherLoginController);
