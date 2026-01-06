@@ -137,13 +137,6 @@ const teacherSchema = new mongoose.Schema(
   }
 );
 
-// Add text index for search fields
-teacherSchema.index({
-  name: 'text',
-  email: 'text',
-  phone: 'text'
-});
-
 //model
 const Teacher = mongoose.models.Teacher || mongoose.model("Teacher", teacherSchema);
 

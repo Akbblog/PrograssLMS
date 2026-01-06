@@ -49,7 +49,8 @@ const ClassLevelSchema = new mongoose.Schema(
 
 // Add text index for search fields
 ClassLevelSchema.index({
-  name: 'text'
+  name: 'text',
+  section: 'text'
 });
 
 const ClassLevel = mongoose.models.ClassLevel || mongoose.model("ClassLevel", ClassLevelSchema);
