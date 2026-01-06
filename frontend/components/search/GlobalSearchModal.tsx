@@ -5,8 +5,6 @@ import { Dialog } from '@radix-ui/react-dialog';
 import { useSearchStore } from '../../store/searchStore';
 import { CategoryHeader } from './CategoryHeader';
 import { SearchResultItem } from './SearchResultItem';
-import { useVirtualizer } from '@tanstack/react-virtual';
-
 export default function GlobalSearchModal() {
   const {
     isOpen,
@@ -50,15 +48,9 @@ export default function GlobalSearchModal() {
     return () => clearTimeout(debounce);
   }, [query, isOpen, search]);
 
-  // Virtualizer setup
   const allResults = Object.entries(results);
-  const flatResults = allResults.flatMap(([cat, items]) => items.map((item, idx) => ({ ...item, category: cat, idx })));
-  const parentRef = useRef<HTMLDivElement>(null);
-  const rowVirtualizer = useVirtualizer({
-    count: flatResults.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 56,
-  });
+  const flatResults = allResults.flatMap(([cat, items]) => items.map((item) => ({ ...item, category: cat })));
+
 
   return (
     <Dialog open={isOpen} onOpenChange={(v: boolean) => v ? open() : close()}>
@@ -72,7 +64,7 @@ export default function GlobalSearchModal() {
             onChange={e => setQuery(e.target.value)}
           />
         </div>
-        <div ref={parentRef} className="overflow-auto" style={{ maxHeight: '50vh' }}>
+        <div className="overflow-auto" style={{ maxHeight: '50vh' }}>
           {query.length < 2 && recentSearches.length > 0 && (
             <div className="px-6 pb-2">
               <div className="text-xs text-slate-400 mb-2">RECENT SEARCHES</div>
@@ -88,16 +80,20 @@ export default function GlobalSearchModal() {
           {!isLoading && flatResults.length === 0 && query.length >= 2 && (
             <div className="px-6 py-4 text-center text-slate-400">No results found</div>
           )}
+
           {allResults.map(([category, items], i) => (
             <div key={category} className="px-6 pb-2">
               <CategoryHeader category={category} count={items.length} />
-              {items.map((item, idx) => (
-                <SearchResultItem
-                  key={item.id}
-                  result={item}
-                  selected={flatResults[rowVirtualizer.getVirtualItems()[0]?.index]?.idx === idx && flatResults[rowVirtualizer.getVirtualItems()[0]?.index]?.category === category}
-                />
-              ))}
+              {items.map((item, idx) => {
+                const globalIndex = flatResults.findIndex(fr => fr.id === item.id && fr.category === category);
+                return (
+                  <SearchResultItem
+                    key={item.id}
+                    result={item}
+                    selected={globalIndex !== -1 && selectedIndex === globalIndex}
+                  />
+                )
+              })}
               {items.length >= 5 && (
                 <div className="text-xs text-blue-500 cursor-pointer mt-1">See all {items.length} →</div>
               )}

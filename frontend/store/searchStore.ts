@@ -47,7 +47,7 @@ export const useSearchStore = create<SearchState & SearchActions>((set, get) => 
   results: {},
   selectedIndex: 0,
   isLoading: false,
-  recentSearches: JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'),
+  recentSearches: (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem(RECENT_KEY) || '[]') : []),
   activeCategory: null,
 
   open: () => set({ isOpen: true }),
@@ -90,7 +90,9 @@ export const useSearchStore = create<SearchState & SearchActions>((set, get) => 
     let recent = get().recentSearches.filter((q) => q !== query);
     recent.unshift(query);
     if (recent.length > MAX_RECENT) recent = recent.slice(0, MAX_RECENT);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+    }
     set({ recentSearches: recent });
   },
 }));

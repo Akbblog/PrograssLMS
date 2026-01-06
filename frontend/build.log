@@ -1,0 +1,39 @@
+﻿
+> school-management-frontend@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.0 (Turbopack)
+- Environments: .env.production.local, .env.local
+
+node.exe : ΓÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: 
+https://nextjs.org/docs/messages/middleware-to-proxy
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá The "middle...leware-to-proxy:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 23.9s
+  Running TypeScript ...
+Failed to compile.
+
+./app/admin/attendance/page.tsx:236:100
+Type error: Cannot find name 'handleMarkAllStudents'.
+
+[0m [90m 234 |[39m                                             [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 235 |[39m                                             [33m<[39m[33mdiv[39m className[33m=[39m[32m"flex 
+gap-2"[39m[33m>[39m
+[31m[1m>[22m[39m[90m 236 |[39m                                                 [33m<[39m[33mButton[39m 
+variant[33m=[39m[32m"outline"[39m size[33m=[39m[32m"sm"[39m onClick[33m=[39m{() [33m=>[39m 
+handleMarkAllStudents([32m'present'[39m)}[33m>[39m[33mMark[39m [33mAll[39m 
+[33mPresent[39m[33m<[39m[33m/[39m[33mButton[39m[33m>[39m
+ [90m     |[39m                                                                                                    
+[31m[1m^[22m[39m
+ [90m 237 |[39m                                                 [33m<[39m[33mButton[39m 
+variant[33m=[39m[32m"outline"[39m size[33m=[39m[32m"sm"[39m onClick[33m=[39m{() [33m=>[39m 
+handleMarkAllStudents([32m'absent'[39m)}[33m>[39m[33mMark[39m [33mAll[39m 
+[33mAbsent[39m[33m<[39m[33m/[39m[33mButton[39m[33m>[39m
+ [90m 238 |[39m                                             [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 239 |[39m                                         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m[0m
+Next.js build worker exited with code: 1 and signal: null

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Check, ChevronsLeft, ChevronsRight, Upload, X } from "lucide-react";
+import { Check, ChevronsLeft, ChevronsRight, Upload, X, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // --- Schema Definitions ---

@@ -10,6 +10,21 @@ interface SidebarState {
     closeMobile: () => void
 }
 
+const serverSideStorage = (() => {
+    let store: Record<string, string> = {}
+    return {
+        getItem: (key: string) => {
+            return store[key] ?? null
+        },
+        setItem: (key: string, value: string) => {
+            store[key] = value
+        },
+        removeItem: (key: string) => {
+            delete store[key]
+        },
+    }
+})()
+
 export const useSidebarStore = create<SidebarState>()(
     persist(
         (set, get) => ({
@@ -34,7 +49,7 @@ export const useSidebarStore = create<SidebarState>()(
         }),
         {
             name: 'sidebar-storage',
-            storage: createJSONStorage(() => localStorage),
+            storage: typeof window !== 'undefined' ? createJSONStorage(() => localStorage) : (serverSideStorage as any),
             partialize: (state) => ({ isCollapsed: state.isCollapsed }),
         }
     )

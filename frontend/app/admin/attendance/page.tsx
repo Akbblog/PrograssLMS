@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { academicAPI, attendanceAPI } from "@/lib/api/endpoints";
+import { academicAPI, attendanceAPI, adminAPI } from "@/lib/api/endpoints";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,6 +12,7 @@ import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { toast } from "sonner";
 import Icon from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { unwrapArray } from "@/lib/utils";
@@ -25,18 +26,46 @@ export default function AdminAttendancePage() {
     const [isMarkOpen, setIsMarkOpen] = useState(false);
     const [markLoading, setMarkLoading] = useState(false);
 
+    // Modal student state
+    const [students, setStudents] = useState<any[]>([]);
+    const [studentStatuses, setStudentStatuses] = useState<Record<string, 'present' | 'absent'>>({});
+
+    // Academic periods for modal
+    const [academicYears, setAcademicYears] = useState<any[]>([]);
+    const [academicTerms, setAcademicTerms] = useState<any[]>([]);
+    const [selectedAcademicYear, setSelectedAcademicYear] = useState<string>("");
+    const [selectedAcademicTerm, setSelectedAcademicTerm] = useState<string>("");
+
     useEffect(() => {
         fetchInitialData();
     }, []);
 
     const fetchInitialData = async () => {
         try {
-            const classesRes: any = await academicAPI.getClasses();
+            const [classesRes, yearsRes, termsRes] = await Promise.all([
+                academicAPI.getClasses(),
+                adminAPI.getAcademicYears(),
+                adminAPI.getAcademicTerms(),
+            ]);
             const classesData = unwrapArray(classesRes?.data, "classes");
             setClasses(classesData);
             if (classesData.length > 0) {
                 setSelectedClass(classesData[0]._id);
             }
+
+            const years = unwrapArray((yearsRes as any)?.data, "years");
+            const terms = unwrapArray((termsRes as any)?.data, "terms");
+            setAcademicYears(years);
+            setAcademicTerms(terms);
+
+            const currentYear = years.find((y: any) => y.isCurrent);
+            if (currentYear) setSelectedAcademicYear(currentYear._id);
+            else if (years.length > 0) setSelectedAcademicYear(years[0]._id);
+
+            const currentTerm = terms.find((t: any) => t.isCurrent);
+            if (currentTerm) setSelectedAcademicTerm(currentTerm._id);
+            else if (terms.length > 0) setSelectedAcademicTerm(terms[0]._id);
+
         } catch (error) {
             toast.error("Failed to load classes");
         } finally {
@@ -63,6 +92,92 @@ export default function AdminAttendancePage() {
         if (selectedClass) fetchAttendance();
     }, [selectedClass, selectedDate]);
 
+    // Fetch students for the Mark Attendance modal and initialize statuses
+    const fetchStudentsForModal = async () => {
+        if (!selectedClass) return;
+        setLoading(true);
+        try {
+            const res: any = await academicAPI.getStudentsByClass(selectedClass);
+            const list = unwrapArray(res?.data, "students");
+            setStudents(list);
+
+            // Initialize statuses using existing attendanceData if available
+            const initialStatuses: Record<string, 'present' | 'absent'> = {};
+            list.forEach((s: any) => {
+                const existing = attendanceData.find((a: any) => a.student?._id === s._id || a.student === s._id);
+                initialStatuses[s._id] = (existing?.status as 'present' | 'absent') || 'present';
+            });
+            setStudentStatuses(initialStatuses);
+        } catch (err) {
+            toast.error("Failed to load students for class");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const openMarkModal = async () => {
+        if (!selectedClass) {
+            toast.error("Please select a class first");
+            return;
+        }
+        await fetchStudentsForModal();
+        setIsMarkOpen(true);
+    }
+
+    const handleMarkAllStudents = (status: 'present' | 'absent') => {
+        const newStatuses: Record<string, 'present' | 'absent'> = {};
+        students.forEach(s => {
+            newStatuses[s._id] = status;
+        });
+        setStudentStatuses(newStatuses);
+        toast.success(`Marked all students as ${status}`);
+    }
+
+    const handleStudentStatusChange = (studentId: string, status: 'present' | 'absent') => {
+        setStudentStatuses(prev => ({ ...prev, [studentId]: status }));
+    }
+
+    const handleSaveStudentAttendance = async () => {
+        if (!selectedClass) {
+            toast.error("Please select a class");
+            return;
+        }
+        if (!selectedAcademicYear) {
+            toast.error("Please select an academic year");
+            return;
+        }
+        if (!selectedAcademicTerm) {
+            toast.error("Please select an academic term");
+            return;
+        }
+
+        setMarkLoading(true);
+        try {
+            const records = Object.entries(studentStatuses).map(([studentId, status]) => ({
+                student: studentId,
+                status,
+                remarks: "",
+            }));
+
+            await attendanceAPI.markStudentAttendance({
+                classLevel: selectedClass,
+                date: new Date(selectedDate).toISOString(),
+                academicYear: selectedAcademicYear,
+                academicTerm: selectedAcademicTerm,
+                records,
+            });
+
+            toast.success("Student attendance saved successfully!");
+            // Refresh attendance view
+            await fetchAttendance();
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || error.message || "Failed to save attendance");
+        } finally {
+            setMarkLoading(false);
+            setIsMarkOpen(false);
+        }
+    }
+
     if (loading && classes.length === 0) {
         return (
             <div className="flex justify-center items-center h-[60vh]">
@@ -78,7 +193,7 @@ export default function AdminAttendancePage() {
         <AdminPageLayout
             title="Attendance"
             description="Record and review student attendance"
-            actions={<Button onClick={() => setIsMarkOpen(true)} className="bg-primary text-white">Mark Attendance</Button>}
+            actions={<Button onClick={openMarkModal} className="bg-primary text-white">Mark Attendance</Button>}
             stats={(
                 <>
                     <SummaryStatCard title="Present" value={present} icon={<CheckCircle2 className="h-4 w-4 text-white" />} variant="green" />
@@ -227,8 +342,8 @@ export default function AdminAttendancePage() {
                                                             <div className="text-xs text-muted-foreground">{s.rollNumber || s.studentId}</div>
                                                         </div>
                                                         <div className="flex gap-2">
-                                                            <Button size="sm" variant={studentAttendance[s._id]?.status === 'present' ? 'primary' : 'ghost'} onClick={() => handleStudentStatusChange(s._id, 'present')}>Present</Button>
-                                                            <Button size="sm" variant={studentAttendance[s._id]?.status === 'absent' ? 'destructive' : 'ghost'} onClick={() => handleStudentStatusChange(s._id, 'absent')}>Absent</Button>
+                                                            <Button size="sm" variant={studentStatuses[s._id] === 'present' ? 'default' : 'ghost'} onClick={() => handleStudentStatusChange(s._id, 'present')}>Present</Button>
+                                                            <Button size="sm" variant={studentStatuses[s._id] === 'absent' ? 'destructive' : 'ghost'} onClick={() => handleStudentStatusChange(s._id, 'absent')}>Absent</Button>
                                                         </div>
                                                     </div>
                                                 ))}
