@@ -92,14 +92,15 @@ const examSchema = new mongoose.Schema(
       ref: "AcademicYear",
       required: true,
     },
-     // Add text index for search fields
-     examSchema.index({
-       name: 'text',
-       subject: 'text'
-     });
   },
   { timestamps: true }
 );
+
+// Add text index for search fields
+examSchema.index({
+  name: 'text',
+  subject: 'text'
+});
 
 const Exam = mongoose.models.Exam || mongoose.model("Exam", examSchema);
 

@@ -174,21 +174,40 @@ export default function Sidebar({ className }: SidebarProps) {
                 isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
                 className
             )}>
-                {/* Logo Section */}
-                <div className="h-20 flex items-center justify-between px-6">
-                    <Link href="/admin/dashboard" className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-                            <GraduationCap className="h-6 w-6 text-white" />
-                        </div>
-                        {!isCollapsed && (
-                            <span className="font-bold text-xl text-slate-900 tracking-tight truncate">
-                                Progress <span className="text-violet-500">LMS</span>
-                            </span>
+                {/* Header Section */}
+                <div className="h-20 flex items-center relative px-4">
+                    <div className={cn(
+                        "flex items-center transition-all duration-300 w-full",
+                        isCollapsed ? "justify-center" : "justify-start px-2"
+                    )}>
+                        <Link href="/admin/dashboard" className="flex items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
+                                <GraduationCap className="h-6 w-6 text-white" />
+                            </div>
+                            {!isCollapsed && (
+                                <span className="font-bold text-xl text-slate-900 tracking-tight truncate">
+                                    Progress <span className="text-violet-500">LMS</span>
+                                </span>
+                            )}
+                        </Link>
+                    </div>
+
+                    {/* Desktop Collapse Toggle */}
+                    <button
+                        onClick={toggleCollapse}
+                        className={cn(
+                            "hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200",
+                            isCollapsed ? "absolute -right-3 top-7 w-6 h-6 bg-white border border-slate-200 rounded-full items-center justify-center shadow-sm z-50" : ""
                         )}
-                    </Link>
+                        title={isCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Ctrl+B)"}
+                    >
+                        {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-5 h-5" />}
+                    </button>
+
+                    {/* Mobile Close Button */}
                     <button
                         onClick={closeMobile}
-                        className="lg:hidden p-2 rounded-lg hover:bg-white/10 flex-shrink-0"
+                        className="lg:hidden p-2 rounded-lg hover:bg-slate-100 flex-shrink-0 transition-colors"
                     >
                         <X className="w-5 h-5 text-slate-500" />
                     </button>
@@ -394,29 +413,10 @@ export default function Sidebar({ className }: SidebarProps) {
                         </Tooltip>
                     )}
                 </div>
-
-                {/* Collapse Toggle Button */}
-                <div className="hidden lg:flex justify-center p-4 border-t border-slate-100">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                onClick={toggleCollapse}
-                                variant="ghost"
-                                size="sm"
-                                className="w-full flex items-center justify-center text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-all duration-200"
-                            >
-                                {isCollapsed ? (
-                                    <ChevronRight className="w-5 h-5" />
-                                ) : (
-                                    <ChevronLeft className="w-5 h-5" />
-                                )}
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" className="ml-2">
-                            {isCollapsed ? "Expand sidebar" : "Collapse sidebar"} (Ctrl+B)
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
+            </div>
+        </TooltipProvider>
+    )
+}
             </div>
         </TooltipProvider>
     )

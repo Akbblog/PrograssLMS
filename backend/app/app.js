@@ -37,34 +37,20 @@ app.use((req, res, next) => {
 
 // Initialize cors 
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://progresslms.netlify.app",
-  "https://progresslms-frontend.vercel.app",
-  "https://progresslms-frontend-alis-projects-ae84a621.vercel.app",
-  "https://progresslms-frontend-akbmaksa-3745-alis-projects-ae84a621.vercel.app"
-  ,"https://progresslms-frontend-git-main-alis-projects-ae84a621.vercel.app"
-  ,"https://progresslms.io"
-  ,"https://www.progresslms.io"
-].filter(Boolean);
+  "https://progresslms.io",
+  "https://www.progresslms.io",
+  "http://localhost:3000"
+];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    // Allow any deployment under vercel.app for this project
-    if (origin.endsWith("vercel.app")) {
-      return callback(null, true);
-    }
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes("*")) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
+
+// Handle preflight for all routes
+app.options('*', cors());
 
 // Rate Limiting
 app.use(limiter);

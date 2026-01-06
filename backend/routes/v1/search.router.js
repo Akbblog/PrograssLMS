@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/isLoggedIn');
-const Student = require('../../models/Students/Student.model');
-const Teacher = require('../../models/HR/Teacher.model');
+const Student = require('../../models/Students/students.model');
+const Teacher = require('../../models/Staff/teachers.model');
 const Class = require('../../models/Academic/Class.model');
 const Subject = require('../../models/Academic/Subject.model');
 const Exam = require('../../models/Academic/Exam.model');
 const Course = require('../../models/Academic/Course.model');
 const Book = require('../../models/Library/Book.model');
-const Staff = require('../../models/HR/Staff.model');
+const Staff = require('../../models/HR/StaffProfile.model');
 const RouteModel = require('../../models/Transport/Route.model');
 
 // GET /api/v1/search?q=query&categories=students,teachers&limit=5

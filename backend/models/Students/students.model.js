@@ -53,13 +53,6 @@ const studentSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-     // Add text index for search fields
-     studentSchema.index({
-       name: 'text',
-       email: 'text',
-       studentId: 'text',
-       phone: 'text'
-     });
     currentClassLevels: [
       {
         type: ObjectId,
@@ -77,18 +70,11 @@ const studentSchema = new mongoose.Schema(
       trim: true,
       uppercase: true,
     },
-    // Roll number within class/section
-    rollNumber: {
-      type: String,
-      trim: true,
-    },
-    // Enrollment status
     enrollmentStatus: {
       type: String,
       enum: ["active", "inactive", "graduated", "transferred", "withdrawn"],
       default: "active",
     },
-
     academicYear: {
       type: ObjectId,
       ref: "AcademicYear",
@@ -139,6 +125,9 @@ const studentSchema = new mongoose.Schema(
     prefectName: {
       type: String,
     },
+    yearGraduated: {
+      type: String,
+    },
     // both are commented for future update
     // behaviorReport: [
     //   {
@@ -152,15 +141,19 @@ const studentSchema = new mongoose.Schema(
     //     ref: "FinancialReport",
     //   },
     // ],
-    //year group
-    yearGraduated: {
-      type: String,
-    },
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
+
+// Add text index for search fields
+studentSchema.index({
+  name: 'text',
+  email: 'text',
+  studentId: 'text',
+  phone: 'text'
+});
 
 //model
 const Student = mongoose.models.Student || mongoose.model("Student", studentSchema);
