@@ -118,6 +118,12 @@ export const authAPI = {
   },
 };
 
+// Global search endpoint
+export const searchAPI = {
+  // q: query string, categories: comma-separated category list (optional)
+  global: (q: string, categories?: string) => api.get('/search', { params: { q, categories } }),
+};
+
 // Superadmin endpoints
 export const superAdminAPI = {
   getSchools: () => api.get('/superadmin/schools'),

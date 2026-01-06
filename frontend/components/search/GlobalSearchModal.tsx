@@ -72,12 +72,10 @@ export default function GlobalSearchModal() {
         }
     };
 
-    return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && close()}>
-            <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden">
-                <VisuallyHidden>
-                    <DialogTitle>Global Search</DialogTitle>
-                </VisuallyHidden>
+// Deprecated: replaced by inline SearchDropdown. Keep for backward compatibility if needed.
+export default function GlobalSearchModal() {
+    return null;
+}
                 <VisuallyHidden>
                     <DialogDescription>Search across students, teachers, classes, and settings</DialogDescription>
                 </VisuallyHidden>

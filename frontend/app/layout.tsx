@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
-import GlobalSearchModal from '@/components/search/GlobalSearchModal'
 import GlobalSearchActivator from '@/components/search/GlobalSearchActivator'
 
 const geistSans = Geist({
@@ -34,9 +33,8 @@ export default function RootLayout({
       >
          {children}
          <Toaster position="top-right" richColors />
-         {/* Global Search Modal (client components) */}
+         {/* Global search activator for keyboard shortcut only */}
          <GlobalSearchActivator />
-         <GlobalSearchModal />
       </body>
     </html>
   );
