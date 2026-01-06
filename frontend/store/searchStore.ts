@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import Fuse from 'fuse.js';
+import { API_BASE_URL } from '@/lib/api/endpoints';
 
 export interface SearchResult {
   id: string;
@@ -62,11 +63,22 @@ export const useSearchStore = create<SearchState & SearchActions>((set, get) => 
     try {
       const params = new URLSearchParams({ q: query });
       if (get().activeCategory) params.append('categories', get().activeCategory as string);
-      const res = await fetch(`/api/v1/search?${params}`);
+      const res = await fetch(`${API_BASE_URL}/search?${params}`);
+      if (!res.ok) {
+        throw new Error(`Search failed: ${res.status}`);
+      }
       const data = await res.json();
-      set({ results: data, isLoading: false });
+      // Ensure data is an object with array values
+      const safeData: SearchResults = {};
+      if (data && typeof data === 'object') {
+        Object.keys(data).forEach(key => {
+          safeData[key] = Array.isArray(data[key]) ? data[key] : [];
+        });
+      }
+      set({ results: safeData, isLoading: false });
     } catch (e) {
-      set({ isLoading: false });
+      console.error('Search error:', e);
+      set({ results: {}, isLoading: false });
     }
   },
   selectNext: () => {

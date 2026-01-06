@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useSearchStore } from '@/store/searchStore';
 import { Search, Clock, ArrowRight, Loader2, User, BookOpen, GraduationCap, Settings, FileText } from 'lucide-react';
@@ -77,6 +77,9 @@ export default function GlobalSearchModal() {
             <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden">
                 <VisuallyHidden>
                     <DialogTitle>Global Search</DialogTitle>
+                </VisuallyHidden>
+                <VisuallyHidden>
+                    <DialogDescription>Search across students, teachers, classes, and settings</DialogDescription>
                 </VisuallyHidden>
 
                 {/* Search Input Header */}
