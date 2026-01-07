@@ -1,0 +1,33 @@
+{
+  "builds": [
+    {
+      "src": "backend/package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "backend/**"
+      }
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@next-public-api-url",
+    "DATABASE_URL": "@database-url",
+    "JWT_SECRET": "@jwt-secret",
+    "MONGODB_URL": "@mongodb-url",
+    "REDIS_URL": "@redis-url"
+  },
+  "buildCommand": "cd backend && npx prisma generate && cd ../frontend && npm run build"
+}
