@@ -169,9 +169,3 @@ exports.updateAdminService = async (id, data, res) => {
     return responseStatus(res, 201, "success", findAdminAndUpdate);
   }
 };
-
-// If USE_PRISMA is enabled, delegate exports to Prisma implementation
-if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
-  module.exports = require('./admin.service.prisma_impl');
-  return;
-}
