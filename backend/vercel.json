@@ -21,5 +21,4 @@
       "dest": "/server.js"
     }
   ],
-  "buildCommand": "npx prisma generate"
-  
+  "buildCommand": "npx prisma generate"}  
