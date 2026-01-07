@@ -7,15 +7,42 @@ export function useAcademicTerms() {
 
 export function useCreateAcademicTerm() {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.createAcademicTerm(data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['academicTerms'] }) });
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.createAcademicTerm(data), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['academicTerms'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateAcademicTerm(id?: string) {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.updateAcademicTerm(id as string, data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['academicTerms'] }) });
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.updateAcademicTerm(id as string, data), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['academicTerms'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteAcademicTerm() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.deleteAcademicTerm(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['academicTerms'] }) });
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.deleteAcademicTerm(id), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['academicTerms'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
