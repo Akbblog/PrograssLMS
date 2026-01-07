@@ -71,8 +71,8 @@ export default function AcademicTermsPage() {
     const { data: termsRes, isLoading: termsLoading } = useAcademicTerms();
     const { data: yearsRes, isLoading: yearsLoading } = useAcademicYears();
 
-    const terms = (termsRes && (termsRes as any).data) ? unwrapArray((termsRes as any).data, "terms") : (termsRes || []);
-    const years = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, "years") : (yearsRes || []);
+    const terms: AcademicTerm[] = (termsRes && (termsRes as any).data) ? unwrapArray((termsRes as any).data, "terms") : [];
+    const years: AcademicYear[] = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, "years") : [];
 
     const { mutateAsync: createAcademicTerm } = useCreateAcademicTerm();
     const { mutateAsync: updateAcademicTerm } = useUpdateAcademicTerm();
@@ -161,7 +161,7 @@ export default function AcademicTermsPage() {
         label: y.name + (y.isCurrent ? " (Current)" : "")
     }));
 
-    if (loading) {
+    if (termsLoading || yearsLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
