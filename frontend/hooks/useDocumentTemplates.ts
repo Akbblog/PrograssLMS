@@ -7,14 +7,30 @@ export function useDocumentTemplates() {
 
 export function useCreateDocumentTemplate() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.createDocumentTemplate(payload), {
+  type CreatePayload = { templateName: string; templateType: string };
+
+  const m = useMutation<any, Error, CreatePayload>((payload: CreatePayload) => adminAPI.createDocumentTemplate(payload), {
     onSuccess() { qc.invalidateQueries(['documents','templates']); qc.invalidateQueries(['documents']); }
-  })
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteDocumentTemplate() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.deleteDocumentTemplate(id), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.deleteDocumentTemplate(id), {
     onSuccess() { qc.invalidateQueries(['documents','templates']); qc.invalidateQueries(['documents']); }
-  })
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
