@@ -51,7 +51,7 @@ export default function AdminSubjectsPage() {
                 });
             }
             // Invalidate subjects list
-            qc.invalidateQueries(['subjects']);
+            qc.invalidateQueries({ queryKey: ['subjects'] });
             toast.success("Subject created successfully");
             setCreateDialogOpen(false);
             setFormData({ name: "", description: "", program: "" });
