@@ -3,6 +3,11 @@ const router = require('express').Router();
 // Store route loading errors for debugging
 const routeErrors = [];
 
+// Health check that runs before any other routes load (useful for cold-start testing)
+router.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // NOTE: Avoid dynamic `require(pathVar)` in serverless.
 // Vercel’s bundler may not include those files, causing runtime 503s.
 

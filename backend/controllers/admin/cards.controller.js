@@ -122,10 +122,10 @@ exports.pregenerateCardsController = async (req, res) => {
     (async () => {
       try {
         const zipPath = path.join(pregDir, `${jobId}.zip`);
-        const output = fs.createWriteStream(zipPath);
+        const outputStream = fs.createWriteStream(zipPath);
         const archive = archiver('zip', { zlib: { level: 9 } });
         archive.on('error', err => { throw err; });
-        archive.pipe(output);
+        archive.pipe(outputStream);
 
         for (const id of ids) {
           let entity = null;
