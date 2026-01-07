@@ -1,3 +1,0 @@
-{
-  "buildCommand": "cd backend && npx prisma generate"
-}
