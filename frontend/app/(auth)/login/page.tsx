@@ -101,33 +101,36 @@ export default function LoginPage() {
                     password: values.password,
                 }) as any
 
-                const token = res.token || res.data?.token || res.accessToken
+                // Handle multiple response formats from backend
+                // Backend returns: {success: true, data: {...}, message: '...'}
+                const responseData = res.data || res;
+                const token = responseData.token || responseData.data?.token;
+                
+                // Get user data from various possible locations
+                let userData = responseData.data;
+                if (userData?.user) userData = userData.user;
+                else if (userData?.student) userData = userData.student;
+                else if (userData?.teacher) userData = userData.teacher;
+                else if (userData?.admin) userData = userData.admin;
+                else if (!userData?.name && responseData.student) userData = responseData.student;
+                else if (!userData?.name && responseData.teacher) userData = responseData.teacher;
+                else if (!userData?.name && responseData.admin) userData = responseData.admin;
 
-                if ((res.status === 'success' || token) && token) {
-                    let userData = res.data
-                    if (userData?.user) userData = userData.user
-                    else if (userData?.student) userData = userData.student
-                    else if (userData?.teacher) userData = userData.teacher
+                if ((responseData.success || token) && token && userData && userData.name) {
+                    const resolvedRole = (userData.role || roleConfig.id) as RoleType | string
 
-                    if (!userData?._id && res.data?._id) {
-                        userData = res.data
-                    }
-
-                    if (userData && userData._id) {
-                        const resolvedRole = (userData.role || roleConfig.id) as RoleType | string
-
-                        login(
-                            {
-                                _id: userData._id,
-                                id: userData._id,
-                                name: userData.name,
-                                email: userData.email,
-                                role: resolvedRole,
-                                schoolId: userData.schoolId,
-                                features: userData.features,
-                            },
-                            token
-                        )
+                    login(
+                        {
+                            _id: userData._id || userData.id,
+                            id: userData._id || userData.id,
+                            name: userData.name,
+                            email: userData.email,
+                            role: resolvedRole,
+                            schoolId: userData.schoolId,
+                            features: userData.features,
+                        },
+                        token
+                    )
 
                         toast.success(`Welcome back, ${userData.name}!`)
                         success = true;
