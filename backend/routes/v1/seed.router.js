@@ -6,7 +6,7 @@
 
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-const prisma = require('../../lib/prismaClient').default || require('../../lib/prismaClient');
+const { getPrisma } = require('../../lib/prismaClient');
 
 const SCHOOL_ID = 'school-islamic-001';
 
@@ -95,8 +95,8 @@ async function hashPassword(password) {
 // Seed endpoint
 router.post('/seed', verifySeedSecret, async (req, res) => {
   try {
-    const p = await prisma;
-    if (!p) {
+    const prisma = getPrisma();
+    if (!prisma) {
       return res.status(500).json({
         success: false,
         message: 'Database connection failed'
@@ -106,21 +106,21 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     console.log('🕌 Starting Vercel Seed...');
 
     // Clear existing data
-    await p.assignmentSubmission.deleteMany({});
-    await p.assignment.deleteMany({});
-    await p.enrollment.deleteMany({});
-    await p.attendance.deleteMany({});
-    await p.feePayment.deleteMany({});
-    await p.feeStructure.deleteMany({});
-    await p.subject.deleteMany({});
-    await p.classLevel.deleteMany({});
-    await p.student.deleteMany({});
-    await p.teacher.deleteMany({});
-    await p.admin.deleteMany({});
-    await p.school.deleteMany({});
+    await prisma.assignmentSubmission.deleteMany({});
+    await prisma.assignment.deleteMany({});
+    await prisma.enrollment.deleteMany({});
+    await prisma.attendance.deleteMany({});
+    await prisma.feePayment.deleteMany({});
+    await prisma.feeStructure.deleteMany({});
+    await prisma.subject.deleteMany({});
+    await prisma.classLevel.deleteMany({});
+    await prisma.student.deleteMany({});
+    await prisma.teacher.deleteMany({});
+    await prisma.admin.deleteMany({});
+    await prisma.school.deleteMany({});
 
     // Create School
-    const school = await p.school.create({
+    const school = await prisma.school.create({
       data: {
         id: SCHOOL_ID,
         name: 'Al-Noor Islamic Academy',
@@ -140,7 +140,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
 
     // Create Admin
     const adminPassword = await hashPassword('admin123');
-    const admin = await p.admin.create({
+    const admin = await prisma.admin.create({
       data: {
         name: 'Dr. Muhammad Rashid',
         email: 'admin@alnoor-academy.edu',
@@ -154,7 +154,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     // Create Class Levels
     const createdClassLevels = [];
     for (const classData of classLevels) {
-      const classLevel = await p.classLevel.create({
+      const classLevel = await prisma.classLevel.create({
         data: {
           name: classData.name,
           section: classData.section,
@@ -167,7 +167,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     // Create Subjects
     const createdSubjects = [];
     for (const subjectData of subjects) {
-      const subject = await p.subject.create({
+      const subject = await prisma.subject.create({
         data: {
           name: subjectData.name,
           code: subjectData.code,
@@ -181,7 +181,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     const teacherPassword = await hashPassword('password123');
     const createdTeachers = [];
     for (const teacherData of teachers) {
-      const teacher = await p.teacher.create({
+      const teacher = await prisma.teacher.create({
         data: {
           name: teacherData.name,
           email: teacherData.email,
@@ -201,7 +201,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     const createdStudents = [];
     for (let i = 0; i < students.length; i++) {
       const studentData = students[i];
-      const student = await p.student.create({
+      const student = await prisma.student.create({
         data: {
           name: studentData.name,
           email: studentData.email,
@@ -226,7 +226,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
       if (matchingClass) {
         const enrollmentSubjects = createdSubjects.slice(0, Math.floor(Math.random() * 2) + 3);
         for (const subject of enrollmentSubjects) {
-          await p.enrollment.create({
+          await prisma.enrollment.create({
             data: {
               studentId: student.id,
               subjectId: subject.id,
