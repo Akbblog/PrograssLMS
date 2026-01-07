@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useQueryClient } from '@tanstack/react-query'
-import { adminAPI, academicAPI } from '@/lib/api/endpoints'
+import { adminAPI, academicAPI, superAdminAPI } from '@/lib/api/endpoints'
 import { useAuthStore } from "@/store/authStore"
 import { useSidebarStore } from "@/store/sidebarStore"
 import { Button } from "@/components/ui/button"
@@ -183,6 +183,12 @@ export default function Sidebar({ className }: SidebarProps) {
         } else if (href.startsWith('/admin/documents')) {
             // Prefetch templates for Documents pages
             qc.prefetchQuery({ queryKey: ['documents','templates'], queryFn: () => adminAPI.getDocumentTemplates() });
+        } else if (href === '/admin/settings') {
+            // Prefetch school settings for settings page (if user has a schoolId)
+            const user = useAuthStore.getState().user
+            if (user?.schoolId) {
+                qc.prefetchQuery({ queryKey: ['school', user.schoolId], queryFn: () => superAdminAPI.getSchool(user.schoolId) })
+            }
         } else if (href.startsWith('/admin/transport')) {
             qc.prefetchQuery({ queryKey: ['routes', { page: 1 }], queryFn: () => adminAPI.get('/transport/routes', { params: { page: 1 } }).then(r => r.data) });
             qc.prefetchQuery({ queryKey: ['vehicles'], queryFn: () => adminAPI.get('/transport/vehicles').then(r => r.data) });

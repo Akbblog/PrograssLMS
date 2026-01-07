@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import useSchoolSettings from '@/hooks/useSchoolSettings'
 import { useAuthStore } from "@/store/authStore"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,13 +45,28 @@ export default function AdminSettingsPage() {
     const [email, setEmail] = useState(user?.email || "")
 
     // School settings
-    const [schoolName, setSchoolName] = useState("Progress Demo School")
-    const [schoolEmail, setSchoolEmail] = useState("admin@progressschool.edu")
-    const [schoolPhone, setSchoolPhone] = useState("+1 (555) 123-4567")
-    const [schoolAddress, setSchoolAddress] = useState("123 Education St, New York, NY 10001")
+    // School settings (will be hydrated from server)
+    const [schoolName, setSchoolName] = useState("")
+    const [schoolEmail, setSchoolEmail] = useState("")
+    const [schoolPhone, setSchoolPhone] = useState("")
+    const [schoolAddress, setSchoolAddress] = useState("")
     const [timezone, setTimezone] = useState("America/New_York")
     const [academicYear, setAcademicYear] = useState("2024-2025")
 
+    // React Query hook for server-backed school settings
+    const { school, isLoading: schoolLoading, updateSchool } = require('@/hooks/useSchoolSettings')()
+
+    // Hydrate local state when server data arrives
+    useEffect(() => {
+        if (school) {
+            setSchoolName(school.name || "")
+            setSchoolEmail(school.email || "")
+            setSchoolPhone(school.phone || "")
+            setSchoolAddress(school.address || "")
+            setTimezone(school.timezone || "America/New_York")
+            setAcademicYear(school.currentAcademicYear || academicYear)
+        }
+    }, [school])
     // Notification settings
     const [emailNotifications, setEmailNotifications] = useState(true)
     const [newStudentAlerts, setNewStudentAlerts] = useState(true)
@@ -223,7 +239,24 @@ export default function AdminSettingsPage() {
                             </div>
 
                             <div className="flex justify-end">
-                                <Button onClick={() => handleSave("School information")} disabled={saving}>
+                                <Button onClick={async () => {
+                                    setSaving(true)
+                                    try {
+                                        await updateSchool({
+                                            name: schoolName,
+                                            email: schoolEmail,
+                                            phone: schoolPhone,
+                                            address: schoolAddress,
+                                            timezone,
+                                            currentAcademicYear: academicYear,
+                                        })
+                                        toast.success("School information updated")
+                                    } catch (error) {
+                                        toast.error("Failed to update school information")
+                                    } finally {
+                                        setSaving(false)
+                                    }
+                                }} disabled={saving}>
                                     {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                                     Save Changes
                                 </Button>
