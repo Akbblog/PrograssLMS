@@ -8,6 +8,15 @@ router.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// ============ SEED ROUTE (Must be early) ============
+try {
+    router.use('/', require('./seed.router'));
+    console.log('[ROUTES] ✅ Mounted: /seed (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load seed.router:', e);
+    routeErrors.push({ path: './seed.router', error: e.message });
+}
+
 // NOTE: Avoid dynamic `require(pathVar)` in serverless.
 // Vercel’s bundler may not include those files, causing runtime 503s.
 
