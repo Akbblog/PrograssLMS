@@ -1,23 +1,30 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const Admin = null; // not needed here
-const Teacher = null;
-const Student = null;
+const { getPrisma } = require('./prismaClient');
 const eventBus = require('../utils/eventBus');
 
 async function _getUsersForRole(role, schoolId) {
   // Attempt to query based on role; fallback to empty
   try {
+    const prisma = getPrisma();
+    if (!prisma) {
+      console.warn('[Prisma][Notifications] client not available in _getUsersForRole');
+      return [];
+    }
     if (role === 'admin') return await prisma.admin.findMany({ where: schoolId ? { schoolId } : {} });
     if (role === 'teacher') return await prisma.teacher.findMany({ where: schoolId ? { schoolId } : {} });
     if (role === 'student') return await prisma.student.findMany({ where: schoolId ? { schoolId } : {} });
   } catch (err) {
-    console.warn('[Prisma][Notifications] _getUsersForRole fallback', err.message);
+    console.warn('[Prisma][Notifications] _getUsersForRole fallback', err && err.message ? err.message : err);
   }
   return [];
 }
 
 async function createNotification({ title, message, type = 'info', targetRoles = [], userId = null, userModel = 'System', actionUrl = '', meta = {}, schoolId = null }) {
+  const prisma = getPrisma();
+  if (!prisma) {
+    console.warn('[Prisma][Notifications] createNotification skipped - prisma client unavailable');
+    return { notification: null, recipientsCount: 0 };
+  }
+
   const notification = await prisma.notification.create({ data: { title, message, type, targetRoles: JSON.stringify(targetRoles), userId, userModel, actionUrl, meta: JSON.stringify(meta), schoolId } });
 
   const recipients = [];
@@ -48,6 +55,11 @@ async function createNotification({ title, message, type = 'info', targetRoles =
 
 async function getNotificationsForUser(userId, page = 1, limit = 20) {
   const skip = (page - 1) * limit;
+  const prisma = getPrisma();
+  if (!prisma) {
+    console.warn('[Prisma][Notifications] getNotificationsForUser - prisma unavailable');
+    return [];
+  }
   const recipients = await prisma.notificationRecipient.findMany({ where: { userId }, orderBy: { createdAt: 'desc' }, skip, take: limit });
   const notificationIds = recipients.map(r => r.notificationId);
   const notifications = await prisma.notification.findMany({ where: { id: { in: notificationIds } } });
@@ -56,17 +68,32 @@ async function getNotificationsForUser(userId, page = 1, limit = 20) {
 }
 
 async function markRead(userId, notificationId) {
+  const prisma = getPrisma();
+  if (!prisma) {
+    console.warn('[Prisma][Notifications] markRead - prisma unavailable');
+    throw new Error('Database unavailable');
+  }
   const recipient = await prisma.notificationRecipient.updateMany({ where: { userId, notificationId }, data: { readAt: new Date() } });
   if (recipient.count === 0) throw new Error('Notification recipient not found');
   return recipient;
 }
 
 async function markAllRead(userId) {
+  const prisma = getPrisma();
+  if (!prisma) {
+    console.warn('[Prisma][Notifications] markAllRead - prisma unavailable');
+    throw new Error('Database unavailable');
+  }
   const res = await prisma.notificationRecipient.updateMany({ where: { userId, readAt: null }, data: { readAt: new Date() } });
   return res;
 }
 
 async function getUnreadCount(userId) {
+  const prisma = getPrisma();
+  if (!prisma) {
+    console.warn('[Prisma][Notifications] getUnreadCount - prisma unavailable');
+    return 0;
+  }
   const count = await prisma.notificationRecipient.count({ where: { userId, readAt: null } });
   return count;
 }
