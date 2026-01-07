@@ -11,7 +11,17 @@ export function useClass(id?: string, enabled = !!id) {
 
 export function useCreateClass() {
   const qc = useQueryClient();
-  return useMutation((data: any) => academicAPI.createClass(data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['classes'] }) });
+  const m = useMutation((data: any) => academicAPI.createClass(data), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['classes'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    // keep full mutation available if needed
+    mutation: m,
+  };
 }
 
 export function useUpdateClass(id?: string) {
