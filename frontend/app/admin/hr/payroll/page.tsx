@@ -109,10 +109,16 @@ export default function PayrollPage() {
     });
 
     const { data: payrollsRes, isLoading: payrollsLoading } = usePayroll();
-    const payrolls = (payrollsRes && (payrollsRes as any).data) ? unwrapArray((payrollsRes as any).data, 'payrolls') : (payrollsRes || []);
+    const payrolls: any[] = (payrollsRes && (payrollsRes as any).data)
+        ? unwrapArray((payrollsRes as any).data, 'payrolls')
+        : unwrapArray(payrollsRes);
 
-    const { data: staffRes } = useStaff();
-    const staff = (staffRes && (staffRes as any).data) ? unwrapArray((staffRes as any).data, 'staff') : (staffRes || []);
+    const { data: staffRes, isLoading: staffLoading } = useStaff();
+    const staff: any[] = (staffRes && (staffRes as any).data)
+        ? unwrapArray((staffRes as any).data, 'staff')
+        : unwrapArray(staffRes);
+
+    const loading = payrollsLoading || staffLoading;
 
     const { mutateAsync: generatePayroll } = useGeneratePayroll();
     const { mutateAsync: processPayroll } = useProcessPayroll();
