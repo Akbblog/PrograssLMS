@@ -215,12 +215,12 @@ export default function AdminTeachersPage() {
 
     const filterTeachers = () => {
         let filtered = [...teachers];
-        if (statusFilter === "active") filtered = filtered.filter(t => !t.isWithdrawn && !t.isSuspended);
-        else if (statusFilter === "suspended") filtered = filtered.filter(t => t.isSuspended);
+        if (statusFilter === "active") filtered = filtered.filter((t: any) => !t.isWithdrawn && !t.isSuspended);
+        else if (statusFilter === "suspended") filtered = filtered.filter((t: any) => t.isSuspended);
 
         if (searchQuery) {
             const q = searchQuery.toLowerCase();
-            filtered = filtered.filter(t =>
+            filtered = filtered.filter((t: any) =>
                 t.name?.toLowerCase().includes(q) ||
                 t.email?.toLowerCase().includes(q)
             );
@@ -261,9 +261,9 @@ export default function AdminTeachersPage() {
     }
 
     const total = teachers.length
-    const activeCount = teachers.filter(t => !t.isWithdrawn && !t.isSuspended).length
-    const suspendedCount = teachers.filter(t => t.isSuspended).length
-    const subjectsCount = new Set(teachers.filter(t => t.subject).map(t => typeof t.subject === 'object' ? t.subject._id : t.subject)).size
+    const activeCount = teachers.filter((t: any) => !t.isWithdrawn && !t.isSuspended).length
+    const suspendedCount = teachers.filter((t: any) => t.isSuspended).length
+    const subjectsCount = new Set(teachers.filter((t: any) => t.subject).map((t: any) => typeof t.subject === 'object' ? t.subject._id : t.subject)).size
 
     return (
         <AdminPageLayout

@@ -221,21 +221,21 @@ export default function RoutesPage() {
     };
 
     const vehicleOptions = vehicles
-        .filter(v => v.status === 'active')
-        .map(v => ({
+        .filter((v: any) => v.status === 'active')
+        .map((v: any) => ({
             value: v._id,
             label: `${v.vehicleNumber} - ${v.vehicleType} (${v.capacity} seats)`
         }));
 
-    const filteredRoutes = routes.filter(r =>
+    const filteredRoutes = routes.filter((r: any) =>
         r.routeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         r.routeCode.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const stats = {
         totalRoutes: routes.length,
-        activeRoutes: routes.filter(r => r.isActive).length,
-        totalStops: routes.reduce<number>((sum, r) => sum + (r.stops?.length || 0), 0)
+        activeRoutes: routes.filter((r: any) => r.isActive).length,
+        totalStops: routes.reduce((sum: number, r: any) => sum + (r.stops?.length || 0), 0)
     };
 
     if (routesLoading) {
@@ -339,7 +339,7 @@ export default function RoutesPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredRoutes.map((route) => (
+                                    {filteredRoutes.map((route: any) => (
                                         <TableRow key={route._id}>
                                             <TableCell className="font-medium">{route.routeName}</TableCell>
                                             <TableCell>

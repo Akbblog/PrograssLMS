@@ -71,10 +71,10 @@ export default function StaffPage() {
                 </SheetHeader>
                 <div className="h-[calc(100vh-80px)]">
                     <StaffForm 
-                        onSubmit={handleAddStaff} 
-                        onCancel={() => setIsAddOpen(false)} 
-                        isLoading={isLoading}
-                        defaultValues={editingStaff}
+                      onSubmit={handleAddStaff} 
+                      onCancel={() => setIsAddOpen(false)} 
+                      isLoading={staffLoading}
+                      defaultValues={editingStaff}
                     />
                 </div>
             </SheetContent>
