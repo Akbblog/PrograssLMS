@@ -36,5 +36,12 @@ export function useUpdateClass(id?: string) {
 
 export function useDeleteClass() {
   const qc = useQueryClient();
-  return useMutation((id: string) => academicAPI.deleteClass(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['classes'] }) });
+  const m = useMutation<any, Error, string>((id: string) => academicAPI.deleteClass(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['classes'] }) });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
