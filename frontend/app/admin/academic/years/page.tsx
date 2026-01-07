@@ -25,7 +25,7 @@ interface AcademicYear {
 
 export default function AcademicYearsPage() {
     const { data: yearsRes, isLoading: yearsLoading } = useAcademicYears();
-    const years = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, "years") : (yearsRes || []);
+    const years: AcademicYear[] = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, "years") : [];
 
     const { mutateAsync: createAcademicYear } = useCreateAcademicYear();
     const { mutateAsync: updateAcademicYear } = useUpdateAcademicYear();
@@ -113,7 +113,7 @@ export default function AcademicYearsPage() {
         });
     };
 
-    if (loading) {
+    if (yearsLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
