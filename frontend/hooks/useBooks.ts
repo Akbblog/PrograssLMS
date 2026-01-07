@@ -17,6 +17,7 @@ export function useCreateBook() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -31,6 +32,7 @@ export function useUpdateBook(id?: string) {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -45,6 +47,7 @@ export function useDeleteBook() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,

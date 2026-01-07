@@ -127,8 +127,11 @@ export default function CreateStudentPage() {
     const { data: yearsData } = useAcademicYears();
     const createStudent = useCreateStudent();
 
+    const classes = unwrapArray(classesData);
+    const academicYears = unwrapArray(yearsData);
+
     useEffect(() => {
-        const currentYear = (yearsData || []).find((y: any) => y.isCurrent);
+        const currentYear = (academicYears || []).find((y: any) => y.isCurrent);
         if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
     }, [yearsData]);
 
@@ -216,8 +219,8 @@ export default function CreateStudentPage() {
         { value: 'O-', label: 'O-' }
     ];
 
-    const classOptions = classes.map(cls => ({ value: cls._id, label: cls.name }));
-    const yearOptions = academicYears.map(year => ({ value: year._id, label: year.name }));
+    const classOptions = classes.map((cls: any) => ({ value: cls._id, label: cls.name }));
+    const yearOptions = academicYears.map((year: any) => ({ value: year._id, label: year.name }));
 
     if (!classesData || !yearsData) {
         return (

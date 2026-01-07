@@ -15,6 +15,7 @@ export function useCreateDocumentTemplate() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -29,6 +30,7 @@ export function useDeleteDocumentTemplate() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,

@@ -15,6 +15,7 @@ export function useCreateProgram() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -32,6 +33,7 @@ export function useUpdateProgram(id?: string) {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -44,6 +46,7 @@ export function useDeleteProgram() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,

@@ -18,6 +18,7 @@ export function useCreatePayroll() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -32,6 +33,7 @@ export function useUpdatePayroll(id?: string) {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -46,6 +48,7 @@ export function useDeletePayroll() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -62,6 +65,7 @@ export function useGeneratePayroll() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,

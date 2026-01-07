@@ -27,6 +27,7 @@ export function useCreateStudent() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -44,6 +45,7 @@ export function useUpdateStudent(id?: string) {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,
@@ -58,6 +60,7 @@ export function useDeleteStudent() {
 
   return {
     mutateAsync: m.mutateAsync,
+    mutate: m.mutate,
     isLoading: (m as any).isLoading ?? m.status === 'loading',
     reset: m.reset,
     mutation: m,

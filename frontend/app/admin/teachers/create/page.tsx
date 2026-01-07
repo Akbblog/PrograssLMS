@@ -182,14 +182,22 @@ export default function CreateTeacherPage() {
     const { data: yearsData } = useAcademicYears();
     const { data: termsData } = useAcademicTerms();
 
+    const classes = unwrapArray(classesData);
+    const subjects = unwrapArray(subjectsData);
+    const academicYears = unwrapArray(yearsData);
+    const academicTerms = unwrapArray(termsData);
+
     const createClassMutation = useCreateClass();
     const createSubjectMutation = useCreateSubject();
     const createTeacherMutation = useCreateTeacher();
 
+    const creatingClass = (createClassMutation as any).isLoading ?? false;
+    const creatingSubject = (createSubjectMutation as any).isLoading ?? false;
+
     useEffect(() => {
-        const currentYear = (yearsData || []).find((y: any) => y.isCurrent);
+        const currentYear = (academicYears || []).find((y: any) => y.isCurrent);
         if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
-    }, [yearsData]);
+    }, [academicYears]);
     // Create new class
     const handleCreateClass = async () => {
         if (!newClassName.trim()) {

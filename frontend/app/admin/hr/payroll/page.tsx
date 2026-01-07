@@ -328,8 +328,8 @@ export default function PayrollPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {filteredPayrolls.map((payroll) => {
-                                        const totalAllowances = payroll.allowances?.reduce<number>((sum, a) => sum + a.amount, 0) || 0;
-                                        const totalDeductions = payroll.deductions?.reduce<number>((sum, d) => sum + d.amount, 0) || 0;
+                                        const totalAllowances = payroll.allowances?.reduce((sum: number, a: any) => sum + (a.amount || 0), 0) || 0;
+                                        const totalDeductions = payroll.deductions?.reduce((sum: number, d: any) => sum + (d.amount || 0), 0) || 0;
                                         
                                         return (
                                             <TableRow key={payroll._id}>

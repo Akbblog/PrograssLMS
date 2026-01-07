@@ -401,10 +401,10 @@ export default function AttendancePage() {
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
+                                        <Calendar
                                         mode="single"
                                         selected={selectedDate}
-                                        onSelect={(date) => date && setSelectedDate(date)}
+                                        onSelect={(date: any) => date && setSelectedDate(date)}
                                         initialFocus
                                     />
                                 </PopoverContent>

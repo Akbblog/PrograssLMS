@@ -13,6 +13,8 @@ const apiOrigin = (() => {
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  // Turbopack settings. Keep root configured; disable at build time via
+  // env `NEXT_DISABLE_TURBOPACK=1` when needed on Windows.
   turbopack: {
     root: path.resolve(__dirname),
   },

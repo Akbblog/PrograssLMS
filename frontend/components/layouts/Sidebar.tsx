@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useQueryClient } from '@tanstack/react-query'
-import { adminAPI, academicAPI, superAdminAPI } from '@/lib/api/endpoints'
+import { adminAPI, academicAPI, superAdminAPI, examAPI, hrAPI, libraryAPI, transportAPI } from '@/lib/api/endpoints'
 import { useAuthStore } from "@/store/authStore"
 import { useSidebarStore } from "@/store/sidebarStore"
 import { Button } from "@/components/ui/button"
@@ -173,13 +173,13 @@ export default function Sidebar({ className }: SidebarProps) {
         } else if (href === '/admin/dashboard') {
             qc.prefetchQuery({ queryKey: ['dashboardStats'], queryFn: () => adminAPI.getDashboardStats() });
         } else if (href.startsWith('/admin/exams')) {
-            qc.prefetchQuery({ queryKey: ['exams', { page: 1 }], queryFn: () => adminAPI.get('/exams', { params: { page: 1 } }).then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['exams', { page: 1 }], queryFn: () => examAPI.getAll() });
         } else if (href.startsWith('/admin/hr')) {
-            qc.prefetchQuery({ queryKey: ['staff', { page: 1 }], queryFn: () => adminAPI.get('/hr/staff', { params: { page: 1 } }).then(r => r.data) });
-            qc.prefetchQuery({ queryKey: ['payroll'], queryFn: () => adminAPI.get('/hr/payroll').then(r => r.data) });
-            qc.prefetchQuery({ queryKey: ['appraisals', { page: 1 }], queryFn: () => adminAPI.get('/hr/appraisals', { params: { page: 1 } }).then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['staff', { page: 1 }], queryFn: () => hrAPI.getStaff({ page: 1 }) });
+            qc.prefetchQuery({ queryKey: ['payroll'], queryFn: () => hrAPI.getPayrolls() });
+            qc.prefetchQuery({ queryKey: ['appraisals', { page: 1 }], queryFn: () => hrAPI.getAppraisals({ page: 1 }) });
         } else if (href.startsWith('/admin/library')) {
-            qc.prefetchQuery({ queryKey: ['books', { page: 1 }], queryFn: () => adminAPI.get('/library/books', { params: { page: 1 } }).then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['books', { page: 1 }], queryFn: () => libraryAPI.getBooks({ page: 1 }) });
         } else if (href.startsWith('/admin/documents')) {
             // Prefetch templates for Documents pages
             qc.prefetchQuery({ queryKey: ['documents','templates'], queryFn: () => adminAPI.getDocumentTemplates() });
@@ -187,11 +187,11 @@ export default function Sidebar({ className }: SidebarProps) {
             // Prefetch school settings for settings page (if user has a schoolId)
             const user = useAuthStore.getState().user
             if (user?.schoolId) {
-                qc.prefetchQuery({ queryKey: ['school', user.schoolId], queryFn: () => superAdminAPI.getSchool(user.schoolId) })
+                qc.prefetchQuery({ queryKey: ['school', user.schoolId], queryFn: () => superAdminAPI.getSchool(user.schoolId as string) })
             }
         } else if (href.startsWith('/admin/transport')) {
-            qc.prefetchQuery({ queryKey: ['routes', { page: 1 }], queryFn: () => adminAPI.get('/transport/routes', { params: { page: 1 } }).then(r => r.data) });
-            qc.prefetchQuery({ queryKey: ['vehicles'], queryFn: () => adminAPI.get('/transport/vehicles').then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['routes', { page: 1 }], queryFn: () => transportAPI.getRoutes({ page: 1 }) });
+            qc.prefetchQuery({ queryKey: ['vehicles'], queryFn: () => transportAPI.getVehicles() });
         }
     }
 

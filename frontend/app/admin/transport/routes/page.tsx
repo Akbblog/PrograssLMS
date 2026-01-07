@@ -238,7 +238,7 @@ export default function RoutesPage() {
         totalStops: routes.reduce<number>((sum, r) => sum + (r.stops?.length || 0), 0)
     };
 
-    if (loading) {
+    if (routesLoading) {
         return (
             <AdminPageLayout title="Routes" description="Manage routes and stops">
                 <div className="flex justify-center items-center h-64">

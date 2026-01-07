@@ -32,7 +32,7 @@ export default function VirtualizedList<T>({
             <div
               key={virtualRow.key}
               data-index={virtualRow.index}
-              ref={virtualRow.measureElement}
+              ref={(el) => (virtualRow as any).measureElement?.(el)}
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', transform: `translateY(${virtualRow.start}px)` }}
             >
               {renderItem(item, virtualRow.index)}
