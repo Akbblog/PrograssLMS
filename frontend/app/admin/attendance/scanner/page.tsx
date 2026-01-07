@@ -18,6 +18,18 @@ export default function ScannerPage() {
     }
   }
 
+  const [html5Loaded, setHtml5Loaded] = useState(false);
+  const startCameraScan = async () => {
+    try {
+      const m = await import('html5-qrcode');
+      console.log('html5-qrcode loaded', m);
+      setHtml5Loaded(true);
+      // Integration point: initialize scanner on a dedicated DOM node and start camera
+    } catch (err) {
+      console.error('Failed to load html5-qrcode', err);
+    }
+  }
+
   return (
     <AdminPageLayout title="QR Scanner" description="Scan student QR codes to record attendance">
       <div className="p-6 max-w-3xl mx-auto space-y-6">
@@ -28,6 +40,7 @@ export default function ScannerPage() {
           <input className="w-full border rounded p-2" value={manualData} onChange={(e)=>setManualData(e.target.value)} />
           <div className="flex gap-2">
             <Button onClick={handleManualScan}>Send Scan</Button>
+            <Button onClick={startCameraScan} variant="outline">{html5Loaded ? 'Camera Ready' : 'Start Camera Scan'}</Button>
           </div>
         </div>
 

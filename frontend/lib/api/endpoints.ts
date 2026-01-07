@@ -162,6 +162,11 @@ export const adminAPI = {
   getDashboardStats: () => api.get('/admin/stats'),
   // Student dashboard
   getStudentDashboard: () => api.get('/students/dashboard'),
+  // Documents
+  getDocumentTemplates: () => api.get('/documents/templates'),
+  createDocumentTemplate: (data: any) => api.post('/documents/templates', data),
+  updateDocumentTemplate: (id: string, data: any) => api.put(`/documents/templates/${id}`, data),
+  deleteDocumentTemplate: (id: string) => api.delete(`/documents/templates/${id}`),
   // Export utilities
   exportStudents: () => api.get('/admin/export/students', { responseType: 'blob' as any }),
   exportTeachers: () => api.get('/admin/export/teachers', { responseType: 'blob' as any }),

@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { adminAPI, academicAPI } from "@/lib/api/endpoints";
+import { useClasses, useCreateClass } from '@/hooks/useClasses';
+import { useSubjects, useCreateSubject } from '@/hooks/useSubjects';
+import { useAcademicYears } from '@/hooks/useAcademicYears';
+import { useAcademicTerms } from '@/hooks/useAcademicTerms';
+import { useCreateTeacher } from '@/hooks/useTeachers';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -154,11 +158,6 @@ function NativeSelect({
 export default function CreateTeacherPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [dataLoading, setDataLoading] = useState(true);
-    const [classes, setClasses] = useState<any[]>([]);
-    const [subjects, setSubjects] = useState<any[]>([]);
-    const [academicYears, setAcademicYears] = useState<any[]>([]);
-    const [academicTerms, setAcademicTerms] = useState<any[]>([]);
     const [step, setStep] = useState(1);
     const totalSteps = 3;
 
@@ -169,8 +168,6 @@ export default function CreateTeacherPage() {
     const [newClassDescription, setNewClassDescription] = useState("");
     const [newSubjectName, setNewSubjectName] = useState("");
     const [newSubjectDescription, setNewSubjectDescription] = useState("");
-    const [creatingClass, setCreatingClass] = useState(false);
-    const [creatingSubject, setCreatingSubject] = useState(false);
 
     const [formData, setFormData] = useState<TeacherFormData>({
         name: "",
@@ -180,41 +177,19 @@ export default function CreateTeacherPage() {
         joiningDate: new Date().toISOString().split('T')[0],
     });
 
+    const { data: classesData } = useClasses();
+    const { data: subjectsData } = useSubjects();
+    const { data: yearsData } = useAcademicYears();
+    const { data: termsData } = useAcademicTerms();
+
+    const createClassMutation = useCreateClass();
+    const createSubjectMutation = useCreateSubject();
+    const createTeacherMutation = useCreateTeacher();
+
     useEffect(() => {
-        fetchDropdownData();
-    }, []);
-
-    const fetchDropdownData = async () => {
-        try {
-            const [classesData, subjectsData, yearsData, termsData] = await Promise.all([
-                academicAPI.getClasses(),
-                academicAPI.getSubjects(),
-                adminAPI.getAcademicYears(),
-                adminAPI.getAcademicTerms(),
-            ]);
-            const classesList = unwrapArray((classesData as any)?.data, "classes");
-            const subjectsList = unwrapArray((subjectsData as any)?.data, "subjects");
-            const yearsList = unwrapArray((yearsData as any)?.data, "years");
-            const termsList = unwrapArray((termsData as any)?.data, "terms");
-
-            setClasses(classesList);
-            setSubjects(subjectsList);
-            setAcademicYears(yearsList);
-            setAcademicTerms(termsList);
-
-            // Set default academic year to current
-            const currentYear = yearsList.find((y: any) => y.isCurrent);
-            if (currentYear) {
-                setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
-            }
-        } catch (error) {
-            console.error("Error fetching dropdown data:", error);
-            toast.error("Failed to load form data");
-        } finally {
-            setDataLoading(false);
-        }
-    };
-
+        const currentYear = (yearsData || []).find((y: any) => y.isCurrent);
+        if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
+    }, [yearsData]);
     // Create new class
     const handleCreateClass = async () => {
         if (!newClassName.trim()) {
@@ -222,25 +197,14 @@ export default function CreateTeacherPage() {
             return;
         }
 
-        setCreatingClass(true);
         try {
-            const response = await academicAPI.createClass({
-                name: newClassName.trim(),
-                description: newClassDescription.trim()
-            });
-
-            const newClass = (response as any).data;
-            setClasses(prev => [...prev, newClass]);
-            setFormData(prev => ({ ...prev, classLevel: newClass._id }));
+            await createClassMutation.mutateAsync({ name: newClassName.trim(), description: newClassDescription.trim() });
             setShowNewClassModal(false);
             setNewClassName("");
             setNewClassDescription("");
-            toast.success(`Class "${newClass.name}" created successfully!`);
+            toast.success(`Class "${newClassName}" created successfully!`);
         } catch (error: any) {
-            console.error("Error creating class:", error);
             toast.error(error?.message || "Failed to create class");
-        } finally {
-            setCreatingClass(false);
         }
     };
 
@@ -251,56 +215,14 @@ export default function CreateTeacherPage() {
             return;
         }
 
-        setCreatingSubject(true);
         try {
-            // For subjects that don't require a program, we'll create a simple subject
-            // First, check if there's a default program or create without program
-            const response = await academicAPI.createSubject("default", {
-                name: newSubjectName.trim(),
-                description: newSubjectDescription.trim()
-            });
-
-            const newSubject = (response as any).data;
-            setSubjects(prev => [...prev, newSubject]);
-            setFormData(prev => ({ ...prev, subject: newSubject._id }));
+            await createSubjectMutation.mutateAsync({ name: newSubjectName.trim(), description: newSubjectDescription.trim() });
             setShowNewSubjectModal(false);
             setNewSubjectName("");
             setNewSubjectDescription("");
-            toast.success(`Subject "${newSubject.name}" created successfully!`);
+            toast.success(`Subject "${newSubjectName}" created successfully!`);
         } catch (error: any) {
-            console.error("Error creating subject:", error);
-            // If program-based creation fails, try direct creation
-            try {
-                // Create subject directly without program dependency
-                const directResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5130/api/v1'}/subjects`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        name: newSubjectName.trim(),
-                        description: newSubjectDescription.trim()
-                    })
-                });
-
-                if (directResponse.ok) {
-                    const data = await directResponse.json();
-                    const newSubject = data.data;
-                    setSubjects(prev => [...prev, newSubject]);
-                    setFormData(prev => ({ ...prev, subject: newSubject._id }));
-                    setShowNewSubjectModal(false);
-                    setNewSubjectName("");
-                    setNewSubjectDescription("");
-                    toast.success(`Subject "${newSubject.name}" created successfully!`);
-                } else {
-                    throw new Error("Failed to create subject");
-                }
-            } catch (directError) {
-                toast.error(error?.message || "Failed to create subject. Make sure you have proper permissions.");
-            }
-        } finally {
-            setCreatingSubject(false);
+            toast.error(error?.message || "Failed to create subject. Make sure you have proper permissions.");
         }
     };
 
@@ -334,12 +256,15 @@ export default function CreateTeacherPage() {
                 role: "teacher",
             };
 
-            await adminAPI.createTeacher(payload);
-            toast.success("Teacher added successfully!");
-            router.push("/admin/teachers");
-        } catch (error: any) {
-            console.error("Error creating teacher:", error);
-            toast.error(error?.response?.data?.message || error?.message || "Failed to create teacher");
+            createTeacherMutation.mutate(payload, {
+                onSuccess: () => {
+                    toast.success("Teacher added successfully!");
+                    router.push("/admin/teachers");
+                },
+                onError: (err: any) => {
+                    toast.error(err?.message || "Failed to create teacher");
+                }
+            });
         } finally {
             setLoading(false);
         }
@@ -380,7 +305,7 @@ export default function CreateTeacherPage() {
     const yearOptions = academicYears.map(year => ({ value: year._id, label: year.name }));
     const termOptions = academicTerms.map(term => ({ value: term._id, label: term.name }));
 
-    if (dataLoading) {
+    if (!classesData || !subjectsData || !yearsData || !termsData) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <div className="text-center">

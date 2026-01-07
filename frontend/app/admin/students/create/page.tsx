@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { adminAPI, academicAPI } from "@/lib/api/endpoints";
+import { useCreateStudent } from '@/hooks/useStudents';
+import { useClasses } from '@/hooks/useClasses';
+import { useAcademicYears } from '@/hooks/useAcademicYears';
+import { useMutation } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -108,9 +111,6 @@ function NativeSelect({
 export default function CreateStudentPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [dataLoading, setDataLoading] = useState(true);
-    const [classes, setClasses] = useState<any[]>([]);
-    const [academicYears, setAcademicYears] = useState<any[]>([]);
     const [step, setStep] = useState(1);
     const totalSteps = 4;
 
@@ -123,34 +123,14 @@ export default function CreateStudentPage() {
         admissionDate: new Date().toISOString().split('T')[0],
     });
 
+    const { data: classesData } = useClasses();
+    const { data: yearsData } = useAcademicYears();
+    const createStudent = useCreateStudent();
+
     useEffect(() => {
-        fetchDropdownData();
-    }, []);
-
-    const fetchDropdownData = async () => {
-        try {
-            const [classesData, yearsData] = await Promise.all([
-                academicAPI.getClasses(),
-                adminAPI.getAcademicYears(),
-            ]);
-            const classesList = unwrapArray((classesData as any)?.data, "classes");
-            const yearsList = unwrapArray((yearsData as any)?.data, "years");
-
-            setClasses(classesList);
-            setAcademicYears(yearsList);
-
-            // Set default academic year to current
-            const currentYear = yearsList.find((y: any) => y.isCurrent);
-            if (currentYear) {
-                setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
-            }
-        } catch (error) {
-            console.error("Error fetching dropdown data:", error);
-            toast.error("Failed to load form data");
-        } finally {
-            setDataLoading(false);
-        }
-    };
+        const currentYear = (yearsData || []).find((y: any) => y.isCurrent);
+        if (currentYear) setFormData(prev => ({ ...prev, academicYear: currentYear._id }));
+    }, [yearsData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -188,12 +168,15 @@ export default function CreateStudentPage() {
                 role: "student",
             };
 
-            await adminAPI.createStudent(payload);
-            toast.success("Student registered successfully!");
-            router.push("/admin/students");
-        } catch (error: any) {
-            console.error("Error creating student:", error);
-            toast.error(error?.response?.data?.message || error?.message || "Failed to create student");
+            createStudent.mutate(payload, {
+                onSuccess: () => {
+                    toast.success("Student registered successfully!");
+                    router.push("/admin/students");
+                },
+                onError: (err: any) => {
+                    toast.error(err?.message || "Failed to create student");
+                }
+            });
         } finally {
             setLoading(false);
         }
@@ -236,7 +219,7 @@ export default function CreateStudentPage() {
     const classOptions = classes.map(cls => ({ value: cls._id, label: cls.name }));
     const yearOptions = academicYears.map(year => ({ value: year._id, label: year.name }));
 
-    if (dataLoading) {
+    if (!classesData || !yearsData) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <div className="text-center">

@@ -9,57 +9,33 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
+import { useBooks, useCreateBook } from '@/hooks/useBooks';
 
 export default function BooksPage() {
-  const [books, setBooks] = useState<any[]>([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchBooks = async () => {
-    try {
-      const res = await fetch("/api/v1/library/books");
-      const data = await res.json();
-      // Adjust depending on how API wrapper works
-      if (data.status === 'success' || Array.isArray(data)) {
-          setBooks(unwrapArray(data.data || data, 'books'));
-      }
-    } catch (error) {
-      toast.error("Failed to fetch books");
-    }
-  };
+  const { data: booksRes, isLoading: booksLoading } = useBooks();
+  const books = (booksRes && (booksRes as any).data) ? (booksRes as any).data : (booksRes || []);
 
-  useEffect(() => {
-    fetchBooks();
-  }, []);
+  const { mutateAsync: createBook } = useCreateBook();
 
   const handleAddBook = async (data: any) => {
     setIsLoading(true);
     try {
       const payload = {
           ...data,
-          // Format date for API if needed
           acquisitionInfo: {
               ...data.acquisitionInfo,
           }
       };
 
-      const res = await fetch("/api/v1/library/books", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        toast.success("Book added successfully");
-        setIsAddOpen(false);
-        fetchBooks();
-      } else {
-        const err = await res.json();
-        toast.error(err.message || "Failed to add book");
-      }
-    } catch (error) {
-      toast.error("An error occurred");
+      await createBook(payload);
+      toast.success("Book added successfully");
+      setIsAddOpen(false);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message || "Failed to add book");
     } finally {
       setIsLoading(false);
     }

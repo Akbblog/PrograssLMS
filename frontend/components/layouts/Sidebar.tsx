@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { useQueryClient } from '@tanstack/react-query'
+import { adminAPI, academicAPI } from '@/lib/api/endpoints'
 import { useAuthStore } from "@/store/authStore"
 import { useSidebarStore } from "@/store/sidebarStore"
 import { Button } from "@/components/ui/button"
@@ -148,9 +150,43 @@ export default function Sidebar({ className }: SidebarProps) {
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [toggleCollapse])
 
+    const qc = useQueryClient();
+
     const isActive = (href: string) => {
         if (href === "/admin/dashboard") return pathname === href
         return pathname.startsWith(href.split("?")[0])
+    }
+
+    const handleMouseEnter = (href: string) => {
+        // Prefetch the most likely queries for each admin route
+        if (href === '/admin/students') {
+            qc.prefetchQuery({ queryKey: ['students', { page: 1, search: '', classId: '' }], queryFn: () => adminAPI.getStudents({ page: 1 }) });
+        } else if (href === '/admin/teachers') {
+            qc.prefetchQuery({ queryKey: ['teachers', { page: 1, search: '' }], queryFn: () => adminAPI.getTeachers({ page: 1 }) });
+        } else if (href === '/admin/academic/classes' || href.startsWith('/admin/academic')) {
+            qc.prefetchQuery({ queryKey: ['classes'], queryFn: () => academicAPI.getClasses() });
+            qc.prefetchQuery({ queryKey: ['subjects'], queryFn: () => academicAPI.getSubjects() });
+            qc.prefetchQuery({ queryKey: ['academicYears'], queryFn: () => adminAPI.getAcademicYears() });
+            qc.prefetchQuery({ queryKey: ['academicTerms'], queryFn: () => adminAPI.getAcademicTerms() });
+        } else if (href.startsWith('/admin/attendance')) {
+            qc.prefetchQuery({ queryKey: ['attendance', { classLevel: '', date: '' }], queryFn: () => Promise.resolve([]) });
+        } else if (href === '/admin/dashboard') {
+            qc.prefetchQuery({ queryKey: ['dashboardStats'], queryFn: () => adminAPI.getDashboardStats() });
+        } else if (href.startsWith('/admin/exams')) {
+            qc.prefetchQuery({ queryKey: ['exams', { page: 1 }], queryFn: () => adminAPI.get('/exams', { params: { page: 1 } }).then(r => r.data) });
+        } else if (href.startsWith('/admin/hr')) {
+            qc.prefetchQuery({ queryKey: ['staff', { page: 1 }], queryFn: () => adminAPI.get('/hr/staff', { params: { page: 1 } }).then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['payroll'], queryFn: () => adminAPI.get('/hr/payroll').then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['appraisals', { page: 1 }], queryFn: () => adminAPI.get('/hr/appraisals', { params: { page: 1 } }).then(r => r.data) });
+        } else if (href.startsWith('/admin/library')) {
+            qc.prefetchQuery({ queryKey: ['books', { page: 1 }], queryFn: () => adminAPI.get('/library/books', { params: { page: 1 } }).then(r => r.data) });
+        } else if (href.startsWith('/admin/documents')) {
+            // Prefetch templates for Documents pages
+            qc.prefetchQuery({ queryKey: ['documents','templates'], queryFn: () => adminAPI.getDocumentTemplates() });
+        } else if (href.startsWith('/admin/transport')) {
+            qc.prefetchQuery({ queryKey: ['routes', { page: 1 }], queryFn: () => adminAPI.get('/transport/routes', { params: { page: 1 } }).then(r => r.data) });
+            qc.prefetchQuery({ queryKey: ['vehicles'], queryFn: () => adminAPI.get('/transport/vehicles').then(r => r.data) });
+        }
     }
 
     const toggleExpanded = (title: string) => {
@@ -242,7 +278,7 @@ export default function Sidebar({ className }: SidebarProps) {
                                                             ? "bg-violet-50 text-violet-600"
                                                             : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                                     )}
-                                                    onMouseEnter={() => setHoveredItem(item.title)}
+                                                    onMouseEnter={() => { setHoveredItem(item.title); handleMouseEnter(item.href); }}
                                                     onMouseLeave={() => setHoveredItem(null)}
                                                 >
                                                     <item.icon className={cn(
@@ -260,6 +296,7 @@ export default function Sidebar({ className }: SidebarProps) {
                                                         <Link
                                                             key={subItem.href}
                                                             href={subItem.href}
+                                                            onMouseEnter={() => handleMouseEnter(subItem.href)}
                                                             className={cn(
                                                                 "block px-3 py-2 text-sm rounded-md transition-all",
                                                                 pathname === subItem.href.split("?")[0]
@@ -331,6 +368,7 @@ export default function Sidebar({ className }: SidebarProps) {
                                                     <Link
                                                         key={subItem.href}
                                                         href={subItem.href}
+                                                        onMouseEnter={() => handleMouseEnter(subItem.href)}
                                                         className={cn(
                                                             "block py-2 px-3 text-sm rounded-md transition-all",
                                                             pathname === subItem.href.split("?")[0]
@@ -347,6 +385,7 @@ export default function Sidebar({ className }: SidebarProps) {
                                 ) : (
                                     <Link
                                         href={item.href}
+                                        onMouseEnter={() => handleMouseEnter(item.href)}
                                         className={cn(
                                             "group flex items-center gap-3 px-3.5 py-3 rounded-lg transition-all duration-200",
                                             active

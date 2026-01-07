@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { transportAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useRoutes, useCreateRoute, useUpdateRoute, useDeleteRoute, useVehicles } from '@/hooks/useTransport';
 import {
     Loader2,
     Plus,
@@ -96,9 +97,6 @@ const emptyFormData: RouteFormData = {
 };
 
 export default function RoutesPage() {
-    const [routes, setRoutes] = useState<RouteData[]>([]);
-    const [vehicles, setVehicles] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingRoute, setEditingRoute] = useState<RouteData | null>(null);
@@ -107,25 +105,15 @@ export default function RoutesPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [formData, setFormData] = useState<RouteFormData>(emptyFormData);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const { data: routesRes, isLoading: routesLoading } = useRoutes();
+    const routes = (routesRes && (routesRes as any).data) ? unwrapArray((routesRes as any).data, 'routes') : (routesRes || []);
 
-    const fetchData = async () => {
-        try {
-            const [routesRes, vehiclesRes] = await Promise.all([
-                transportAPI.getRoutes(),
-                transportAPI.getVehicles()
-            ]);
-            setRoutes(unwrapArray((routesRes as any)?.data, 'routes'));
-            setVehicles(unwrapArray((vehiclesRes as any)?.data, 'vehicles'));
-        } catch (error) {
-            console.error('Failed to fetch data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: vehiclesRes } = useVehicles();
+    const vehicles = (vehiclesRes && (vehiclesRes as any).data) ? unwrapArray((vehiclesRes as any).data, 'vehicles') : (vehiclesRes || []);
 
+    const { mutateAsync: createRoute } = useCreateRoute();
+    const { mutateAsync: updateRoute } = useUpdateRoute();
+    const { mutateAsync: deleteRoute } = useDeleteRoute();
     const openCreateDialog = () => {
         setEditingRoute(null);
         setFormData({ ...emptyFormData, routeCode: generateRouteCode() });
@@ -197,14 +185,13 @@ export default function RoutesPage() {
             };
 
             if (editingRoute) {
-                await transportAPI.updateRoute(editingRoute._id, payload);
+                await updateRoute({ id: editingRoute._id, ...payload });
                 toast.success('Route updated successfully');
             } else {
-                await transportAPI.createRoute(payload);
+                await createRoute(payload);
                 toast.success('Route created successfully');
             }
             setDialogOpen(false);
-            fetchData();
         } catch (error: any) {
             toast.error(error?.message || 'Failed to save route');
         } finally {
@@ -217,11 +204,10 @@ export default function RoutesPage() {
 
         setProcessing(true);
         try {
-            await transportAPI.deleteRoute(routeToDelete._id);
+            await deleteRoute(routeToDelete._id);
             toast.success('Route deleted successfully');
             setDeleteDialogOpen(false);
             setRouteToDelete(null);
-            fetchData();
         } catch (error: any) {
             toast.error(error?.message || 'Failed to delete route');
         } finally {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { academicAPI, adminAPI } from "@/lib/api/endpoints";
+import { useClasses, useCreateClass, useDeleteClass } from "@/hooks/useClasses";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,12 @@ import EmptyState from '@/components/admin/EmptyState'
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminClassesPage() {
-    const [classes, setClasses] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: classesRes, isLoading: classesLoading } = useClasses();
+    const classes = (classesRes && (classesRes as any).data) ? (classesRes as any).data : (classesRes || []);
+
+    const { mutateAsync: createClass, isLoading: creating } = useCreateClass();
+    const { mutateAsync: deleteClass } = useDeleteClass();
+
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -27,37 +31,13 @@ export default function AdminClassesPage() {
     });
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchClasses();
-    }, []);
-
-    const fetchClasses = async () => {
-        setLoading(true)
-        try {
-            const res: any = await academicAPI.getClasses();
-            const data = res?.data || res || []
-            setClasses(data);
-        } catch (error) {
-            console.warn('Failed to load classes, using fallback', error)
-            setError('Failed to load classes from server')
-            // Fallback mock data
-            setClasses([
-                { _id: 'c1', name: 'Grade 10', description: 'Grade 10 classes', studentCount: 120 },
-                { _id: 'c2', name: 'Grade 9', description: 'Grade 9 classes', studentCount: 110 }
-            ])
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleCreateClass = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await academicAPI.createClass(formData);
+            await createClass(formData);
             toast.success("Class created successfully");
             setCreateDialogOpen(false);
             setFormData({ name: "", description: "" });
-            fetchClasses();
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || error.message || "Failed to create class";
             toast.error(errorMessage);
@@ -67,9 +47,8 @@ export default function AdminClassesPage() {
     const handleDeleteClass = async (id: string) => {
         if (!confirm("Are you sure you want to delete this class?")) return;
         try {
-            await academicAPI.deleteClass(id);
+            await deleteClass(id);
             toast.success("Class deleted successfully");
-            fetchClasses();
         } catch (error: any) {
             toast.error(error.message || "Failed to delete class");
         }

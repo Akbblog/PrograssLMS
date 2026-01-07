@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { examAPI } from "@/lib/api/endpoints";
+import { useExams } from "@/hooks/useExams";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
@@ -15,24 +15,10 @@ import { unwrapArray } from "@/lib/utils";
 
 export default function AdminExamsPage() {
     const router = useRouter();
-    const [exams, setExams] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: examsRes, isLoading: examsLoading } = useExams();
+    const exams = (examsRes && (examsRes as any).data) ? unwrapArray((examsRes as any).data, "exams") : (examsRes || []);
 
-    useEffect(() => {
-        const fetchExams = async () => {
-            try {
-                const res = await examAPI.getAll();
-                setExams(unwrapArray((res as any)?.data, "exams"));
-            } catch (error) {
-                console.error("Failed to fetch exams:", error);
-                toast.error("Failed to load exams");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchExams();
-    }, []);
+    const loading = examsLoading;
 
     if (loading) {
         return (

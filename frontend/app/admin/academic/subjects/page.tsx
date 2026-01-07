@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { academicAPI } from "@/lib/api/endpoints";
+import { useSubjects, useCreateSubject, useDeleteSubject } from "@/hooks/useSubjects";
+import { usePrograms } from "@/hooks/usePrograms";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +18,12 @@ import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
 
 export default function AdminSubjectsPage() {
-    const [subjects, setSubjects] = useState<any[]>([]);
-    const [programs, setPrograms] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: subjectsRes, isLoading: subjectsLoading } = useSubjects();
+    const { data: programsRes, isLoading: programsLoading } = usePrograms();
+
+    const subjects = (subjectsRes && (subjectsRes as any).data) ? unwrapArray((subjectsRes as any).data, "subjects") : (subjectsRes || []);
+    const programs = (programsRes && (programsRes as any).data) ? unwrapArray((programsRes as any).data, "programs") : (programsRes || []);
+
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -25,24 +31,9 @@ export default function AdminSubjectsPage() {
         program: ""
     });
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const [subjectsRes, programsRes] = await Promise.all([
-                academicAPI.getSubjects(),
-                academicAPI.getPrograms()
-            ]);
-            setSubjects(unwrapArray((subjectsRes as any)?.data, "subjects"));
-            setPrograms(unwrapArray((programsRes as any)?.data, "programs"));
-        } catch (error) {
-            toast.error("Failed to load data");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { mutateAsync: createSimpleSubject } = useCreateSubject();
+    const { mutateAsync: deleteSubjectMutation } = useDeleteSubject();
+    const qc = useQueryClient();
 
     const handleCreateSubject = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,15 +45,16 @@ export default function AdminSubjectsPage() {
                     description: formData.description
                 });
             } else {
-                await academicAPI.createSimpleSubject({
+                await createSimpleSubject({
                     name: formData.name,
                     description: formData.description
                 });
             }
+            // Invalidate subjects list
+            qc.invalidateQueries(['subjects']);
             toast.success("Subject created successfully");
             setCreateDialogOpen(false);
             setFormData({ name: "", description: "", program: "" });
-            fetchData();
         } catch (error: any) {
             toast.error(error.message || "Failed to create subject");
         }
@@ -71,9 +63,8 @@ export default function AdminSubjectsPage() {
     const handleDeleteSubject = async (id: string) => {
         if (!confirm("Are you sure you want to delete this subject?")) return;
         try {
-            await academicAPI.deleteSubject(id);
+            await deleteSubjectMutation(id);
             toast.success("Subject deleted successfully");
-            fetchData();
         } catch (error: any) {
             toast.error(error.message || "Failed to delete subject");
         }

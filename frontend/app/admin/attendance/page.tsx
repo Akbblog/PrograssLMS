@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { academicAPI, attendanceAPI, adminAPI } from "@/lib/api/endpoints";
+import { useClasses } from '@/hooks/useClasses';
+import { useAcademicYears } from '@/hooks/useAcademicYears';
+import { useAcademicTerms } from '@/hooks/useAcademicTerms';
+import { useAttendanceByDate, useStudentsForAttendance, useMarkAttendance } from '@/hooks/useAttendance';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -18,60 +21,54 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { unwrapArray } from "@/lib/utils";
 
 export default function AdminAttendancePage() {
-    const [loading, setLoading] = useState(true);
-    const [classes, setClasses] = useState<any[]>([]);
     const [selectedClass, setSelectedClass] = useState("");
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-    const [attendanceData, setAttendanceData] = useState<any[]>([]);
     const [isMarkOpen, setIsMarkOpen] = useState(false);
     const [markLoading, setMarkLoading] = useState(false);
 
-    // Modal student state
-    const [students, setStudents] = useState<any[]>([]);
+    // Modal student statuses
     const [studentStatuses, setStudentStatuses] = useState<Record<string, 'present' | 'absent'>>({});
 
     // Academic periods for modal
-    const [academicYears, setAcademicYears] = useState<any[]>([]);
-    const [academicTerms, setAcademicTerms] = useState<any[]>([]);
     const [selectedAcademicYear, setSelectedAcademicYear] = useState<string>("");
     const [selectedAcademicTerm, setSelectedAcademicTerm] = useState<string>("");
 
+    // Use hooks
+    const { data: classesRes } = useClasses();
+    const classes = (classesRes && (classesRes as any).data) ? (classesRes as any).data : (classesRes || []);
+
+    const { data: yearsRes } = useAcademicYears();
+    const academicYears = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, 'years') : (yearsRes || []);
+
+    const { data: termsRes } = useAcademicTerms();
+    const academicTerms = (termsRes && (termsRes as any).data) ? unwrapArray((termsRes as any).data, 'terms') : (termsRes || []);
+
+    const { data: attendanceRes, isLoading: attendanceLoading, refetch: refetchAttendance } = useAttendanceByDate(selectedClass, selectedDate, !!(selectedClass && selectedDate));
+    const attendanceData = (attendanceRes && (attendanceRes as any).data) ? unwrapArray((attendanceRes as any).data, 'attendance') : (attendanceRes || []);
+
+    const { data: studentsRes } = useStudentsForAttendance(selectedClass, !!selectedClass);
+    const students = (studentsRes && (studentsRes as any).data) ? unwrapArray((studentsRes as any).data, 'students') : (studentsRes || []);
+
+    const { mutateAsync: markAttendance } = useMarkAttendance();
+
+    // Set defaults when dependencies load
     useEffect(() => {
-        fetchInitialData();
-    }, []);
+        if (!selectedClass && classes.length > 0) setSelectedClass(classes[0]._id);
+    }, [classes]);
 
-    const fetchInitialData = async () => {
-        try {
-            const [classesRes, yearsRes, termsRes] = await Promise.all([
-                academicAPI.getClasses(),
-                adminAPI.getAcademicYears(),
-                adminAPI.getAcademicTerms(),
-            ]);
-            const classesData = unwrapArray(classesRes?.data, "classes");
-            setClasses(classesData);
-            if (classesData.length > 0) {
-                setSelectedClass(classesData[0]._id);
-            }
-
-            const years = unwrapArray((yearsRes as any)?.data, "years");
-            const terms = unwrapArray((termsRes as any)?.data, "terms");
-            setAcademicYears(years);
-            setAcademicTerms(terms);
-
-            const currentYear = years.find((y: any) => y.isCurrent);
-            if (currentYear) setSelectedAcademicYear(currentYear._id);
-            else if (years.length > 0) setSelectedAcademicYear(years[0]._id);
-
-            const currentTerm = terms.find((t: any) => t.isCurrent);
-            if (currentTerm) setSelectedAcademicTerm(currentTerm._id);
-            else if (terms.length > 0) setSelectedAcademicTerm(terms[0]._id);
-
-        } catch (error) {
-            toast.error("Failed to load classes");
-        } finally {
-            setLoading(false);
+    useEffect(() => {
+        if (!selectedAcademicYear && academicYears.length > 0) {
+            const currentYear = academicYears.find((y: any) => y.isCurrent);
+            setSelectedAcademicYear(currentYear?._id || academicYears[0]._id);
         }
-    };
+    }, [academicYears]);
+
+    useEffect(() => {
+        if (!selectedAcademicTerm && academicTerms.length > 0) {
+            const currentTerm = academicTerms.find((t: any) => t.isCurrent);
+            setSelectedAcademicTerm(currentTerm?._id || academicTerms[0]._id);
+        }
+    }, [academicTerms]);
 
     const fetchAttendance = async () => {
         if (!selectedClass) return;
@@ -92,35 +89,20 @@ export default function AdminAttendancePage() {
         if (selectedClass) fetchAttendance();
     }, [selectedClass, selectedDate]);
 
-    // Fetch students for the Mark Attendance modal and initialize statuses
-    const fetchStudentsForModal = async () => {
-        if (!selectedClass) return;
-        setLoading(true);
-        try {
-            const res: any = await academicAPI.getStudentsByClass(selectedClass);
-            const list = unwrapArray(res?.data, "students");
-            setStudents(list);
-
-            // Initialize statuses using existing attendanceData if available
-            const initialStatuses: Record<string, 'present' | 'absent'> = {};
-            list.forEach((s: any) => {
-                const existing = attendanceData.find((a: any) => a.student?._id === s._id || a.student === s._id);
-                initialStatuses[s._id] = (existing?.status as 'present' | 'absent') || 'present';
-            });
-            setStudentStatuses(initialStatuses);
-        } catch (err) {
-            toast.error("Failed to load students for class");
-        } finally {
-            setLoading(false);
-        }
-    }
-
     const openMarkModal = async () => {
         if (!selectedClass) {
             toast.error("Please select a class first");
             return;
         }
-        await fetchStudentsForModal();
+
+        // Initialize statuses using existing attendance data and student list
+        const initialStatuses: Record<string, 'present' | 'absent'> = {};
+        students.forEach((s: any) => {
+            const existing = attendanceData.find((a: any) => (a.student?._id === s._id || a.student === s._id));
+            initialStatuses[s._id] = (existing?.status as 'present' | 'absent') || 'present';
+        });
+        setStudentStatuses(initialStatuses);
+
         setIsMarkOpen(true);
     }
 
@@ -159,7 +141,7 @@ export default function AdminAttendancePage() {
                 remarks: "",
             }));
 
-            await attendanceAPI.markStudentAttendance({
+            await markAttendance({
                 classLevel: selectedClass,
                 date: new Date(selectedDate).toISOString(),
                 academicYear: selectedAcademicYear,
@@ -169,7 +151,7 @@ export default function AdminAttendancePage() {
 
             toast.success("Student attendance saved successfully!");
             // Refresh attendance view
-            await fetchAttendance();
+            await refetchAttendance();
         } catch (error: any) {
             toast.error(error.response?.data?.message || error.message || "Failed to save attendance");
         } finally {
@@ -255,7 +237,7 @@ export default function AdminAttendancePage() {
                                                 <Calendar className="h-8 w-8 text-slate-200" />
                                             </div>
                                             <p className="text-slate-400 font-medium tracking-tight uppercase text-xs">No attendance data for this selection</p>
-                                            <Button variant="link" className="text-indigo-600" onClick={fetchAttendance}>
+                                            <Button variant="link" className="text-indigo-600" onClick={() => refetchAttendance()}>
                                                 Try re-fetching records
                                             </Button>
                                         </div>

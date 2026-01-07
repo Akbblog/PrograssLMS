@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AdminPageLayout from "@/components/layouts/AdminPageLayout";
+import { useStaff, useCreateStaff, useDeleteStaff } from '@/hooks/useStaff';
 import StaffList from "./_components/StaffList";
 import StaffForm from "./_components/StaffForm";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -9,29 +10,17 @@ import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
 
 export default function StaffPage() {
-  const [staff, setStaff] = useState<any[]>([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchStaff = async () => {
-    try {
-      const res = await fetch("/api/v1/hr/staff");
-      const data = await res.json();
-      if(data.status === 'success') {
-          setStaff(unwrapArray(data.data));
-      }
-    } catch (error) {
-      toast.error("Failed to fetch staff list");
-    }
-  };
+  const { data: staffRes, isLoading: staffLoading } = useStaff();
+  const staff = (staffRes && (staffRes as any).data) ? (staffRes as any).data : (staffRes || []);
 
-  useEffect(() => {
-    fetchStaff();
-  }, []);
+  const { mutateAsync: createStaff } = useCreateStaff();
+  const { mutateAsync: deleteStaff } = useDeleteStaff();
+
 
   const handleAddStaff = async (data: any) => {
-    setIsLoading(true);
     try {
       // Auto-generate employeeId if not present (simple mock)
       const payload = {
@@ -40,24 +29,11 @@ export default function StaffPage() {
         status: 'active'
       };
 
-      const res = await fetch("/api/v1/hr/staff", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        toast.success("Staff member added successfully");
-        setIsAddOpen(false);
-        fetchStaff();
-      } else {
-        const err = await res.json();
-        toast.error(err.message || "Failed to add staff");
-      }
-    } catch (error) {
-      toast.error("An error occurred");
-    } finally {
-      setIsLoading(false);
+      await createStaff(payload);
+      toast.success("Staff member added successfully");
+      setIsAddOpen(false);
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || error.message || "Failed to add staff");
     }
   };
   

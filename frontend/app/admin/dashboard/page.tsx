@@ -4,7 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth/useAuth";
-import { adminAPI } from "@/lib/api/endpoints";
+import dynamic from 'next/dynamic';
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useStudents } from "@/hooks/useStudents";
+
+// Dynamically import heavy chart components to reduce initial bundle
+const AreaChart = dynamic(() => import('recharts').then(m => m.AreaChart), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(m => m.BarChart), { ssr: false });
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,17 +51,6 @@ interface DashboardStats {
 export default function AdminDashboard() {
     const { user } = useAuth();
     const router = useRouter();
-    const [stats, setStats] = useState<DashboardStats>({
-        totalStudents: 0,
-        totalTeachers: 0,
-        totalClasses: 0,
-        totalRevenue: 0,
-        pendingFees: 0,
-        attendanceRate: 0,
-        newEnrollments: 0
-    });
-    const [recentStudents, setRecentStudents] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
     useEffect(() => {
@@ -63,35 +58,24 @@ export default function AdminDashboard() {
         return () => clearInterval(timer);
     }, []);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const [statsRes, studentsRes] = await Promise.all([
-                    adminAPI.getDashboardStats(),
-                    adminAPI.getStudents()
-                ]);
+    // Use React Query hooks for dashboard data
+    const { data: statsRes, isLoading: statsLoading } = useDashboardStats();
+    const { data: studentsRes, isLoading: studentsLoading } = useStudents({ page: 1 });
 
-                if ((statsRes as any).status === "success" && (statsRes as any).data) {
-                    setStats({
-                        ...(statsRes as any).data,
-                        pendingFees: 12500,
-                        attendanceRate: 94.5,
-                        newEnrollments: 8
-                    });
-                }
+    const loading = statsLoading || studentsLoading;
 
-                const studentsData = (studentsRes as any).data;
-                const students = Array.isArray(studentsData) ? studentsData : (studentsData?.students || []);
-                setRecentStudents(students.slice(0, 5));
-            } catch (error) {
-                console.error("Failed to fetch dashboard stats:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const stats = (statsRes && (statsRes as any).data) ? {
+        ...(statsRes as any).data,
+        pendingFees: (statsRes as any).data.pendingFees ?? 12500,
+        attendanceRate: (statsRes as any).data.attendanceRate ?? 94.5,
+        newEnrollments: (statsRes as any).data.newEnrollments ?? 8
+    } : { totalStudents: 0, totalTeachers: 0, totalClasses: 0, totalRevenue: 0, pendingFees: 0, attendanceRate: 0, newEnrollments: 0 };
 
-        fetchStats();
-    }, []);
+    const recentStudents = (() => {
+        const sd = studentsRes?.data || studentsRes || [];
+        const students = Array.isArray(sd) ? sd : (sd?.students || []);
+        return students.slice(0, 5);
+    })();
 
     const statCards = [
         {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { adminAPI } from "@/lib/api/endpoints";
+import { useState } from "react";
+import { useAcademicYears, useCreateAcademicYear, useUpdateAcademicYear, useDeleteAcademicYear } from "@/hooks/useAcademicYears";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +24,13 @@ interface AcademicYear {
 }
 
 export default function AcademicYearsPage() {
-    const [years, setYears] = useState<AcademicYear[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: yearsRes, isLoading: yearsLoading } = useAcademicYears();
+    const years = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, "years") : (yearsRes || []);
+
+    const { mutateAsync: createAcademicYear } = useCreateAcademicYear();
+    const { mutateAsync: updateAcademicYear } = useUpdateAcademicYear();
+    const { mutateAsync: deleteAcademicYear } = useDeleteAcademicYear();
+
     const [saving, setSaving] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingYear, setEditingYear] = useState<AcademicYear | null>(null);
@@ -35,23 +40,6 @@ export default function AcademicYearsPage() {
         toYear: "",
         isCurrent: false
     });
-
-    useEffect(() => {
-        fetchYears();
-    }, []);
-
-    const fetchYears = async () => {
-        try {
-            const res: any = await adminAPI.getAcademicYears();
-            setYears(unwrapArray(res?.data, "years"));
-        } catch (error) {
-            console.error("Failed to load academic years:", error);
-            toast.error("Failed to load academic years");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const resetForm = () => {
         setFormData({
             name: "",
@@ -89,15 +77,14 @@ export default function AcademicYearsPage() {
         setSaving(true);
         try {
             if (editingYear) {
-                await adminAPI.updateAcademicYear(editingYear._id, formData);
+                await updateAcademicYear({ ...formData, id: editingYear._id });
                 toast.success("Academic year updated successfully");
             } else {
-                await adminAPI.createAcademicYear(formData);
+                await createAcademicYear(formData);
                 toast.success("Academic year created successfully");
             }
             setDialogOpen(false);
             resetForm();
-            fetchYears();
         } catch (error: any) {
             const errorMessage = error?.message || error?.response?.data?.message || "Operation failed";
             toast.error(errorMessage);
@@ -110,9 +97,8 @@ export default function AcademicYearsPage() {
         if (!confirm("Are you sure you want to delete this academic year?")) return;
 
         try {
-            await adminAPI.deleteAcademicYear(id);
+            await deleteAcademicYear(id);
             toast.success("Academic year deleted successfully");
-            fetchYears();
         } catch (error: any) {
             toast.error(error?.message || "Failed to delete academic year");
         }

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { adminAPI } from "@/lib/api/endpoints";
+import { useTeachers, useDeleteTeacher } from '@/hooks/useTeachers';
+import VirtualizedList from '@/components/ui/VirtualizedList';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -195,39 +196,22 @@ function TeacherCard({ teacher, onView, onEdit, onDelete }: {
 
 export default function AdminTeachersPage() {
     const router = useRouter();
-    const [teachers, setTeachers] = useState<any[]>([]);
     const [filteredTeachers, setFilteredTeachers] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<"all" | "active" | "suspended">("all");
     const [viewMode, setViewMode] = useState<"card" | "table">("card");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [teacherToDelete, setTeacherToDelete] = useState<any>(null);
 
-    useEffect(() => { fetchTeachers(); }, []);
-    useEffect(() => { filterTeachers(); }, [searchQuery, statusFilter, teachers]);
+    const { data: teachersData, isLoading: teachersLoading } = useTeachers();
+    const deleteTeacherMutation = useDeleteTeacher();
 
-    const fetchTeachers = async () => {
-        try {
-            const response = await adminAPI.getTeachers();
-            const payload = (response as any)?.data;
-            const teachersList = Array.isArray(payload)
-                ? payload
-                : Array.isArray(payload?.teachers)
-                    ? payload.teachers
-                    : Array.isArray(payload?.data)
-                        ? payload.data
-                        : Array.isArray(payload?.data?.teachers)
-                            ? payload.data.teachers
-                            : [];
-            setTeachers(teachersList);
-            setFilteredTeachers(teachersList);
-        } catch (error: any) {
-            toast.error(error.message || "Failed to load teachers");
-        } finally {
-            setLoading(false);
-        }
-    };
+    useEffect(() => { filterTeachers(); }, [searchQuery, statusFilter, teachersData]);
+
+    const teachers = Array.isArray((teachersData as any)?.teachers) ? (teachersData as any).teachers : Array.isArray(teachersData) ? teachersData : (teachersData as any)?.data || [];
+
+    // lazy import virtualized list only when needed to avoid bundling for pages that don't use it
+    const VirtualizedList = require('@/components/ui/VirtualizedList').default;
 
     const filterTeachers = () => {
         let filtered = [...teachers];
@@ -251,16 +235,15 @@ export default function AdminTeachersPage() {
 
     const confirmDelete = async () => {
         if (!teacherToDelete) return;
-        try {
-            await adminAPI.deleteTeacher(teacherToDelete._id);
-            toast.success("Teacher deleted successfully");
-            fetchTeachers();
-        } catch (error: any) {
-            toast.error(error.message || "Failed to delete teacher");
-        } finally {
-            setDeleteDialogOpen(false);
-            setTeacherToDelete(null);
-        }
+        deleteTeacherMutation.mutate(teacherToDelete._id, {
+            onSuccess: () => {
+                toast.success("Teacher deleted successfully");
+            },
+            onSettled: () => {
+                setDeleteDialogOpen(false);
+                setTeacherToDelete(null);
+            }
+        });
     };
 
     const getStatusBadge = (teacher: any) => {
@@ -269,7 +252,7 @@ export default function AdminTeachersPage() {
         return <Badge variant="success">Active</Badge>;
     };
 
-    if (loading) {
+    if (teachersLoading) {
         return (
             <div className="flex justify-center items-center h-96">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -365,17 +348,34 @@ export default function AdminTeachersPage() {
                     </CardContent>
                 </Card>
             ) : viewMode === "card" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                    {filteredTeachers.map((teacher) => (
-                        <TeacherCard
-                            key={teacher._id}
-                            teacher={teacher}
-                            onView={() => router.push(`/admin/teachers/${teacher._id}`)}
-                            onEdit={() => router.push(`/admin/teachers/${teacher._id}/edit`)}
-                            onDelete={() => handleDelete(teacher)}
-                        />
-                    ))}
-                </div>
+                {filteredTeachers.length > 50 ? (
+                    <VirtualizedList
+                        items={filteredTeachers}
+                        estimateSize={160}
+                        renderItem={(teacher: any) => (
+                            <div className="p-2" key={teacher._id}>
+                                <TeacherCard
+                                    teacher={teacher}
+                                    onView={() => router.push(`/admin/teachers/${teacher._id}`)}
+                                    onEdit={() => router.push(`/admin/teachers/${teacher._id}/edit`)}
+                                    onDelete={() => handleDelete(teacher)}
+                                />
+                            </div>
+                        )}
+                    />
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                        {filteredTeachers.map((teacher) => (
+                            <TeacherCard
+                                key={teacher._id}
+                                teacher={teacher}
+                                onView={() => router.push(`/admin/teachers/${teacher._id}`)}
+                                onEdit={() => router.push(`/admin/teachers/${teacher._id}/edit`)}
+                                onDelete={() => handleDelete(teacher)}
+                            />
+                        ))}
+                    </div>
+                )}
             ) : (
                 <Card className="overflow-hidden">
                     <div className="overflow-x-auto mobile-scroll">

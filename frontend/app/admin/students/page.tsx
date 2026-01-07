@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { adminAPI, enrollmentAPI, academicAPI } from "@/lib/api/endpoints";
+import { enrollmentAPI } from "@/lib/api/endpoints";
+import { useMutation } from '@tanstack/react-query';
+import { useStudents, useDeleteStudent } from '@/hooks/useStudents';
+import { useSubjects } from '@/hooks/useSubjects';
+import { useClasses } from '@/hooks/useClasses';
+import { useAcademicYears } from '@/hooks/useAcademicYears';
+import { useAcademicTerms } from '@/hooks/useAcademicTerms';
+import VirtualizedList from '@/components/ui/VirtualizedList';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -73,7 +80,7 @@ function NativeSelect({ value, onValueChange, placeholder, options, required = f
 }
 
 // Action Menu
-function ActionMenu({ onView, onEdit, onEnroll, onDelete }: {
+const ActionMenu = React.memo(function ActionMenu({ onView, onEdit, onEnroll, onDelete }: {
     onView: () => void;
     onEdit: () => void;
     onEnroll: () => void;
@@ -108,25 +115,25 @@ function ActionMenu({ onView, onEdit, onEnroll, onDelete }: {
             )}
         </div>
     );
-}
+});
 
 // Student Card
-function StudentCard({ student, onView, onEdit, onEnroll, onDelete }: {
+const StudentCard = React.memo(function StudentCard({ student, onView, onEdit, onEnroll, onDelete }: {
     student: any;
     onView: () => void;
     onEdit: () => void;
     onEnroll: () => void;
     onDelete: () => void;
 }) {
-    const getStatusBadge = () => {
+    const getStatusBadge = useCallback(() => {
         if (student.isWithdrawn) return <Badge variant="destructive">Withdrawn</Badge>;
         if (student.isSuspended) return <Badge variant="warning">Suspended</Badge>;
         return <Badge variant="success">Active</Badge>;
-    };
+    }, [student.isWithdrawn, student.isSuspended]);
 
-    const getClassName = () => {
+    const getClassName = useCallback(() => {
         return student.currentClassLevel?.name || student.currentClassLevels?.[0]?.name || null;
-    };
+    }, [student.currentClassLevel, student.currentClassLevels]);
 
     return (
         <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={onView}>
@@ -172,17 +179,11 @@ function StudentCard({ student, onView, onEdit, onEnroll, onDelete }: {
             </CardContent>
         </Card>
     );
-}
+});
 
 export default function AdminStudentsPage() {
     const router = useRouter();
-    const [students, setStudents] = useState<any[]>([]);
     const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
-    const [subjects, setSubjects] = useState<any[]>([]);
-    const [classes, setClasses] = useState<any[]>([]);
-    const [years, setYears] = useState<any[]>([]);
-    const [terms, setTerms] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<"all" | "active" | "suspended">("all");
     const [viewMode, setViewMode] = useState<"card" | "table">("card");
@@ -192,88 +193,28 @@ export default function AdminStudentsPage() {
     const [enrolling, setEnrolling] = useState(false);
     const [enrollmentForm, setEnrollmentForm] = useState({ subject: "", classLevel: "", academicYear: "", academicTerm: "" });
 
-    useEffect(() => { fetchData(); }, []);
-    useEffect(() => { filterStudents(); }, [searchQuery, statusFilter, students]);
+    const { data: studentsData, isLoading: studentsLoading } = useStudents();
+    const { data: subjectsData } = useSubjects();
+    const { data: classesData } = useClasses();
+    const { data: yearsData } = useAcademicYears();
+    const { data: termsData } = useAcademicTerms();
+    const deleteStudentMutation = useDeleteStudent();
 
-    const fetchData = async () => {
-        try {
-            const [studentsRes, subjectsRes, classesRes, yearsRes, termsRes] = await Promise.all([
-                adminAPI.getStudents(),
-                academicAPI.getSubjects(),
-                academicAPI.getClasses(),
-                adminAPI.getAcademicYears(),
-                adminAPI.getAcademicTerms(),
-            ]);
+    // keep the legacy filter effect but use query data
+    useEffect(() => { filterStudents(); }, [searchQuery, statusFilter, studentsData]);
 
-            // Handle both paginated and non-paginated responses
-            const studentsPayload = (studentsRes as any)?.data;
-            const studentsList = Array.isArray(studentsPayload)
-                ? studentsPayload
-                : Array.isArray(studentsPayload?.students)
-                    ? studentsPayload.students
-                    : Array.isArray(studentsPayload?.data)
-                        ? studentsPayload.data
-                        : Array.isArray(studentsPayload?.data?.students)
-                            ? studentsPayload.data.students
-                            : [];
-            setStudents(studentsList);
+    // set default academic year when query returns
+    useEffect(() => {
+        const currentYear = (yearsData || []).find((y: any) => y.isCurrent);
+        if (currentYear) setEnrollmentForm(prev => ({ ...prev, academicYear: currentYear._id }));
+    }, [yearsData]);
 
-            const subjectsPayload = (subjectsRes as any)?.data;
-            const subjectsList = Array.isArray(subjectsPayload)
-                ? subjectsPayload
-                : Array.isArray(subjectsPayload?.subjects)
-                    ? subjectsPayload.subjects
-                    : Array.isArray(subjectsPayload?.data)
-                        ? subjectsPayload.data
-                        : Array.isArray(subjectsPayload?.data?.subjects)
-                            ? subjectsPayload.data.subjects
-                            : [];
-            setSubjects(subjectsList);
-
-            const classesPayload = (classesRes as any)?.data;
-            const classesList = Array.isArray(classesPayload)
-                ? classesPayload
-                : Array.isArray(classesPayload?.classes)
-                    ? classesPayload.classes
-                    : Array.isArray(classesPayload?.data)
-                        ? classesPayload.data
-                        : Array.isArray(classesPayload?.data?.classes)
-                            ? classesPayload.data.classes
-                            : [];
-            setClasses(classesList);
-
-            const yearsPayload = (yearsRes as any)?.data;
-            const yearsList = Array.isArray(yearsPayload)
-                ? yearsPayload
-                : Array.isArray(yearsPayload?.years)
-                    ? yearsPayload.years
-                    : Array.isArray(yearsPayload?.data)
-                        ? yearsPayload.data
-                        : Array.isArray(yearsPayload?.data?.years)
-                            ? yearsPayload.data.years
-                            : [];
-            setYears(yearsList);
-
-            const termsPayload = (termsRes as any)?.data;
-            const termsList = Array.isArray(termsPayload)
-                ? termsPayload
-                : Array.isArray(termsPayload?.terms)
-                    ? termsPayload.terms
-                    : Array.isArray(termsPayload?.data)
-                        ? termsPayload.data
-                        : Array.isArray(termsPayload?.data?.terms)
-                            ? termsPayload.data.terms
-                            : [];
-            setTerms(termsList);
-
-            const currentYear = yearsList.find((y: any) => y.isCurrent);
-            if (currentYear) setEnrollmentForm(prev => ({ ...prev, academicYear: currentYear._id }));
-        } catch (error: any) {
-            toast.error(error.message || "Failed to load data");
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Helper to normalize query data
+    const students = Array.isArray((studentsData as any)?.students) ? (studentsData as any).students : Array.isArray(studentsData) ? studentsData : (studentsData as any)?.data || [];
+    const subjects = Array.isArray((subjectsData as any)?.subjects) ? (subjectsData as any).subjects : Array.isArray(subjectsData) ? subjectsData : (subjectsData as any)?.data || [];
+    const classes = Array.isArray((classesData as any)?.classes) ? (classesData as any).classes : Array.isArray(classesData) ? classesData : (classesData as any)?.data || [];
+    const years = Array.isArray((yearsData as any)?.years) ? (yearsData as any).years : Array.isArray(yearsData) ? yearsData : (yearsData as any)?.data || [];
+    const terms = Array.isArray((termsData as any)?.terms) ? (termsData as any).terms : Array.isArray(termsData) ? termsData : (termsData as any)?.data || [];
 
     const filterStudents = () => {
         let filtered = [...students];
@@ -287,39 +228,41 @@ export default function AdminStudentsPage() {
         setFilteredStudents(filtered);
     };
 
-    const handleEnrollStudent = async (e: React.FormEvent) => {
+    const enrollMutation = useMutation((data: any) => enrollmentAPI.createEnrollment(data), {
+        onSuccess: () => {
+            toast.success("Student enrolled successfully!");
+            // ensure attendance/enrollment related queries are fresh
+        },
+        onError: (err: any) => toast.error(err?.message || "Failed to enroll student"),
+        onSettled: () => {
+            setEnrollmentDialog(null);
+            setEnrolling(false);
+        }
+    });
+
+    const handleEnrollStudent = (e: React.FormEvent) => {
         e.preventDefault();
         if (!enrollmentDialog || !enrollmentForm.subject || !enrollmentForm.classLevel || !enrollmentForm.academicYear || !enrollmentForm.academicTerm) {
             toast.error("Please fill all required fields");
             return;
         }
         setEnrolling(true);
-        try {
-            await enrollmentAPI.createEnrollment({ student: enrollmentDialog._id, ...enrollmentForm });
-            toast.success("Student enrolled successfully!");
-            setEnrollmentDialog(null);
-            setEnrollmentForm({ subject: "", classLevel: "", academicYear: enrollmentForm.academicYear, academicTerm: "" });
-        } catch (error: any) {
-            toast.error(error.message || "Failed to enroll student");
-        } finally {
-            setEnrolling(false);
-        }
+        enrollMutation.mutate({ student: enrollmentDialog._id, ...enrollmentForm });
     };
 
     const handleDelete = (student: any) => { setStudentToDelete(student); setDeleteDialogOpen(true); };
 
     const confirmDelete = async () => {
         if (!studentToDelete) return;
-        try {
-            await adminAPI.deleteStudent(studentToDelete._id);
-            toast.success("Student deleted");
-            fetchData();
-        } catch (error: any) {
-            toast.error(error.message || "Failed to delete");
-        } finally {
-            setDeleteDialogOpen(false);
-            setStudentToDelete(null);
-        }
+        deleteStudentMutation.mutate(studentToDelete._id, {
+            onSuccess: () => {
+                toast.success('Student deleted');
+            },
+            onSettled: () => {
+                setDeleteDialogOpen(false);
+                setStudentToDelete(null);
+            }
+        });
     };
 
     const getStatusBadge = (student: any) => {
@@ -328,7 +271,7 @@ export default function AdminStudentsPage() {
         return <Badge variant="success">Active</Badge>;
     };
 
-    if (loading) {
+    if (studentsLoading) {
         return (
             <div className="flex justify-center items-center h-96">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
@@ -408,18 +351,36 @@ export default function AdminStudentsPage() {
                     </CardContent>
                 </Card>
             ) : viewMode === "card" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {filteredStudents.map((student) => (
-                        <StudentCard
-                            key={student._id}
-                            student={student}
-                            onView={() => router.push(`/admin/students/${student._id}`)}
-                            onEdit={() => router.push(`/admin/students/${student._id}/edit`)}
-                            onEnroll={() => setEnrollmentDialog(student)}
-                            onDelete={() => handleDelete(student)}
-                        />
-                    ))}
-                </div>
+                {filteredStudents.length > 50 ? (
+                    <VirtualizedList
+                        items={filteredStudents}
+                        estimateSize={140}
+                        renderItem={(student: any) => (
+                            <div className="p-2" key={student._id}>
+                                <StudentCard
+                                    student={student}
+                                    onView={() => router.push(`/admin/students/${student._id}`)}
+                                    onEdit={() => router.push(`/admin/students/${student._id}/edit`)}
+                                    onEnroll={() => setEnrollmentDialog(student)}
+                                    onDelete={() => handleDelete(student)}
+                                />
+                            </div>
+                        )}
+                    />
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {filteredStudents.map((student) => (
+                            <StudentCard
+                                key={student._id}
+                                student={student}
+                                onView={() => router.push(`/admin/students/${student._id}`)}
+                                onEdit={() => router.push(`/admin/students/${student._id}/edit`)}
+                                onEnroll={() => setEnrollmentDialog(student)}
+                                onDelete={() => handleDelete(student)}
+                            />
+                        ))}
+                    </div>
+                )}
             ) : (
                 <Card className="border-slate-200 overflow-hidden">
                     <div className="overflow-x-auto">

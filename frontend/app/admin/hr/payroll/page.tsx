@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { hrAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
 import { toast } from 'sonner';
+import { usePayroll, useGeneratePayroll, useProcessPayroll } from '@/hooks/usePayroll';
+import { useStaff } from '@/hooks/useStaff';
 import {
     Loader2,
     DollarSign,
@@ -94,9 +96,6 @@ const monthOptions = [
 const getMonthName = (month: number) => monthOptions.find(m => m.value === String(month))?.label || '';
 
 export default function PayrollPage() {
-    const [payrolls, setPayrolls] = useState<PayrollItem[]>([]);
-    const [staff, setStaff] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
     const [processing, setProcessing] = useState<string | null>(null);
     const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
@@ -109,27 +108,14 @@ export default function PayrollPage() {
         staffId: ''
     });
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const { data: payrollsRes, isLoading: payrollsLoading } = usePayroll();
+    const payrolls = (payrollsRes && (payrollsRes as any).data) ? unwrapArray((payrollsRes as any).data, 'payrolls') : (payrollsRes || []);
 
-    const fetchData = async () => {
-        try {
-            const [payrollsRes, staffRes] = await Promise.all([
-                hrAPI.getPayrolls(),
-                hrAPI.getStaff()
-            ]);
-            setPayrolls(unwrapArray((payrollsRes as any)?.data, 'payrolls'));
-            setStaff(unwrapArray((staffRes as any)?.data, 'staff'));
-        } catch (error) {
-            console.error('Failed to fetch data:', error);
-            // Use mock data for demo
-            setPayrolls([]);
-            setStaff([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: staffRes } = useStaff();
+    const staff = (staffRes && (staffRes as any).data) ? unwrapArray((staffRes as any).data, 'staff') : (staffRes || []);
+
+    const { mutateAsync: generatePayroll } = useGeneratePayroll();
+    const { mutateAsync: processPayroll } = useProcessPayroll();
 
     const handleGeneratePayroll = async () => {
         if (!generateForm.month || !generateForm.year) {
@@ -139,14 +125,13 @@ export default function PayrollPage() {
 
         setGenerating(true);
         try {
-            await hrAPI.generatePayroll({
+            await generatePayroll({
                 month: parseInt(generateForm.month),
                 year: parseInt(generateForm.year),
                 staffId: generateForm.staffId || undefined
             });
             toast.success('Payroll generated successfully');
             setGenerateDialogOpen(false);
-            fetchData();
         } catch (error: any) {
             toast.error(error?.message || 'Failed to generate payroll');
         } finally {
@@ -157,9 +142,8 @@ export default function PayrollPage() {
     const handleProcessPayroll = async (payrollId: string) => {
         setProcessing(payrollId);
         try {
-            await hrAPI.processPayroll(payrollId);
+            await processPayroll(payrollId);
             toast.success('Payroll processed successfully');
-            fetchData();
         } catch (error: any) {
             toast.error(error?.message || 'Failed to process payroll');
         } finally {

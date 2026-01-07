@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { adminAPI } from "@/lib/api/endpoints";
+import { useState } from "react";
+import { useAcademicYears } from "@/hooks/useAcademicYears";
+import { useAcademicTerms, useCreateAcademicTerm, useUpdateAcademicTerm, useDeleteAcademicTerm } from "@/hooks/useAcademicTerms";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,9 +68,16 @@ function NativeSelect({
 }
 
 export default function AcademicTermsPage() {
-    const [terms, setTerms] = useState<AcademicTerm[]>([]);
-    const [years, setYears] = useState<AcademicYear[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: termsRes, isLoading: termsLoading } = useAcademicTerms();
+    const { data: yearsRes, isLoading: yearsLoading } = useAcademicYears();
+
+    const terms = (termsRes && (termsRes as any).data) ? unwrapArray((termsRes as any).data, "terms") : (termsRes || []);
+    const years = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, "years") : (yearsRes || []);
+
+    const { mutateAsync: createAcademicTerm } = useCreateAcademicTerm();
+    const { mutateAsync: updateAcademicTerm } = useUpdateAcademicTerm();
+    const { mutateAsync: deleteAcademicTerm } = useDeleteAcademicTerm();
+
     const [saving, setSaving] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingTerm, setEditingTerm] = useState<AcademicTerm | null>(null);
@@ -79,27 +87,6 @@ export default function AcademicTermsPage() {
         duration: "",
         academicYear: ""
     });
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const [termsRes, yearsRes] = await Promise.all([
-                adminAPI.getAcademicTerms(),
-                adminAPI.getAcademicYears()
-            ]);
-            setTerms(unwrapArray((termsRes as any)?.data, "terms"));
-            setYears(unwrapArray((yearsRes as any)?.data, "years"));
-        } catch (error) {
-            console.error("Failed to load data:", error);
-            toast.error("Failed to load academic terms");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const resetForm = () => {
         setFormData({
             name: "",
@@ -142,15 +129,14 @@ export default function AcademicTermsPage() {
         setSaving(true);
         try {
             if (editingTerm) {
-                await adminAPI.updateAcademicTerm(editingTerm._id, formData);
+                await updateAcademicTerm({ ...formData, id: editingTerm._id });
                 toast.success("Academic term updated successfully");
             } else {
-                await adminAPI.createAcademicTerm(formData);
+                await createAcademicTerm(formData);
                 toast.success("Academic term created successfully");
             }
             setDialogOpen(false);
             resetForm();
-            fetchData();
         } catch (error: any) {
             const errorMessage = error?.message || error?.response?.data?.message || "Operation failed";
             toast.error(errorMessage);
@@ -163,9 +149,8 @@ export default function AcademicTermsPage() {
         if (!confirm("Are you sure you want to delete this academic term?")) return;
 
         try {
-            await adminAPI.deleteAcademicTerm(id);
+            await deleteAcademicTerm(id);
             toast.success("Academic term deleted successfully");
-            fetchData();
         } catch (error: any) {
             toast.error(error?.message || "Failed to delete academic term");
         }
