@@ -11,21 +11,42 @@ export function useBook(id?: string, enabled = !!id) {
 
 export function useCreateBook() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.post('/library/books', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/library/books', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['books']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateBook(id?: string) {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.put(`/library/books/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/library/books/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['books']); qc.invalidateQueries(['book', id]); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteBook() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.delete(`/library/books/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/library/books/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['books']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

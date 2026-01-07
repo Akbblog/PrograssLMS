@@ -13,7 +13,7 @@ export default function useSchoolSettings() {
     { enabled: !!schoolId }
   )
 
-  const mutation = useMutation((updates: any) => superAdminAPI.updateSchool(schoolId as string, updates), {
+  const m = useMutation<any, Error, any>((updates: any) => superAdminAPI.updateSchool(schoolId as string, updates), {
     onSuccess: (res: any) => {
       // Invalidate or update cached school data
       qc.invalidateQueries(['school', schoolId])
@@ -24,7 +24,10 @@ export default function useSchoolSettings() {
     school: query.data?.data,
     isLoading: query.isLoading,
     isError: query.isError,
-    updateSchool: mutation.mutateAsync,
-    updateStatus: mutation.status,
+    updateSchool: m.mutateAsync,
+    updateStatus: m.status,
+    updateLoading: (m as any).isLoading ?? m.status === 'loading',
+    updateReset: m.reset,
+    updateMutation: m,
   }
 }

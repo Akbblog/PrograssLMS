@@ -11,21 +11,42 @@ export function useStaffMember(id?: string, enabled = !!id) {
 
 export function useCreateStaff() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.post('/staff', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/staff', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['staff']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateStaff(id?: string) {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.put(`/staff/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/staff/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['staff']); qc.invalidateQueries(['staff', id]); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteStaff() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.delete(`/staff/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/staff/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['staff']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

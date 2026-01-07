@@ -11,21 +11,42 @@ export function useAppraisal(id?: string, enabled = !!id) {
 
 export function useCreateAppraisal() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.post('/appraisals', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/appraisals', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['appraisals']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateAppraisal(id?: string) {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.put(`/appraisals/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/appraisals/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['appraisals']); qc.invalidateQueries(['appraisal', id]); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteAppraisal() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.delete(`/appraisals/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/appraisals/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['appraisals']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

@@ -11,20 +11,41 @@ export function useProgram(id?: string, enabled = !!id) {
 
 export function useCreateProgram() {
   const qc = useQueryClient();
-  return useMutation((data: any) => academicAPI.createProgram(data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['programs'] }) });
+  const m = useMutation<any, Error, any>((data: any) => academicAPI.createProgram(data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['programs'] }) });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateProgram(id?: string) {
   const qc = useQueryClient();
-  return useMutation((data: any) => academicAPI.updateProgram(id as string, data), {
+  const m = useMutation<any, Error, any>((data: any) => academicAPI.updateProgram(id as string, data), {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['programs'] });
       qc.invalidateQueries({ queryKey: ['program', id] });
     },
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteProgram() {
   const qc = useQueryClient();
-  return useMutation((id: string) => academicAPI.deleteProgram(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['programs'] }) });
+  const m = useMutation<any, Error, string>((id: string) => academicAPI.deleteProgram(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['programs'] }) });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

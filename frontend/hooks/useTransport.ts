@@ -11,23 +11,44 @@ export function useRoute(id?: string, enabled = !!id) {
 
 export function useCreateRoute() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.post('/transport/routes', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/transport/routes', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['routes']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateRoute(id?: string) {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.put(`/transport/routes/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/transport/routes/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['routes']); qc.invalidateQueries(['route', id]); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteRoute() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.delete(`/transport/routes/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/transport/routes/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['routes']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useVehicles() {

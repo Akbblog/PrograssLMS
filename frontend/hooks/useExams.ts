@@ -11,21 +11,42 @@ export function useExam(id?: string, enabled = !!id) {
 
 export function useCreateExam() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.post('/exams', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/exams', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['exams']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateExam(id?: string) {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.put(`/exams/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/exams/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['exams']); qc.invalidateQueries(['exam', id]); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteExam() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.delete(`/exams/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/exams/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['exams']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

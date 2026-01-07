@@ -16,24 +16,45 @@ export function useTeacher(id?: string, enabled = !!id) {
 
 export function useCreateTeacher() {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.createTeacher(data), {
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.createTeacher(data), {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['teachers'] }),
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateTeacher(id?: string) {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.updateTeacher(id as string, data), {
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.updateTeacher(id as string, data), {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['teachers'] });
       qc.invalidateQueries({ queryKey: ['teacher', id] });
     },
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteTeacher() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.deleteTeacher(id), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.deleteTeacher(id), {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['teachers'] }),
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

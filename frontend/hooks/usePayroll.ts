@@ -12,23 +12,44 @@ export function usePayrollRecord(id?: string, enabled = !!id) {
 
 export function useCreatePayroll() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.post('/payroll', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/payroll', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdatePayroll(id?: string) {
   const qc = useQueryClient();
-  return useMutation((payload: any) => adminAPI.put(`/payroll/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/payroll/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); qc.invalidateQueries(['payroll', id]); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeletePayroll() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.delete(`/payroll/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/payroll/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useGeneratePayroll() {
@@ -49,7 +70,14 @@ export function useGeneratePayroll() {
 
 export function useProcessPayroll() {
   const qc = useQueryClient();
-  return useMutation((id: string) => hrAPI.processPayroll(id).then((r: any) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => hrAPI.processPayroll(id).then((r: any) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }

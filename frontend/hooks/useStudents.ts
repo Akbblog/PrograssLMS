@@ -21,24 +21,45 @@ export function useStudent(id?: string, enabled = !!id) {
 
 export function useCreateStudent() {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.createStudent(data), {
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.createStudent(data), {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['students'] }),
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateStudent(id?: string) {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.updateStudent(id as string, data), {
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.updateStudent(id as string, data), {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['students'] });
       qc.invalidateQueries({ queryKey: ['student', id] });
     },
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useDeleteStudent() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.deleteStudent(id), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.deleteStudent(id), {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['students'] }),
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
