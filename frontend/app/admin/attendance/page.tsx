@@ -5,6 +5,7 @@ import { useClasses } from '@/hooks/useClasses';
 import { useAcademicYears } from '@/hooks/useAcademicYears';
 import { useAcademicTerms } from '@/hooks/useAcademicTerms';
 import { useAttendanceByDate, useStudentsForAttendance, useMarkAttendance } from '@/hooks/useAttendance';
+import { attendanceAPI } from '@/lib/api/endpoints';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -34,20 +35,28 @@ export default function AdminAttendancePage() {
     const [selectedAcademicTerm, setSelectedAcademicTerm] = useState<string>("");
 
     // Use hooks
-    const { data: classesRes } = useClasses();
-    const classes = (classesRes && (classesRes as any).data) ? (classesRes as any).data : (classesRes || []);
+    const { data: classesRes, isLoading: classesLoading } = useClasses();
+    const classes: any[] = (classesRes && (classesRes as any).data) ? unwrapArray((classesRes as any).data, 'classes') : unwrapArray(classesRes);
 
     const { data: yearsRes } = useAcademicYears();
-    const academicYears = (yearsRes && (yearsRes as any).data) ? unwrapArray((yearsRes as any).data, 'years') : (yearsRes || []);
+    const academicYears: any[] = (yearsRes && (yearsRes as any).data)
+        ? unwrapArray((yearsRes as any).data, 'years')
+        : unwrapArray(yearsRes);
 
     const { data: termsRes } = useAcademicTerms();
-    const academicTerms = (termsRes && (termsRes as any).data) ? unwrapArray((termsRes as any).data, 'terms') : (termsRes || []);
+    const academicTerms: any[] = (termsRes && (termsRes as any).data)
+        ? unwrapArray((termsRes as any).data, 'terms')
+        : unwrapArray(termsRes);
 
     const { data: attendanceRes, isLoading: attendanceLoading, refetch: refetchAttendance } = useAttendanceByDate(selectedClass, selectedDate, !!(selectedClass && selectedDate));
-    const attendanceData = (attendanceRes && (attendanceRes as any).data) ? unwrapArray((attendanceRes as any).data, 'attendance') : (attendanceRes || []);
+    const attendanceData: any[] = (attendanceRes && (attendanceRes as any).data)
+        ? unwrapArray((attendanceRes as any).data, 'attendance')
+        : unwrapArray(attendanceRes);
 
-    const { data: studentsRes } = useStudentsForAttendance(selectedClass, !!selectedClass);
-    const students = (studentsRes && (studentsRes as any).data) ? unwrapArray((studentsRes as any).data, 'students') : (studentsRes || []);
+    const { data: studentsRes, isLoading: studentsLoading } = useStudentsForAttendance(selectedClass, !!selectedClass);
+    const students: any[] = (studentsRes && (studentsRes as any).data)
+        ? unwrapArray((studentsRes as any).data, 'students')
+        : unwrapArray(studentsRes);
 
     const { mutateAsync: markAttendance } = useMarkAttendance();
 
@@ -70,23 +79,11 @@ export default function AdminAttendancePage() {
         }
     }, [academicTerms]);
 
-    const fetchAttendance = async () => {
-        if (!selectedClass) return;
-        setLoading(true);
-        try {
-            // This endpoint might need to be adjusted based on actual backend implementation
-            const res: any = await attendanceAPI.getAttendance(selectedClass, selectedDate);
-            setAttendanceData(unwrapArray(res?.data, "attendance"));
-        } catch (error) {
-            toast.error("No attendance records found for this date");
-            setAttendanceData([]);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        if (selectedClass) fetchAttendance();
+        if (selectedClass && selectedDate) {
+            // ensure query re-fetches when selection changes
+            refetchAttendance();
+        }
     }, [selectedClass, selectedDate]);
 
     const openMarkModal = async () => {
@@ -160,7 +157,7 @@ export default function AdminAttendancePage() {
         }
     }
 
-    if (loading && classes.length === 0) {
+    if (classesLoading && classes.length === 0) {
         return (
             <div className="flex justify-center items-center h-[60vh]">
                 <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
@@ -311,7 +308,7 @@ export default function AdminAttendancePage() {
                                         </div>
                                     </CardHeader>
                                     <CardContent className="p-4">
-                                        {loading && students.length === 0 ? (
+                                        {studentsLoading && students.length === 0 ? (
                                             <div className="flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
                                         ) : students.length === 0 ? (
                                             <p className="text-sm text-muted-foreground">No students for selected class.</p>
