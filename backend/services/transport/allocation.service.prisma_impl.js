@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrisma } = require('../../lib/prismaClient');
 
 exports.createAllocation = async (req, res) => {
   try {

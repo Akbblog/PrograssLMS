@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrisma } = require('../../lib/prismaClient');
 const Admin = require('../../models/Staff/admin.model');
 const responseStatus = require('../../handlers/responseStatus.handler');
 
@@ -9,6 +8,8 @@ exports.createClassLevelService = async (data, userId, res) => {
   if (!admin) return responseStatus(res, 401, 'failed', 'Admin not found');
   const schoolId = admin.schoolId || 'SCHOOL-IMPORT-1';
 
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const exists = await prisma.classLevel.findFirst({ where: { name, schoolId: String(schoolId) } });
   if (exists) return responseStatus(res, 400, 'failed', 'Class already exists');
 
@@ -20,6 +21,8 @@ exports.createClassLevelService = async (data, userId, res) => {
 };
 
 exports.getAllClassesService = async (schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return [];
   const where = schoolId ? { schoolId: String(schoolId) } : {};
   const classes = await prisma.classLevel.findMany({ where, orderBy: { createdAt: 'desc' } });
   // student counts require joining with students table which may need data normalization; skip heavy joins here
@@ -27,11 +30,15 @@ exports.getAllClassesService = async (schoolId) => {
 };
 
 exports.getClassLevelsService = async (id) => {
+  const prisma = getPrisma();
+  if (!prisma) return null;
   return await prisma.classLevel.findUnique({ where: { id } });
 };
 
 exports.updateClassLevelService = async (data, id, userId, res) => {
   const { name, description } = data;
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const exists = await prisma.classLevel.findFirst({ where: { name, NOT: { id } } });
   if (exists) return responseStatus(res, 400, 'failed', 'Class name already exists');
   const updated = await prisma.classLevel.update({ where: { id }, data: { name, description: description || null } });
@@ -39,11 +46,15 @@ exports.updateClassLevelService = async (data, id, userId, res) => {
 };
 
 exports.deleteClassLevelService = async (id) => {
+  const prisma = getPrisma();
+  if (!prisma) return null;
   return await prisma.classLevel.delete({ where: { id } });
 };
 
 // Relations (subjects/teachers) need relational tables in Prisma schema. These functions return best-effort results.
 exports.getSubjectsByClassService = async (classId, schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return [];
   // fallback: return all subjects for the school
   return await prisma.subject.findMany({ where: { schoolId: String(schoolId) } });
 };

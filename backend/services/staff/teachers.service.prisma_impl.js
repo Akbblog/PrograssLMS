@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrisma } = require('../../lib/prismaClient');
 const { hashPassword, isPassMatched } = require('../../handlers/passHash.handler');
 const responseStatus = require('../../handlers/responseStatus.handler');
 const generateToken = require('../../utils/tokenGenerator');

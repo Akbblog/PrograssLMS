@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrisma } = require('../../lib/prismaClient');
 const Teacher = require('../../models/Staff/teachers.model');
 const Admin = require('../../models/Staff/admin.model');
 const responseStatus = require('../../handlers/responseStatus.handler');

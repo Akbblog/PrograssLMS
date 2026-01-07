@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { getPrisma } = require('../../lib/prismaClient');
 const responseStatus = require('../../handlers/responseStatus.handler');
 
 exports.studentCheckExamResultService = async (examId, studentId, res) => {
