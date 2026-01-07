@@ -16,7 +16,9 @@ import { unwrapArray } from "@/lib/utils";
 export default function AdminExamsPage() {
     const router = useRouter();
     const { data: examsRes, isLoading: examsLoading } = useExams();
-    const exams = (examsRes && (examsRes as any).data) ? unwrapArray((examsRes as any).data, "exams") : (examsRes || []);
+    const exams: any[] = (examsRes && (examsRes as any).data)
+        ? unwrapArray((examsRes as any).data, "exams")
+        : unwrapArray(examsRes);
 
     const loading = examsLoading;
 
