@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.markAttendance = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const payload = { ...req.body, schoolId };
     const attendance = await prisma.driverAttendance.create({ data: { driverId: payload.driver, vehicleId: payload.vehicle, routeId: payload.route, date: payload.date ? new Date(payload.date) : new Date(), schoolId } });
@@ -14,6 +16,8 @@ exports.markAttendance = async (req, res) => {
 
 exports.getAttendance = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const records = await prisma.driverAttendance.findMany({ where: { schoolId }, include: { driver: true, vehicle: true, route: true } });
     return res.status(200).json({ status: 'success', data: records });
@@ -25,6 +29,8 @@ exports.getAttendance = async (req, res) => {
 
 exports.getStats = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const activeVehicles = await prisma.driverAttendance.findMany({ where: { schoolId }, select: { vehicleId: true } });
     const activeRoutes = await prisma.driverAttendance.findMany({ where: { schoolId }, select: { routeId: true } });

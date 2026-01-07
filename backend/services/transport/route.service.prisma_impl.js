@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.createRoute = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const data = { ...req.body, schoolId };
     const route = await prisma.route.create({ data });
@@ -14,6 +16,8 @@ exports.createRoute = async (req, res) => {
 
 exports.getRoutes = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const routes = await prisma.route.findMany({ where: { schoolId }, include: { vehicle: true } });
     return res.status(200).json({ status: 'success', data: routes });
@@ -25,6 +29,8 @@ exports.getRoutes = async (req, res) => {
 
 exports.updateRoute = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const updated = await prisma.route.updateMany({ where: { id, schoolId }, data: req.body });
@@ -39,6 +45,8 @@ exports.updateRoute = async (req, res) => {
 
 exports.deleteRoute = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const deleted = await prisma.route.deleteMany({ where: { id, schoolId } });

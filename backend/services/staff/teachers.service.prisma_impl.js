@@ -7,6 +7,9 @@ const Admin = require('../../models/Staff/admin.model');
 exports.createTeacherService = async (data, adminId, res) => {
   const { name, email, password, phone, dateOfBirth, gender, employeeId, department, qualifications, specialization, experience, dateOfJoining, subject, classLevels, academicYear, address, nationality, employmentType, salary } = data;
 
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
+
   // Check if teacher exists
   const existing = await prisma.teacher.findUnique({ where: { email } });
   if (existing) return responseStatus(res, 400, 'failed', 'Teacher with this email already exists');
@@ -33,6 +36,8 @@ exports.createTeacherService = async (data, adminId, res) => {
 
 exports.teacherLoginService = async (data, res) => {
   const { email, password } = data;
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const teacher = await prisma.teacher.findUnique({ where: { email } });
   if (!teacher) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
   const matched = await isPassMatched(password, teacher.password);
@@ -43,6 +48,8 @@ exports.teacherLoginService = async (data, res) => {
 };
 
 exports.getAllTeachersService = async (schoolId, options = {}) => {
+  const prisma = getPrisma();
+  if (!prisma) return [];
   const where = {};
   if (schoolId) where.schoolId = String(schoolId);
   const page = parseInt(options.page) || 1;

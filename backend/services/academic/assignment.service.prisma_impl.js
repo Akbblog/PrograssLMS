@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.createAssignment = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { title, description, subject, classLevel, dueDate, totalPoints, attachments, academicYear, academicTerm } = req.body;
     const schoolId = req.userAuth.schoolId;
     const teacher = req.userAuth._id;
@@ -17,6 +19,8 @@ exports.createAssignment = async (req, res) => {
 
 exports.getAssignments = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { classLevel, subject, studentId } = req.query;
     const schoolId = req.userAuth.schoolId;
 
@@ -45,6 +49,8 @@ exports.getAssignments = async (req, res) => {
 
 exports.submitAssignment = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { assignmentId } = req.params;
     const { content, fileUrl } = req.body;
     const studentId = req.userAuth._id;
@@ -70,6 +76,8 @@ exports.submitAssignment = async (req, res) => {
 
 exports.gradeSubmission = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { assignmentId, studentId } = req.params;
     const { grade, feedback } = req.body;
 

@@ -7,6 +7,8 @@ class FinanceService {
 
   async generateStudentFeeStructure(studentId, academicYearId, paymentPlan = 'full') {
     // Basic implementation using Prisma models FeeStructure and Student
+    const prisma = getPrisma();
+    if (!prisma) throw new Error('Database unavailable');
     const student = await prisma.student.findUnique({ where: { id: studentId }, include: { currentClassLevel: true, program: true } });
     const activeFeeStructure = await prisma.feeStructure.findFirst({ where: { schoolId: this.schoolId, academicYear: academicYearId, status: 'active' } });
 
@@ -30,6 +32,8 @@ class FinanceService {
   }
 
   async generateFinancialReport(academicYearId, reportType = 'summary') {
+    const prisma = getPrisma();
+    if (!prisma) throw new Error('Database unavailable');
     const payments = await prisma.feePayment.findMany({ where: { schoolId: this.schoolId, academicYear: academicYearId }, include: { student: true } });
     const report = { totalRevenue: 0, pendingPayments: 0, receivedPayments: 0, overdueAmount: 0, classWiseBreakdown: {}, paymentMethodBreakdown: {}, monthlyTrend: {} };
 
@@ -54,6 +58,8 @@ class FinanceService {
   }
 
   async sendPaymentReminders() {
+    const prisma = getPrisma();
+    if (!prisma) throw new Error('Database unavailable');
     const overduePayments = await prisma.feePayment.findMany({ where: { schoolId: this.schoolId, status: 'overdue' }, include: { student: true } });
     const upcomingPayments = await prisma.feePayment.findMany({ where: { schoolId: this.schoolId, status: { in: ['pending', 'partial'] }, dueDate: { gte: new Date(), lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) } }, include: { student: true } });
 

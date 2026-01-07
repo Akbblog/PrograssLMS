@@ -5,6 +5,8 @@ const generateToken = require('../../utils/tokenGenerator');
 
 exports.adminRegisterStudentService = async (data, adminId, res) => {
   const { name, email, password, schoolId } = data;
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   // find admin's schoolId if not provided
   const admin = await prisma.admin.findUnique({ where: { id: adminId } });
   const sid = schoolId || (admin && admin.schoolId) || 'SCHOOL-IMPORT-1';
@@ -18,6 +20,8 @@ exports.adminRegisterStudentService = async (data, adminId, res) => {
 
 exports.studentLoginService = async (data, res) => {
   const { email, password } = data;
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const student = await prisma.student.findUnique({ where: { email } });
   if (!student) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
   const matched = await isPassMatched(password, student.password);
@@ -28,6 +32,8 @@ exports.studentLoginService = async (data, res) => {
 };
 
 exports.getStudentsProfileService = async (id, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const student = await prisma.student.findUnique({ where: { id } });
   if (!student) return responseStatus(res, 402, 'failed', 'Student not found');
   // remove password
@@ -36,6 +42,8 @@ exports.getStudentsProfileService = async (id, res) => {
 };
 
 exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const where = {};
   if (schoolId) where.schoolId = schoolId;
   if (filters.enrollmentStatus) where.enrollmentStatus = filters.enrollmentStatus;
@@ -53,6 +61,8 @@ exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
 };
 
 exports.getStudentByAdminService = async (studentID, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const student = await prisma.student.findUnique({ where: { id: studentID } });
   if (!student) return responseStatus(res, 402, 'failed', 'Student not found');
   delete student.password;
@@ -60,6 +70,8 @@ exports.getStudentByAdminService = async (studentID, res) => {
 };
 
 exports.studentUpdateProfileService = async (data, userId, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const { email, password } = data;
   if (email) {
     const existing = await prisma.student.findUnique({ where: { email } });
@@ -74,6 +86,8 @@ exports.studentUpdateProfileService = async (data, userId, res) => {
 };
 
 exports.adminUpdateStudentService = async (data, studentId, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const update = {};
   if (data.name) update.name = data.name;
   if (data.email) update.email = data.email;
@@ -87,6 +101,8 @@ exports.adminUpdateStudentService = async (data, studentId, res) => {
 };
 
 exports.studentSelfRegisterService = async (data, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const { name, email, password } = data;
   const existing = await prisma.student.findUnique({ where: { email } });
   if (existing) return responseStatus(res, 402, 'failed', 'Email already registered');

@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.listTemplates = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const templates = await prisma.documentTemplate.findMany({ where: { schoolId } });
     return res.status(200).json({ status: 'success', data: templates });
@@ -13,6 +15,8 @@ exports.listTemplates = async (req, res) => {
 
 exports.createTemplate = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const payload = { ...req.body, schoolId };
     const created = await prisma.documentTemplate.create({ data: payload });
@@ -25,6 +29,8 @@ exports.createTemplate = async (req, res) => {
 
 exports.updateTemplate = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const updated = await prisma.documentTemplate.updateMany({ where: { id, schoolId }, data: req.body });

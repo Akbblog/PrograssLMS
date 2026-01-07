@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.createAllocation = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const payload = { ...req.body, schoolId };
     const allocation = await prisma.transportAllocation.create({ data: { studentId: payload.student, routeId: payload.route, vehicleAssignedId: payload.vehicleAssigned, schoolId: payload.schoolId } });
@@ -14,6 +16,8 @@ exports.createAllocation = async (req, res) => {
 
 exports.getAllocations = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const allocations = await prisma.transportAllocation.findMany({ where: { schoolId }, include: { student: true, route: true, vehicleAssigned: true } });
     return res.status(200).json({ status: 'success', data: allocations });
@@ -25,6 +29,8 @@ exports.getAllocations = async (req, res) => {
 
 exports.updateAllocation = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const updated = await prisma.transportAllocation.updateMany({ where: { id, schoolId }, data: req.body });
@@ -39,6 +45,8 @@ exports.updateAllocation = async (req, res) => {
 
 exports.deleteAllocation = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const deleted = await prisma.transportAllocation.deleteMany({ where: { id, schoolId } });

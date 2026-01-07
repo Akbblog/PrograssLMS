@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.createVehicle = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const data = { ...req.body, schoolId };
     const vehicle = await prisma.vehicle.create({ data });
@@ -14,6 +16,8 @@ exports.createVehicle = async (req, res) => {
 
 exports.getVehicles = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const vehicles = await prisma.vehicle.findMany({ where: { schoolId } });
     return res.status(200).json({ status: 'success', data: vehicles });
@@ -25,6 +29,8 @@ exports.getVehicles = async (req, res) => {
 
 exports.updateVehicle = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const vehicle = await prisma.vehicle.updateMany({ where: { id, schoolId }, data: req.body });
@@ -39,6 +45,8 @@ exports.updateVehicle = async (req, res) => {
 
 exports.deleteVehicle = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const deleted = await prisma.vehicle.deleteMany({ where: { id, schoolId } });

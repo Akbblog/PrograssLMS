@@ -4,6 +4,8 @@ const Admin = require('../../models/Staff/admin.model');
 const responseStatus = require('../../handlers/responseStatus.handler');
 
 exports.createExamService = async (data, userId, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const { name, description, subject, program, passMark, totalMark, academicTerm, duration, examDate, examTime, classLevel, questions } = data;
   let user = await Teacher.findById(userId);
   let userRole = 'teacher';
@@ -18,6 +20,8 @@ exports.createExamService = async (data, userId, res) => {
 };
 
 exports.getAllExamService = async (filters = {}) => {
+  const prisma = getPrisma();
+  if (!prisma) return [];
   // If schoolId provided in filters, apply
   const where = {};
   if (filters.schoolId) where.schoolId = String(filters.schoolId);
@@ -25,10 +29,14 @@ exports.getAllExamService = async (filters = {}) => {
 };
 
 exports.getExamByIdService = async (id) => {
+  const prisma = getPrisma();
+  if (!prisma) return null;
   return await prisma.exam.findUnique({ where: { id } });
 };
 
 exports.updateExamService = async (data, examId, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   if (data.name) {
     const found = await prisma.exam.findFirst({ where: { name: data.name, NOT: { id: examId } } });
     if (found) return responseStatus(res, 402, 'failed', 'Exam with this name already exists');

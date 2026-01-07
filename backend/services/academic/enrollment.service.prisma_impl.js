@@ -2,6 +2,8 @@ const { getPrisma } = require('../../lib/prismaClient');
 
 exports.createEnrollment = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { student, subject, classLevel, academicYear, academicTerm } = req.body;
     const schoolId = req.userAuth.schoolId;
 
@@ -16,6 +18,8 @@ exports.createEnrollment = async (req, res) => {
 
 exports.getStudentEnrollments = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { studentId } = req.params;
     const schoolId = req.userAuth.schoolId;
 
@@ -30,6 +34,8 @@ exports.getStudentEnrollments = async (req, res) => {
 
 exports.updateEnrollmentProgress = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { enrollmentId } = req.params;
     const { progress } = req.body;
 

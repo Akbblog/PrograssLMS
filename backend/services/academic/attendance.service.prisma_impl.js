@@ -6,6 +6,8 @@ const responseStatus = require("../../handlers/responseStatus.handler.js");
  * Note: Prisma schema must include an `Attendance` model with fields used below.
  */
 exports.markAttendanceService = async (data, userId, userRole, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const { classLevel, date, records, academicYear, academicTerm } = data;
 
   // resolve schoolId from admin or teacher
@@ -63,6 +65,8 @@ exports.markAttendanceService = async (data, userId, userRole, res) => {
 };
 
 exports.getAttendanceService = async (classLevel, date, schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return null;
   const attendanceDate = new Date(date);
   attendanceDate.setHours(0, 0, 0, 0);
 
@@ -79,6 +83,8 @@ exports.getAttendanceService = async (classLevel, date, schoolId) => {
 };
 
 exports.getAttendanceHistoryService = async (classLevel, startDate, endDate, schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return [];
   const where = { schoolId, classLevel };
   if (startDate && endDate) where.date = { gte: new Date(startDate), lte: new Date(endDate) };
 
@@ -87,6 +93,8 @@ exports.getAttendanceHistoryService = async (classLevel, startDate, endDate, sch
 };
 
 exports.getStudentAttendanceService = async (studentId, startDate, endDate, schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return [];
   const where = { schoolId };
   if (startDate && endDate) where.date = { gte: new Date(startDate), lte: new Date(endDate) };
 
@@ -104,6 +112,8 @@ exports.getStudentAttendanceService = async (studentId, startDate, endDate, scho
 };
 
 exports.getAttendanceSummaryService = async (classLevel, startDate, endDate, schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return { totalDays: 0, totalPresent: 0, totalAbsent: 0, totalLate: 0, attendanceRate: 0 };
   const where = { schoolId, classLevel };
   if (startDate && endDate) where.date = { gte: new Date(startDate), lte: new Date(endDate) };
 
@@ -129,6 +139,8 @@ exports.getAttendanceSummaryService = async (classLevel, startDate, endDate, sch
 
 exports.deleteAttendanceService = async (attendanceId, schoolId, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
     const deleted = await prisma.attendance.deleteMany({ where: { id: attendanceId, schoolId } });
     if (deleted.count === 0) return responseStatus(res, 404, 'failed', 'Attendance record not found');
     return responseStatus(res, 200, 'success', { message: 'Attendance deleted successfully' });
@@ -141,6 +153,8 @@ exports.deleteAttendanceService = async (attendanceId, schoolId, res) => {
 exports.getStudentsForAttendanceService = async (classLevel, schoolId) => {
   // Depends on `Student` model in Prisma; fallback to empty array if not present
   try {
+    const prisma = getPrisma();
+    if (!prisma) return [];
     const students = await prisma.student.findMany({
       where: {
         schoolId,
