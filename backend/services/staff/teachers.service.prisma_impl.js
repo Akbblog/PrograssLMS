@@ -36,12 +36,22 @@ exports.createTeacherService = async (data, adminId, res) => {
 
 exports.teacherLoginService = async (data, res) => {
   const { email, password } = data;
+  console.log('[Teacher Login] Attempting login for:', email);
   const prisma = getPrisma();
-  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
+  if (!prisma) {
+    console.error('[Teacher Login] Prisma client not available');
+    return responseStatus(res, 500, 'failed', 'Database unavailable');
+  }
   const teacher = await prisma.teacher.findUnique({ where: { email } });
-  if (!teacher) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  if (!teacher) {
+    console.log('[Teacher Login] Teacher not found:', email);
+    return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  }
   const matched = await isPassMatched(password, teacher.password);
-  if (!matched) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  if (!matched) {
+    console.log('[Teacher Login] Password mismatch for:', email);
+    return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  }
   const { password: pw, ...t } = teacher;
   const token = generateToken(teacher.id, teacher.role || 'teacher', teacher.schoolId);
   return responseStatus(res, 200, 'success', { teacher: t, token });

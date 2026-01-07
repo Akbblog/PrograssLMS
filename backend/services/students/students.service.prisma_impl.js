@@ -20,12 +20,22 @@ exports.adminRegisterStudentService = async (data, adminId, res) => {
 
 exports.studentLoginService = async (data, res) => {
   const { email, password } = data;
+  console.log('[Student Login] Attempting login for:', email);
   const prisma = getPrisma();
-  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
+  if (!prisma) {
+    console.error('[Student Login] Prisma client not available');
+    return responseStatus(res, 500, 'failed', 'Database unavailable');
+  }
   const student = await prisma.student.findUnique({ where: { email } });
-  if (!student) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  if (!student) {
+    console.log('[Student Login] Student not found:', email);
+    return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  }
   const matched = await isPassMatched(password, student.password);
-  if (!matched) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  if (!matched) {
+    console.log('[Student Login] Password mismatch for:', email);
+    return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+  }
   const { password: pw, ...studentData } = student;
   const token = generateToken(student.id, student.role || 'student', student.schoolId);
   return responseStatus(res, 200, 'success', { student: studentData, token });

@@ -24,14 +24,26 @@ exports.registerAdminService = async (data, res) => {
 
 exports.loginAdminService = async (data, res) => {
   const { email, password } = data;
+  console.log('[Admin Login] Attempting login for:', email);
   const prisma = getPrisma();
-  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
+  if (!prisma) {
+    console.error('[Admin Login] Prisma client not available');
+    return responseStatus(res, 500, 'failed', 'Database unavailable');
+  }
   try {
+    console.log('[Admin Login] Searching for admin with email:', email);
     const user = await prisma.admin.findUnique({ where: { email } });
-    if (!user) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+    if (!user) {
+      console.log('[Admin Login] Admin not found:', email);
+      return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+    }
 
+    console.log('[Admin Login] Admin found, verifying password...');
     const isPassValid = await isPassMatched(password, user.password);
-    if (!isPassValid) return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+    if (!isPassValid) {
+      console.log('[Admin Login] Password mismatch for:', email);
+      return responseStatus(res, 401, 'failed', 'Invalid login credentials');
+    }
 
     let schoolFeatures = {};
     if (user.schoolId) {

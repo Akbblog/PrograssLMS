@@ -12,6 +12,7 @@ const generateToken = require("../../utils/tokenGenerator.js");
 exports.superAdminLoginService = async (data, res) => {
   try {
     const { email, password } = data;
+    console.log('[SuperAdmin Login] Incoming email:', email, 'Password length:', password?.length);
 
     // For now, use hardcoded superadmin credentials from env (normalize email)
     // In production, store this in database
@@ -19,12 +20,15 @@ exports.superAdminLoginService = async (data, res) => {
     const SUPERADMIN_EMAIL = (process.env.SUPERADMIN_EMAIL || "SA@progresslms.com").toLowerCase();
     const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD || "Superpass";
     const SUPERADMIN_NAME = "System Administrator";
+    console.log('[SuperAdmin Login] Expected email:', SUPERADMIN_EMAIL);
 
     // Normalize incoming email for comparison
     const incomingEmail = (email || "").toLowerCase();
+    console.log('[SuperAdmin Login] Normalized incoming:', incomingEmail, 'vs expected:', SUPERADMIN_EMAIL);
 
     // Verify credentials
     if (incomingEmail !== SUPERADMIN_EMAIL || password !== SUPERADMIN_PASSWORD) {
+      console.log('[SuperAdmin Login] FAILED - Email match:', incomingEmail === SUPERADMIN_EMAIL, 'Password match:', password === SUPERADMIN_PASSWORD);
       return responseStatus(res, 401, "failed", "Invalid login credentials");
     }
 
