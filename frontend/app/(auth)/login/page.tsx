@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -25,9 +25,19 @@ import {
     Sparkles,
     Mail,
     Lock,
-    ArrowRight
+    ArrowRight,
+    // New icons for background
+    BookOpen,
+    Calculator,
+    Microscope,
+    Ruler,
+    Pencil,
+    Atom,
+    Globe,
+    BrainCircuit,
+    Library
 } from "lucide-react"
-import GraduationCap from "@/components/icons/GraduationCap"
+import GraduationCap from "@/components/icons/GraduationCap" // Assuming this exists per your code
 import { toast } from "sonner"
 import { useAuthStore } from "@/store/authStore"
 import apiClient from "@/lib/api/client"
@@ -62,15 +72,36 @@ const roleConfigs: RoleConfig[] = [
     { id: 'super_admin', label: 'Super Admin', icon: Sparkles, endpoint: '/superadmin/login' }
 ]
 
+// --- Background Icons Config ---
+const backgroundIcons = [
+    BookOpen, Calculator, Microscope, Ruler, Pencil, Atom, Globe, BrainCircuit, Library, GraduationCap
+];
+
 export default function LoginPage() {
     const router = useRouter()
     const login = useAuthStore((state) => state.login)
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
+    
+    // Generate random background elements only on client side to avoid hydration mismatch
+    const [floatingElements, setFloatingElements] = useState<any[]>([])
 
     useEffect(() => {
         setIsMounted(true)
+        
+        // Generate random positions and animations for background icons
+        const elements = Array.from({ length: 15 }).map((_, i) => ({
+            id: i,
+            Icon: backgroundIcons[Math.floor(Math.random() * backgroundIcons.length)],
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            size: Math.random() * 30 + 20, // 20px to 50px
+            duration: Math.random() * 20 + 10, // 10s to 30s
+            delay: Math.random() * 5,
+            rotation: Math.random() * 360,
+        }))
+        setFloatingElements(elements)
     }, [])
 
     const form = useForm<FormValues>({
@@ -101,12 +132,9 @@ export default function LoginPage() {
                     password: values.password,
                 }) as any
 
-                // Handle multiple response formats from backend
-                // Backend returns: {success: true, data: {...}, message: '...'}
                 const responseData = res.data || res;
                 const token = responseData.token || responseData.data?.token;
                 
-                // Get user data from various possible locations
                 let userData = responseData.data;
                 if (userData?.user) userData = userData.user;
                 else if (userData?.student) userData = userData.student;
@@ -119,6 +147,16 @@ export default function LoginPage() {
                 if ((responseData.success || token) && token && userData && userData.name) {
                     const resolvedRole = (userData.role || roleConfig.id) as RoleType | string
 
+                    // Parse features if it's a JSON string (Prisma/MySQL returns string)
+                    let features = userData.features;
+                    if (typeof features === 'string') {
+                        try {
+                            features = JSON.parse(features);
+                        } catch (e) {
+                            features = {};
+                        }
+                    }
+
                     login(
                         {
                             _id: userData._id || userData.id,
@@ -127,7 +165,7 @@ export default function LoginPage() {
                             email: userData.email,
                             role: resolvedRole,
                             schoolId: userData.schoolId,
-                            features: userData.features,
+                            features: features || {},
                         },
                         token
                     )
@@ -167,25 +205,67 @@ export default function LoginPage() {
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-50 overflow-hidden font-sans">
             
-            {/* --- Modern White Background Effects --- */}
+            {/* --- ANIMATED BACKGROUND SECTION --- */}
             <div className="absolute inset-0 w-full h-full overflow-hidden">
-                {/* Subtle mesh gradient background */}
+                
+                {/* 1. Base Gradients (Preserved from your code) */}
                 <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-gradient-to-tr from-blue-100/60 to-indigo-100/60 blur-[120px] animate-slow-drift opacity-70" />
-                 <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] rounded-full bg-gradient-to-tl from-violet-100/60 to-fuchsia-100/60 blur-[120px] animate-slow-drift-reverse opacity-70" />
-                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.015] mix-blend-overlay"></div>
+                <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] rounded-full bg-gradient-to-tl from-violet-100/60 to-fuchsia-100/60 blur-[120px] animate-slow-drift-reverse opacity-70" />
+
+                {/* 2. Grid Pattern Overlay (Graph paper look) */}
+                <div 
+                    className="absolute inset-0 opacity-[0.4]"
+                    style={{
+                        backgroundImage: `radial-gradient(#cbd5e1 1px, transparent 1px)`,
+                        backgroundSize: '30px 30px'
+                    }}
+                ></div>
+
+                {/* 3. Floating Education Icons */}
+                {floatingElements.map((el, index) => (
+                    <div
+                        key={el.id}
+                        className="absolute text-slate-300/40 pointer-events-none"
+                        style={{
+                            top: el.top,
+                            left: el.left,
+                            transform: `rotate(${el.rotation}deg)`,
+                            animation: `float ${el.duration}s infinite ease-in-out`,
+                            animationDelay: `${el.delay}s`
+                        }}
+                    >
+                        <el.Icon 
+                            strokeWidth={1.5}
+                            style={{ 
+                                width: `${el.size}px`, 
+                                height: `${el.size}px` 
+                            }} 
+                        />
+                    </div>
+                ))}
             </div>
 
+            {/* --- Inline Styles for Animation Keyframes --- */}
+            <style jsx global>{`
+                @keyframes float {
+                    0% { transform: translate(0, 0) rotate(0deg); }
+                    33% { transform: translate(30px, -50px) rotate(10deg); }
+                    66% { transform: translate(-20px, 20px) rotate(-5deg); }
+                    100% { transform: translate(0, 0) rotate(0deg); }
+                }
+            `}</style>
 
             {/* --- Main Card --- */}
             <div className="relative z-10 w-full max-w-[440px] mx-auto p-4">
                 
                 {/* The "Floating" White Card */}
-                <div className="bg-white rounded-[32px] shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] border border-slate-100/80 p-8 sm:p-12 relative overflow-hidden">
+                <div className="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] border border-white/50 p-8 sm:p-12 relative overflow-hidden">
                     
                     {/* Header Section */}
                     <div className="text-center space-y-4 mb-10">
                         <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-blue-50 text-blue-600 shadow-sm shadow-blue-100 ring-1 ring-blue-100/50 mb-2">
-                            <GraduationCap className="h-7 w-7" />
+                            {/* Animated Graduation Cap inside the header */}
+                            <GraduationCap className="h-7 w-7 animate-bounce-subtle" />
                         </div>
                         
                         <div className="space-y-2">
@@ -193,7 +273,7 @@ export default function LoginPage() {
                                 Welcome back
                             </h1>
                             <p className="text-slate-500 text-[15px]">
-                                Please enter your details to sign in.
+                                Education is the passport to the future.
                             </p>
                         </div>
                     </div>
@@ -215,7 +295,7 @@ export default function LoginPage() {
                                                     type="email"
                                                     disabled={isLoading}
                                                     placeholder="name@school.com"
-                                                    className="h-14 pl-12 bg-slate-50/80 border-0 text-slate-900 placeholder:text-slate-400 rounded-2xl focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:bg-white transition-all shadow-sm shadow-slate-200/50"
+                                                    className="h-14 pl-12 bg-slate-50/50 border-0 text-slate-900 placeholder:text-slate-400 rounded-2xl focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:bg-white transition-all shadow-sm shadow-slate-200/50"
                                                 />
                                             </div>
                                         </FormControl>
@@ -238,7 +318,7 @@ export default function LoginPage() {
                                                     type={showPassword ? "text" : "password"}
                                                     disabled={isLoading}
                                                     placeholder="••••••••"
-                                                     className="h-14 pl-12 pr-12 bg-slate-50/80 border-0 text-slate-900 placeholder:text-slate-400 rounded-2xl focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:bg-white transition-all shadow-sm shadow-slate-200/50"
+                                                     className="h-14 pl-12 pr-12 bg-slate-50/50 border-0 text-slate-900 placeholder:text-slate-400 rounded-2xl focus-visible:ring-2 focus-visible:ring-blue-500/30 focus-visible:bg-white transition-all shadow-sm shadow-slate-200/50"
                                                 />
                                                 <button
                                                     type="button"
@@ -299,7 +379,7 @@ export default function LoginPage() {
                 </div>
                 
                 {/* Subtle bottom text */}
-                <p className="text-center text-xs font-medium text-slate-400 mt-6">
+                <p className="text-center text-xs font-medium text-slate-400 mt-6 relative z-10">
                     © 2026 ProgressLMS. Secured by industry standards.
                 </p>
             </div>
