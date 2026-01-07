@@ -235,7 +235,7 @@ export default function RoutesPage() {
     const stats = {
         totalRoutes: routes.length,
         activeRoutes: routes.filter(r => r.isActive).length,
-        totalStops: routes.reduce((sum, r) => sum + (r.stops?.length || 0), 0)
+        totalStops: routes.reduce<number>((sum, r) => sum + (r.stops?.length || 0), 0)
     };
 
     if (loading) {

@@ -271,7 +271,7 @@ export default function VehiclesPage() {
         total: vehicles.length,
         active: vehicles.filter(v => v.status === 'active').length,
         maintenance: vehicles.filter(v => v.status === 'maintenance').length,
-        totalCapacity: vehicles.filter(v => v.status === 'active').reduce((sum, v) => sum + (v.capacity || 0), 0)
+        totalCapacity: vehicles.filter(v => v.status === 'active').reduce<number>((sum, v) => sum + (v.capacity || 0), 0)
     };
 
     const expiringSoon = vehicles.filter(v => 

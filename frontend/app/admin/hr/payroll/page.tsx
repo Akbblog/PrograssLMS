@@ -193,7 +193,7 @@ export default function PayrollPage() {
         total: payrolls.length,
         pending: payrolls.filter(p => p.status === 'pending').length,
         paid: payrolls.filter(p => p.status === 'paid').length,
-        totalPaid: payrolls.filter(p => p.status === 'paid').reduce((sum, p) => sum + (p.netSalary || 0), 0)
+        totalPaid: payrolls.filter(p => p.status === 'paid').reduce<number>((sum, p) => sum + (p.netSalary || 0), 0)
     };
 
     const yearOptions = Array.from({ length: 5 }, (_, i) => {

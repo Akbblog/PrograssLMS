@@ -248,7 +248,7 @@ export default function AppraisalsPage() {
 
         setProcessing(true);
         try {
-            const overallRating = formData.categories.reduce((sum, c) => sum + c.rating, 0) / formData.categories.length;
+            const overallRating = formData.categories.reduce<number>((sum, c) => sum + c.rating, 0) / formData.categories.length;
             
             const payload = {
                 staff: formData.staffId,
@@ -337,7 +337,7 @@ export default function AppraisalsPage() {
         pending: appraisals.filter(a => a.status === 'pending' || a.status === 'in-review').length,
         completed: appraisals.filter(a => a.status === 'completed').length,
         avgRating: appraisals.length > 0 
-            ? (appraisals.reduce((sum, a) => sum + (a.overallRating || 0), 0) / appraisals.length).toFixed(1)
+            ? (appraisals.reduce<number>((sum, a) => sum + (a.overallRating || 0), 0) / appraisals.length).toFixed(1)
             : '0.0'
     };
 

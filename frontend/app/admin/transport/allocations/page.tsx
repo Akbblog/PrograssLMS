@@ -237,7 +237,7 @@ export default function AllocationsPage() {
     const stats = {
         totalAllocations: allocations.length,
         activeAllocations: allocations.filter(a => a.isActive).length,
-        totalRevenue: allocations.filter(a => a.isActive).reduce((sum, a) => sum + (a.monthlyFee || 0), 0)
+        totalRevenue: allocations.filter(a => a.isActive).reduce<number>((sum, a) => sum + (a.monthlyFee || 0), 0)
     };
 
     if (loading) {

@@ -78,8 +78,8 @@ export default function TransportReportsPage() {
         totalVehicles: vehicles.length,
         activeVehicles: vehicles.filter(v => v.status === 'active').length,
         totalStudents: allocations.filter(a => a.isActive !== false).length,
-        totalCapacity: vehicles.filter(v => v.status === 'active').reduce((sum, v) => sum + (v.capacity || 0), 0),
-        monthlyRevenue: allocations.filter(a => a.isActive !== false).reduce((sum, a) => sum + (a.monthlyFee || 0), 0)
+        totalCapacity: vehicles.filter(v => v.status === 'active').reduce<number>((sum, v) => sum + (v.capacity || 0), 0),
+        monthlyRevenue: allocations.filter(a => a.isActive !== false).reduce<number>((sum, a) => sum + (a.monthlyFee || 0), 0)
     };
 
     // Route-wise stats
@@ -90,7 +90,7 @@ export default function TransportReportsPage() {
             routeName: route.routeName,
             routeCode: route.routeCode,
             totalStudents: routeAllocations.length,
-            monthlyRevenue: routeAllocations.reduce((sum, a) => sum + (a.monthlyFee || 0), 0),
+            monthlyRevenue: routeAllocations.reduce<number>((sum, a) => sum + (a.monthlyFee || 0), 0),
             stops: route.stops?.length || 0,
             vehicle: route.vehicle?.vehicleNumber
         };

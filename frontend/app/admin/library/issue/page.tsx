@@ -317,7 +317,7 @@ export default function LibraryIssuePage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{books.reduce((sum, b) => sum + (b.availableCopies || 0), 0)}</div>
+                            <div className="text-2xl font-bold">{books.reduce<number>((sum, b) => sum + (b.availableCopies || 0), 0)}</div>
                             <p className="text-xs text-muted-foreground">Ready for issue</p>
                         </CardContent>
                     </Card>

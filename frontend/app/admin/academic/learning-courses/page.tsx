@@ -258,11 +258,11 @@ export default function LearningCoursesPage() {
         }
     }
 
-    const totalEnrolled = courses.reduce((sum, c) => sum + (c.enrolledStudents?.length || 0), 0)
-    const totalLessons = courses.reduce((sum, c) => {
+    const totalEnrolled = courses.reduce<number>((sum, c) => sum + (c.enrolledStudents?.length || 0), 0)
+    const totalLessons = courses.reduce<number>((sum, c) => {
         return sum + (c.modules?.reduce((mSum: number, m: any) => mSum + (m.lessons?.length || 0), 0) || 0)
     }, 0)
-    const totalModules = courses.reduce((sum, c) => sum + (c.modules?.length || 0), 0)
+    const totalModules = courses.reduce<number>((sum, c) => sum + (c.modules?.length || 0), 0)
 
     if (loading) {
         return (

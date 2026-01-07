@@ -55,8 +55,8 @@ export default function StudentFeesPage() {
         );
     }
 
-    const totalDue = dueFees.reduce((acc, curr) => acc + (curr.due || 0), 0);
-    const totalPaid = payments.reduce((acc, curr) => acc + (curr.amountPaid || 0), 0);
+    const totalDue = dueFees.reduce<number>((acc, curr) => acc + (curr.due || 0), 0);
+    const totalPaid = payments.reduce<number>((acc, curr) => acc + (curr.amountPaid || 0), 0);
     const paymentProgress = totalPaid + totalDue > 0 ? (totalPaid / (totalPaid + totalDue)) * 100 : 0;
 
     return (

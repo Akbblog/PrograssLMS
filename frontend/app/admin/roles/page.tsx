@@ -394,7 +394,7 @@ export default function RoleManagementPage() {
                             </div>
                             <div>
                                 <p className="text-sm text-slate-500">Users Assigned</p>
-                                <p className="text-2xl font-bold text-slate-900">{roles.reduce((sum, r) => sum + (r.usersCount || 0), 0)}</p>
+                                <p className="text-2xl font-bold text-slate-900">{roles.reduce<number>((sum, r) => sum + (r.usersCount || 0), 0)}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -408,7 +408,7 @@ export default function RoleManagementPage() {
                             <div>
                                 <p className="text-sm text-slate-500">Total Permissions</p>
                                 <p className="text-2xl font-bold text-slate-900">
-                                    {Object.values(permissionCategories).reduce((sum, cat) => sum + cat.permissions.length, 0)}
+                                    {Object.values(permissionCategories).reduce<number>((sum, cat) => sum + cat.permissions.length, 0)}
                                 </p>
                             </div>
                         </div>

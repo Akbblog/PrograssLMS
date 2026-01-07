@@ -370,7 +370,7 @@ export default function VideoCoursesPage() {
                             </div>
                             <div>
                                 <p className="text-sm text-slate-500">Total Enrolled</p>
-                                <p className="text-2xl font-bold text-slate-900">{courses.reduce((sum, c) => sum + c.enrolledCount, 0)}</p>
+                                <p className="text-2xl font-bold text-slate-900">{courses.reduce<number>((sum, c) => sum + c.enrolledCount, 0)}</p>
                             </div>
                         </div>
                     </CardContent>

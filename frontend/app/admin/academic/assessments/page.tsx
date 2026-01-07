@@ -162,7 +162,7 @@ export default function AssessmentTypesPage() {
         t.description.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
-    const totalWeightage = assessmentTypes.reduce((sum, t) => sum + t.weightage, 0)
+    const totalWeightage = assessmentTypes.reduce<number>((sum, t) => sum + t.weightage, 0)
 
     return (
         <div className="p-8 space-y-6">

@@ -55,10 +55,10 @@ export default function AnalyticsPage() {
     }
 
     // Calculate stats from schools data
-    const totalStudents = schools.reduce((acc, s) => acc + (s.subscription?.usage?.studentCount || 0), 0)
-    const totalTeachers = schools.reduce((acc, s) => acc + (s.subscription?.usage?.teacherCount || 0), 0)
+    const totalStudents = schools.reduce<number>((acc, s) => acc + (s.subscription?.usage?.studentCount || 0), 0)
+    const totalTeachers = schools.reduce<number>((acc, s) => acc + (s.subscription?.usage?.teacherCount || 0), 0)
     const activeSchools = schools.filter(s => s.isActive).length
-    const totalRevenue = schools.reduce((acc, s) => {
+    const totalRevenue = schools.reduce<number>((acc, s) => {
         const planPrices: Record<string, number> = { trial: 0, basic: 99, standard: 199, premium: 499 }
         return acc + (planPrices[s.subscription?.plan] || 0)
     }, 0)

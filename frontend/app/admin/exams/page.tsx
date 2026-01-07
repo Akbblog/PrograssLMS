@@ -43,7 +43,7 @@ export default function AdminExamsPage() {
                     <SummaryStatCard title="Total Exams" value={exams.length} icon={<FileText className="h-4 w-4 text-white" />} variant="blue" />
                     <SummaryStatCard title="Upcoming" value={upcoming} icon={<Calendar className="h-4 w-4 text-white" />} variant="green" />
                     <SummaryStatCard title="Live" value={live} icon={<Clock className="h-4 w-4 text-white" />} variant="orange" />
-                    <SummaryStatCard title="Questions" value={exams.reduce((acc, e) => acc + (e.questions?.length || 0), 0)} icon={<FileText className="h-4 w-4 text-white" />} variant="purple" />
+                    <SummaryStatCard title="Questions" value={exams.reduce<number>((acc, e) => acc + (e.questions?.length || 0), 0)} icon={<FileText className="h-4 w-4 text-white" />} variant="purple" />
                 </>
             )}
         >
