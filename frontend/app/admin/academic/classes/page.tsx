@@ -62,7 +62,7 @@ export default function AdminClassesPage() {
             stats={(
                 <>
                     <SummaryStatCard title="Total Classes" value={classes.length} icon={<GraduationCap className="h-4 w-4 text-white" />} variant="blue" />
-                    <SummaryStatCard title="Total Students" value={classes.reduce((acc, c) => acc + (c.studentCount || 0), 0)} icon={<GraduationCap className="h-4 w-4 text-white" />} variant="green" />
+                    <SummaryStatCard title="Total Students" value={classes.reduce((acc: number, c: any) => acc + (c.studentCount || 0), 0)} icon={<GraduationCap className="h-4 w-4 text-white" />} variant="green" />
                     <SummaryStatCard title="Active" value={classes.length} icon={<GraduationCap className="h-4 w-4 text-white" />} variant="purple" />
                     <SummaryStatCard title="New This Month" value={0} icon={<GraduationCap className="h-4 w-4 text-white" />} variant="orange" />
                 </>
@@ -76,7 +76,7 @@ export default function AdminClassesPage() {
             </div>
 
             <div className="rounded-md border bg-white overflow-hidden">
-                {loading ? (
+                {classesLoading ? (
                     <div className="p-6">
                         <div className="grid gap-4 md:grid-cols-3">
                             <Skeleton className="h-20" />
