@@ -43,14 +43,11 @@ exports.superAdminLoginService = async (data, res) => {
       name: SUPERADMIN_NAME,
       email: SUPERADMIN_EMAIL,
       role: "super_admin",
+      token,
     };
 
     // Send response with proper format for frontend
-    return res.status(200).json({
-      status: "success",
-      data: result,
-      token,
-    });
+    return responseStatus(res, 200, "success", result);
   } catch (error) {
     responseStatus(res, 400, "failed", error.message);
   }
