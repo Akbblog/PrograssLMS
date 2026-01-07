@@ -33,9 +33,18 @@ export function useDeletePayroll() {
 
 export function useGeneratePayroll() {
   const qc = useQueryClient();
-  return useMutation((payload: any) => hrAPI.generatePayroll(payload).then((r: any) => r.data), {
+  type GeneratePayload = { month: number; year: number; staffId?: string };
+
+  const m = useMutation<any, Error, GeneratePayload>((payload: GeneratePayload) => hrAPI.generatePayroll(payload).then((r: any) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); }
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useProcessPayroll() {
