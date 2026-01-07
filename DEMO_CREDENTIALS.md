@@ -1,108 +1,150 @@
 # 🚀 Demo Account Credentials
 
-This file contains credentials for the Progress LMS Demo School populated with 10 teachers and 25 students.
+This file contains credentials for the Progress LMS Demo School (Al-Noor Islamic Academy) populated with 10 teachers and 25 students with authentic Islamic names.
 
-## 🔑 Central Roles
+## 🌍 Environment Setup
 
-| Creating School...
-✅ School created: Al-Noor Islamic Academy
+### Local Development
+- Database: MySQL (local)
+- Seed Script: `backend/seed-islamic-school.js` (already executed ✅)
+- Status: **Ready** - All data seeded
 
-👨‍💼 Creating School Admin...
-✅ Admin created: Dr. Muhammad Rashid
+### Vercel Production
+- Database: MySQL at Hostinger (srv2027.hstgr.io:3306)
+- Seed Endpoint: `POST /api/seed`
+- Status: **Requires seeding** - Run command below first
 
-🏫 Creating Class Levels...
-✅ Created 10 class levels
+#### Seed Remote Database (Vercel)
 
-📖 Creating Subjects...
-✅ Created 6 subjects
+The remote database needs to be seeded once. Add `SEED_SECRET` to Vercel environment variables, then call:
 
-👨‍🏫 Creating Teachers...
-  ✅ Muhammad Hassan Al-Rashid (Quranic Studies)
-  ✅ Fatima Zahra Ahmed (Islamic History)
-  ✅ Ali ibn Omar (Mathematics)
-  ✅ Aisha Malik Khan (Arabic Language)
-  ✅ Ibrahim Abdullah (Science)
-  ✅ Zainab Hussain (English Literature)
-  ✅ Yousuf Rahman (Islamic Ethics)
-  ✅ Leila Nasrallah (Geography)
-  ✅ Khalid Al-Mansouri (Physical Education)
-  ✅ Noor Salim (Computer Science)
+```bash
+curl -X POST https://progresslms-backend.vercel.app/api/seed \
+  -H "Authorization: Bearer YOUR_SEED_SECRET" \
+  -H "Content-Type: application/json"
+```
 
-✅ Created 10 teachers
+---
 
-🎓 Creating Students...
-  ✅ Amr Abdullah (Grade 1 A)
-  ✅ Layla Hassan (Grade 1 A)
-  ✅ Tariq Ahmed (Grade 1 B)
-  ✅ Hana Ibrahim (Grade 1 B)
-  ✅ Karim Malik (Grade 1 A)
-  ✅ Nadia Rahman (Grade 2 A)
-  ✅ Bilal Khan (Grade 2 A)
-  ✅ Maryam Ali (Grade 2 B)
-  ✅ Samir Nasri (Grade 2 B)
-  ✅ Rania Hassan (Grade 2 A)
-  ✅ Omar Ibrahim (Grade 3 A)
-  ✅ Samira Abdullah (Grade 3 A)
-  ✅ Zayn Ahmed (Grade 3 B)
-  ✅ Farah Malik (Grade 3 B)
-  ✅ Hassan Al-Rashid (Grade 3 A)
-  ✅ Yasmin Khan (Grade 4 A)
-  ✅ Mustafa Rahman (Grade 4 A)
-  ✅ Dina Hassan (Grade 4 B)
-  ✅ Adnan Ahmed (Grade 4 B)
-  ✅ Sara Ali (Grade 4 A)
-  ✅ Waleed Ibrahim (Grade 5 A)
-  ✅ Huda Nasrallah (Grade 5 A)
-  ✅ Rashid Malik (Grade 5 B)
-  ✅ Lina Abdullah (Grade 5 B)
-  ✅ Sami Khan (Grade 5 A)
+## 🔐 Superadmin (Central Authority)
 
-✅ Created 25 students
+| Property | Value |
+|----------|-------|
+| **Email** | `SA@progresslms.com` |
+| **Password** | `Superpass` |
+| **Role** | System Administrator |
+| **Access** | All schools, all users, system settings |
 
-📝 Creating Student Enrollments...
-✅ Created 87 enrollments
+---
 
-✏️  Creating Sample Assignments...
-  ✅ Assignment 1: Quranic Studies Task
-  ✅ Assignment 2: English Literature Task
-  ✅ Assignment 3: Arabic Language Task
-  ✅ Assignment 4: Quranic Studies Task
-  ✅ Assignment 5: Islamic History Task
+## 🏫 School: Al-Noor Islamic Academy
 
-✅ Created 5 assignments
+### Admin Login
 
-📋 Creating Sample Attendance Records...
-✅ Created 3 attendance records
+| Property | Value |
+|----------|-------|
+| **Name** | Dr. Muhammad Rashid |
+| **Email** | `admin@alnoor-academy.edu` |
+| **Password** | `admin123` |
+| **Role** | School Administrator |
 
-💰 Creating Fee Payments...
-✅ Created 10 fee payment records
+---
 
+## 👨‍🏫 Teachers (10 Total)
 
-============================================================
-🎉 SEED COMPLETE - Islamic School Demo Data Created!
-============================================================
+All teachers use password: **`password123`**
 
-📊 Summary:
-   🏫 School: Al-Noor Islamic Academy
-   👨‍💼 Admin: Dr. Muhammad Rashid
-   👨‍🏫 Teachers: 10
-   🎓 Students: 25
-   📚 Subjects: 6
-   🏛️  Class Levels: 10
-   📝 Enrollments: 87
-   ✏️  Assignments: 5
-   📋 Attendance Records: 3
-   💰 Fee Records: 10
+| Name | Email | Subject |
+|------|-------|---------|
+| Muhammad Hassan Al-Rashid | `hassan.rashid@islamic-school.edu` | Quranic Studies |
+| Fatima Zahra Ahmed | `fatima.ahmed@islamic-school.edu` | Islamic History |
+| Ali ibn Omar | `ali.omar@islamic-school.edu` | Mathematics |
+| Aisha Malik Khan | `aisha.khan@islamic-school.edu` | Arabic Language |
+| Ibrahim Abdullah | `ibrahim.abdullah@islamic-school.edu` | Science |
+| Zainab Hussain | `zainab.hussain@islamic-school.edu` | English Literature |
+| Yousuf Rahman | `yousuf.rahman@islamic-school.edu` | Islamic Ethics |
+| Leila Nasrallah | `leila.nasrallah@islamic-school.edu` | Geography |
+| Khalid Al-Mansouri | `khalid.mansouri@islamic-school.edu` | Physical Education |
+| Noor Salim | `noor.salim@islamic-school.edu` | Computer Science |
 
-🔐 Login Credentials:
-   Admin Email: admin@alnoor-academy.edu
-   Admin Password: admin123
+---
 
-   Teacher Email: hassan.rashid@islamic-school.edu
-   Teacher Password: password123
+## 🎓 Students (25 Total)
 
-   Student Email: amr.abdullah@islamic-school.edu
-   Student Password: password123
+All students use password: **`password123`**
 
-🌟 Superadmin Email: SA@progresslms.com
-🌟 Superadmin Password: Superpass
+**Grade 1:**
+- Amr Abdullah (`amr.abdullah@islamic-school.edu`)
+- Layla Hassan (`layla.hassan@islamic-school.edu`)
+- Tariq Ahmed (`tariq.ahmed@islamic-school.edu`)
+- Hana Ibrahim (`hana.ibrahim@islamic-school.edu`)
+- Karim Malik (`karim.malik@islamic-school.edu`)
+
+**Grade 2:**
+- Nadia Rahman (`nadia.rahman@islamic-school.edu`)
+- Bilal Khan (`bilal.khan@islamic-school.edu`)
+- Maryam Ali (`maryam.ali@islamic-school.edu`)
+- Samir Nasri (`samir.nasri@islamic-school.edu`)
+- Rania Hassan (`rania.hassan@islamic-school.edu`)
+
+**Grade 3:**
+- Omar Ibrahim (`omar.ibrahim@islamic-school.edu`)
+- Samira Abdullah (`samira.abdullah@islamic-school.edu`)
+- Zayn Ahmed (`zayn.ahmed@islamic-school.edu`)
+- Farah Malik (`farah.malik@islamic-school.edu`)
+- Hassan Al-Rashid (`hassan.alrashid@islamic-school.edu`)
+
+**Grade 4:**
+- Yasmin Khan (`yasmin.khan@islamic-school.edu`)
+- Mustafa Rahman (`mustafa.rahman@islamic-school.edu`)
+- Dina Hassan (`dina.hassan@islamic-school.edu`)
+- Adnan Ahmed (`adnan.ahmed@islamic-school.edu`)
+- Sara Ali (`sara.ali@islamic-school.edu`)
+
+**Grade 5:**
+- Waleed Ibrahim (`waleed.ibrahim@islamic-school.edu`)
+- Huda Nasrallah (`huda.nasrallah@islamic-school.edu`)
+- Rashid Malik (`rashid.malik@islamic-school.edu`)
+- Lina Abdullah (`lina.abdullah@islamic-school.edu`)
+- Sami Khan (`sami.khan@islamic-school.edu`)
+
+---
+
+## 🔧 Quick Test Commands
+
+```bash
+# Test Admin Login
+curl -X POST http://localhost:5000/api/v1/auth/admin/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@alnoor-academy.edu", "password": "admin123"}'
+
+# Test Teacher Login
+curl -X POST http://localhost:5000/api/v1/auth/teacher/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "hassan.rashid@islamic-school.edu", "password": "password123"}'
+
+# Test Student Login
+curl -X POST http://localhost:5000/api/v1/auth/student/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "amr.abdullah@islamic-school.edu", "password": "password123"}'
+```
+
+---
+
+## ✅ Troubleshooting
+
+### Vercel: 401 Errors on Login
+**Cause:** Remote database not seeded
+
+**Fix:** Call the seed endpoint once:
+```bash
+curl -X POST https://progresslms-backend.vercel.app/api/seed \
+  -H "Authorization: Bearer SEED_SECRET_VALUE"
+```
+
+### Incorrect Password Error
+- Teachers & Students: `password123`
+- Admin: `admin123`
+- Superadmin: `Superpass`
+
+All passwords are **case-sensitive**.
