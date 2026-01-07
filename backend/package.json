@@ -8,6 +8,8 @@
     "dev": "nodemon server.js",
     "seed:notifications": "node seed-notifications.js",
     "trigger:notifications": "node scripts/trigger-notifications.js",
+    "add-indexes": "node scripts/add-indexes.js",
+    "deploy:vercel": "vercel --prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

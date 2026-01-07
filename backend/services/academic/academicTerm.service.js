@@ -66,7 +66,10 @@ exports.createAcademicTermService = async (data, userId, res) => {
  */
 exports.getAcademicTermsService = async (schoolId) => {
   const filter = schoolId ? { schoolId } : {};
-  return await AcademicTerm.find(filter).sort({ createdAt: -1 });
+  return await AcademicTerm.find(filter)
+    .select('name description duration isCurrent')
+    .sort({ createdAt: -1 })
+    .lean();
 };
 
 /**
@@ -76,7 +79,7 @@ exports.getAcademicTermsService = async (schoolId) => {
  * @returns {Object} - The academic term object.
  */
 exports.getAcademicTermService = async (id) => {
-  return await AcademicTerm.findById(id);
+  return await AcademicTerm.findById(id).select('name description duration isCurrent').lean();
 };
 
 /**

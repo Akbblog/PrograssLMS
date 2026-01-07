@@ -178,12 +178,13 @@ exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
 
   const total = await Student.countDocuments(query);
   const result = await Student.find(query)
-    .select('-password')
+    .select('name email phone studentId currentClassLevel currentClassLevels isWithdrawn isSuspended photo createdAt')
     .populate('currentClassLevel', 'name')
     .populate('currentClassLevels', 'name')
+    .sort('name')
     .skip(skip)
     .limit(limit)
-    .sort('-createdAt'); // Sort by newest first for better UX
+    .lean(); // Return plain objects for faster serialization
 
   return responseStatus(res, 200, "success", {
     students: result,
@@ -203,7 +204,11 @@ exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
  * @returns {Object} - The response object indicating success or failure.
  */
 exports.getStudentByAdminService = async (studentID, res) => {
-  const student = await Student.findById(studentID);
+  const student = await Student.findById(studentID)
+    .select('name email phone studentId currentClassLevel currentClassLevels isWithdrawn isSuspended photo academicYear')
+    .populate('currentClassLevel', 'name')
+    .populate('currentClassLevels', 'name')
+    .lean();
   if (!student) return responseStatus(res, 402, "failed", "Student not found");
   return responseStatus(res, 200, "success", student);
 };

@@ -74,10 +74,13 @@ exports.getAllExamService = async () => {
   // Since I can't easily change the controller signature in this step without breaking valid JS, 
   // I will return all but populate fields.
   return await Exams.find()
-    .populate("subject")
-    .populate("classLevel")
-    .populate("academicTerm")
-    .populate("questions"); // Populate questions to check content
+    .select('name subject classLevel academicTerm examDate createdBy')
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .populate('academicTerm', 'name')
+    .sort({ examDate: -1 })
+    .limit(100)
+    .lean();
 };
 
 /**
@@ -85,10 +88,12 @@ exports.getAllExamService = async () => {
  */
 exports.getExamByIdService = async (id) => {
   return await Exams.findById(id)
-    .populate("subject")
-    .populate("classLevel")
-    .populate("questions")
-    .populate("createdBy", "name email");
+    .select('name description subject classLevel questions academicTerm examDate createdBy')
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .populate('questions')
+    .populate('createdBy', 'name email')
+    .lean();
 };
 
 /**

@@ -95,7 +95,7 @@ exports.downloadQRCode = async (req, res) => {
 exports.listDevices = async (req, res) => {
   try {
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const devices = await AttendanceDevice.find({ schoolId });
+    const devices = await AttendanceDevice.find({ schoolId }).select('name deviceId lastSeen location').lean();
     res.status(200).json({ status: 'success', data: devices });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
@@ -120,7 +120,12 @@ exports.liveStats = async (req, res) => {
     today.setHours(0,0,0,0);
 
     const totalToday = await Attendance.countDocuments({ schoolId, date: { $gte: today } });
-    const recent = await Attendance.find({ schoolId }).sort({ createdAt: -1 }).limit(50).populate('student');
+    const recent = await Attendance.find({ schoolId })
+      .select('student status date createdAt classLevel')
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .populate('student', 'name studentId currentClassLevels')
+      .lean();
 
     res.status(200).json({ status: 'success', data: { totalToday, recent } });
   } catch (err) {
@@ -131,7 +136,12 @@ exports.liveStats = async (req, res) => {
 exports.recentScans = async (req, res) => {
   try {
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const recent = await Attendance.find({ schoolId }).sort({ createdAt: -1 }).limit(50).populate('student');
+    const recent = await Attendance.find({ schoolId })
+      .select('student status date createdAt classLevel')
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .populate('student', 'name studentId currentClassLevels')
+      .lean();
     res.status(200).json({ status: 'success', data: recent });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });

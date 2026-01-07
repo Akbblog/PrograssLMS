@@ -66,7 +66,10 @@ exports.createAcademicYearService = async (data, userId, res) => {
  */
 exports.getAcademicYearsService = async (schoolId) => {
   const filter = schoolId ? { schoolId } : {};
-  return await AcademicYear.find(filter).sort({ createdAt: -1 });
+  return await AcademicYear.find(filter)
+    .select('name fromYear toYear isCurrent')
+    .sort({ createdAt: -1 })
+    .lean();
 };
 
 /**
@@ -76,7 +79,7 @@ exports.getAcademicYearsService = async (schoolId) => {
  * @returns {Object} - The academic year object.
  */
 exports.getAcademicYearService = async (id) => {
-  return await AcademicYear.findById(id);
+  return await AcademicYear.findById(id).select('name fromYear toYear isCurrent').lean();
 };
 
 /**

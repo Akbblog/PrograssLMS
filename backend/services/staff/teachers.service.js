@@ -164,12 +164,13 @@ exports.getAllTeachersService = async (schoolId, options = {}) => {
 
   const total = await Teacher.countDocuments(filter);
   const teachers = await Teacher.find(filter)
-    .select('-password')
+    .select('name email phone employeeId subject classLevel employmentType createdAt')
     .populate('subject', 'name')
     .populate('classLevel', 'name')
+    .sort('name')
     .skip(skip)
     .limit(limit)
-    .sort('-createdAt');
+    .lean();
 
   return {
     teachers,
@@ -188,9 +189,11 @@ exports.getAllTeachersService = async (schoolId, options = {}) => {
  * @returns {Object} - Teacher profile object with selected fields
  */
 exports.getTeacherProfileService = async (teacherId) => {
-  return await Teacher.findById(teacherId).select(
-    "-createdAt -updatedAt -password"
-  );
+  return await Teacher.findById(teacherId)
+    .select('name email phone employeeId subject classLevel dateEmployed')
+    .populate('subject', 'name')
+    .populate('classLevel', 'name')
+    .lean();
 };
 
 /**
@@ -299,10 +302,12 @@ exports.getTeacherDashboardService = async (teacherId, schoolId) => {
     teacher: teacherId,
     dueDate: { $gt: now }
   })
+    .select('title dueDate classLevel subject createdAt')
     .populate('subject', 'name')
     .populate('classLevel', 'name')
     .sort({ dueDate: 1 })
-    .limit(8);
+    .limit(8)
+    .lean();
 
   // Today's assignments
   const startOfDay = new Date(now);
@@ -315,9 +320,11 @@ exports.getTeacherDashboardService = async (teacherId, schoolId) => {
     teacher: teacherId,
     dueDate: { $gte: startOfDay, $lte: endOfDay }
   })
+    .select('title dueDate classLevel subject createdAt')
     .populate('subject', 'name')
     .populate('classLevel', 'name')
-    .sort({ dueDate: 1 });
+    .sort({ dueDate: 1 })
+    .lean();
 
   return {
     success: true,

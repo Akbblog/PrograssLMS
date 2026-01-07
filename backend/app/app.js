@@ -15,8 +15,28 @@ const eventBus = require("../utils/eventBus");
 const listeners = require("../listeners");
 eventBus.init(listeners);
 
-// Security Middleware
-app.use(helmet());
+// Initialize CORS (PERMISSIVE - run before other middleware)
+app.use(cors({
+  origin: true,  // allow all origins (or provide a list)
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-Requested-With']
+}));
+
+// Handle preflight requests for ALL routes (explicit handler)
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
+// Security Middleware - helmet should allow cross-origin resources
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
 app.use(compression());
 
 // Middleware
@@ -35,24 +55,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Initialize cors 
-const allowedOrigins = [
-  "https://progresslms.io",
-  "https://www.progresslms.io",
-  "http://localhost:3000"
-];
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-}));
-
-// Handle preflight for all routes
-app.options('*', cors());
-
-// Rate Limiting
+// Rate Limiting (after CORS)
 app.use(limiter);
 
 // Serve uploaded files (attachments) - local development fallback

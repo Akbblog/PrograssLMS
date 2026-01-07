@@ -123,23 +123,25 @@ exports.getAllSubjectsService = async (schoolId) => {
   // If schoolId provided, filter by it (for school admins)
   // Otherwise return all (for super admin)
   const filter = schoolId ? { schoolId } : {};
-  const subjects = await Subject.find(filter).populate('teacher', 'name email');
+  const subjects = await Subject.find(filter)
+    .select('name description academicTerm program teacher')
+    .lean();
 
   // For subjects without direct teacher assignment, find teacher via Teacher model
   const subjectsWithTeachers = await Promise.all(
     subjects.map(async (subject) => {
-      const subjectObj = subject.toObject();
+      const subjectObj = { ...subject };
 
       // If no teacher directly assigned, look for teacher who has this subject
       if (!subjectObj.teacher) {
         const teacher = await Teacher.findOne({
           schoolId: schoolId,
           $or: [
-            { subject: subject._id },
-            { subjects: subject._id }
+            { subject: subjectObj._id },
+            { subjects: subjectObj._id }
           ],
           isWithdrawn: false
-        }).select('name email');
+        }).select('name email').lean();
 
         if (teacher) {
           subjectObj.teacher = teacher;

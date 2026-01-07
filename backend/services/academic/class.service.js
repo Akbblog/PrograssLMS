@@ -70,7 +70,10 @@ exports.getAllClassesService = async (schoolId) => {
   // If schoolId provided, filter by it (for school admins)
   // Otherwise return all (for super admin)
   const filter = schoolId ? { schoolId } : {};
-  const classes = await ClassLevel.find(filter).populate('createdBy', 'name email');
+  const classes = await ClassLevel.find(filter)
+    .select('name description createdBy')
+    .populate('createdBy', 'name email')
+    .lean();
 
   // Get student counts for each class
   const classesWithCounts = await Promise.all(
@@ -168,14 +171,14 @@ exports.getSubjectsByClassService = async (classId, schoolId) => {
   const Teacher = require("../../models/Staff/teachers.model");
 
   // First, get subjects directly from the class
-  const classLevel = await ClassLevel.findById(classId).populate('subjects');
+  const classLevel = await ClassLevel.findById(classId).select('subjects').populate('subjects', 'name code description').lean();
   const classSubjects = classLevel?.subjects || [];
 
   // Also get subjects from teachers assigned to this class
   const teachers = await Teacher.find({
     classLevel: classId,
     schoolId: schoolId
-  }).populate('subject').populate('subjects');
+  }).select('name email subject subjects').populate('subject', 'name').populate('subjects', 'name').lean();
 
   // Collect all subject IDs
   const subjectIds = new Set(classSubjects.map(s => s._id.toString()));
@@ -196,7 +199,7 @@ exports.getSubjectsByClassService = async (classId, schoolId) => {
   const allSubjects = await Subject.find({
     _id: { $in: Array.from(subjectIds) },
     schoolId: schoolId
-  }).populate('teacher', 'name email');
+  }).select('name code description teacher').populate('teacher', 'name email').lean();
 
   return allSubjects;
 };
@@ -218,7 +221,7 @@ exports.getTeachersByClassService = async (classId, schoolId) => {
     ],
     schoolId: schoolId,
     isWithdrawn: false
-  }).populate('subject', 'name').select('-password');
+  }).select('name email employeeId subject classLevel').populate('subject', 'name').lean();
 };
 
 /**
