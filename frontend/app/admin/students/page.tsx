@@ -351,7 +351,7 @@ export default function AdminStudentsPage() {
                     </CardContent>
                 </Card>
             ) : viewMode === "card" ? (
-                {filteredStudents.length > 50 ? (
+                filteredStudents.length > 50 ? (
                     <VirtualizedList
                         items={filteredStudents}
                         estimateSize={140}
@@ -380,7 +380,7 @@ export default function AdminStudentsPage() {
                             />
                         ))}
                     </div>
-                )}
+                )
             ) : (
                 <Card className="border-slate-200 overflow-hidden">
                     <div className="overflow-x-auto">

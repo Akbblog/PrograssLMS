@@ -348,7 +348,7 @@ export default function AdminTeachersPage() {
                     </CardContent>
                 </Card>
             ) : viewMode === "card" ? (
-                {filteredTeachers.length > 50 ? (
+                filteredTeachers.length > 50 ? (
                     <VirtualizedList
                         items={filteredTeachers}
                         estimateSize={160}
@@ -375,7 +375,7 @@ export default function AdminTeachersPage() {
                             />
                         ))}
                     </div>
-                )}
+                )
             ) : (
                 <Card className="overflow-hidden">
                     <div className="overflow-x-auto mobile-scroll">
