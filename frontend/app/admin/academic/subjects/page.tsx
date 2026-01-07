@@ -21,8 +21,8 @@ export default function AdminSubjectsPage() {
     const { data: subjectsRes, isLoading: subjectsLoading } = useSubjects();
     const { data: programsRes, isLoading: programsLoading } = usePrograms();
 
-    const subjects: any[] = (subjectsRes && (subjectsRes as any).data) ? unwrapArray((subjectsRes as any).data, "subjects") : (subjectsRes || []);
-    const programs: any[] = (programsRes && (programsRes as any).data) ? unwrapArray((programsRes as any).data, "programs") : (programsRes || []);
+    const subjects: any[] = (subjectsRes && (subjectsRes as any).data) ? unwrapArray((subjectsRes as any).data, "subjects") : [];
+    const programs: any[] = (programsRes && (programsRes as any).data) ? unwrapArray((programsRes as any).data, "programs") : [];
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [formData, setFormData] = useState({
