@@ -207,7 +207,7 @@ const seedDemo = async () => {
         for (let i = 0; i < teacherSpecs.length; i++) {
             const spec = teacherSpecs[i];
             const email = `teacher${i + 1}@progress.edu`;
-            const password = "password123";
+            const password = "teacher123";
             const teacher = await Teacher.create({
                 name: spec.name,
                 email: email,
@@ -240,7 +240,7 @@ const seedDemo = async () => {
             const firstName = firstNames[i];
             const lastName = randomFrom(lastNames);
             const email = `student${i + 1}@progress.edu`;
-            const password = "password123";
+            const password = "student123";
 
             const classLevel = classes[i % classes.length];
 

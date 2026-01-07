@@ -48,7 +48,7 @@ async function seedDemoData() {
     console.log('✅ Created admin:', admin.email);
 
     // Create 3 Teachers
-    const teacherPassword = await hashPassword('password123');
+    const teacherPassword = await hashPassword('teacher123');
     const teachers = [
       { name: 'Robert Smith', email: 'teacher1@progress.edu' },
       { name: 'Maria Garcia', email: 'teacher2@progress.edu' },
@@ -69,7 +69,7 @@ async function seedDemoData() {
     }
 
     // Create 5 Students
-    const studentPassword = await hashPassword('password123');
+    const studentPassword = await hashPassword('student123');
     const students = [
       { name: 'Liam Martinez', email: 'student1@progress.edu' },
       { name: 'Noah Miller', email: 'student2@progress.edu' },
@@ -102,10 +102,10 @@ async function seedDemoData() {
     console.log('  Password: admin123\n');
     console.log('Teachers (all):');
     console.log('  Email: teacher1-3@progress.edu');
-    console.log('  Password: password123\n');
+    console.log('  Password: teacher123\n');
     console.log('Students (all):');
     console.log('  Email: student1-5@progress.edu');
-    console.log('  Password: password123\n');
+    console.log('  Password: student123\n');
 
     process.exit(0);
   } catch (err) {

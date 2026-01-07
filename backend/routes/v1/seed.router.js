@@ -178,7 +178,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     }
 
     // Create Teachers
-    const teacherPassword = await hashPassword('password123');
+    const teacherPassword = await hashPassword('teacher123');
     const createdTeachers = [];
     for (const teacherData of teachers) {
       const teacher = await prisma.teacher.create({
@@ -197,7 +197,7 @@ router.post('/seed', verifySeedSecret, async (req, res) => {
     }
 
     // Create Students
-    const studentPassword = await hashPassword('password123');
+    const studentPassword = await hashPassword('student123');
     const createdStudents = [];
     for (let i = 0; i < students.length; i++) {
       const studentData = students[i];

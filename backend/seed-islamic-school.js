@@ -185,7 +185,7 @@ async function seed() {
 
     // 6. Create Teachers
     console.log('👨‍🏫 Creating Teachers...');
-    const teacherPassword = await hashPassword('password123');
+    const teacherPassword = await hashPassword('teacher123');
     const createdTeachers = [];
     for (const teacherData of teachers) {
       const teacher = await prisma.teacher.create({
@@ -207,7 +207,7 @@ async function seed() {
 
     // 7. Create Students
     console.log('🎓 Creating Students...');
-    const studentPassword = await hashPassword('password123');
+    const studentPassword = await hashPassword('student123');
     const createdStudents = [];
     for (let i = 0; i < students.length; i++) {
       const studentData = students[i];
@@ -361,9 +361,9 @@ async function seed() {
     console.log('   Admin Email: admin@alnoor-academy.edu');
     console.log('   Admin Password: admin123\n');
     console.log('   Teacher Email: hassan.rashid@islamic-school.edu');
-    console.log('   Teacher Password: password123\n');
+    console.log('   Teacher Password: teacher123\n');
     console.log('   Student Email: amr.abdullah@islamic-school.edu');
-    console.log('   Student Password: password123\n');
+    console.log('   Student Password: student123\n');
 
     console.log('🌟 Superadmin Email: SA@progresslms.com');
     console.log('🌟 Superadmin Password: Superpass\n');
