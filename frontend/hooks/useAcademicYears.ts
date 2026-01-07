@@ -7,17 +7,42 @@ export function useAcademicYears() {
 
 export function useCreateAcademicYear() {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.createAcademicYear(data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['academicYears'] }) });
-}
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.createAcademicYear(data), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['academicYears'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
+} 
 
 export function useUpdateAcademicYear(id?: string) {
   const qc = useQueryClient();
-  return useMutation((data: any) => adminAPI.updateAcademicYear(id as string, data), {
+  const m = useMutation<any, Error, any>((data: any) => adminAPI.updateAcademicYear(id as string, data), {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['academicYears'] }),
   });
-}
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
+} 
 
 export function useDeleteAcademicYear() {
   const qc = useQueryClient();
-  return useMutation((id: string) => adminAPI.deleteAcademicYear(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['academicYears'] }) });
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.deleteAcademicYear(id), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['academicYears'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
