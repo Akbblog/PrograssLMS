@@ -14,21 +14,50 @@ model Student {
   id         String   @id @default(uuid()) @db.VarChar(36)
   name       String   @db.VarChar(255)
   email      String   @unique @db.VarChar(255)
+  password   String?  @db.Text
   studentId  String?  @db.VarChar(100)
   phone      String?  @db.VarChar(50)
   avatar     String?  @db.Text
+  role       String   @default("student") @db.VarChar(50)
   schoolId   String   @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Admin {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  email      String   @unique @db.VarChar(255)
+  password   String?  @db.Text
+  phone      String?  @db.VarChar(50)
+  avatar     String?  @db.Text
+  role       String   @default("admin") @db.VarChar(50)
+  schoolId   String?  @db.VarChar(36)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model School {
+  id         String   @id @default(uuid()) @db.VarChar(36)
+  name       String   @db.VarChar(255)
+  email      String?  @db.VarChar(255)
+  phone      String?  @db.VarChar(50)
+  address    String?  @db.Text
+  features   String?  @db.Text
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
 
 model Teacher {
   id        String   @id @default(uuid()) @db.VarChar(36)
-  firstName String   @db.VarChar(255)
-  lastName  String?  @db.VarChar(255)
+  name      String   @db.VarChar(255)
   email     String   @unique @db.VarChar(255)
+  password  String?  @db.Text
+  firstName String?  @db.VarChar(255)
+  lastName  String?  @db.VarChar(255)
   phone     String?  @db.VarChar(50)
   avatar    String?  @db.Text
+  role      String   @default("teacher") @db.VarChar(50)
   schoolId  String   @db.VarChar(36)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -41,6 +70,91 @@ model ClassLevel {
   schoolId  String   @db.VarChar(36)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Enrollment {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  studentId     String   @db.VarChar(36)
+  subjectId     String?  @db.VarChar(36)
+  classLevel    String?  @db.VarChar(36)
+  academicYear  String?  @db.VarChar(36)
+  academicTerm  String?  @db.VarChar(36)
+  status        String   @default("active") @db.VarChar(50)
+  progress      Int?     @default(0)
+  schoolId      String   @db.VarChar(36)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Attendance {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  classLevel    String   @db.VarChar(36)
+  date          DateTime
+  records       String?  @db.Text
+  academicYear  String?  @db.VarChar(36)
+  academicTerm  String?  @db.VarChar(36)
+  takenBy       String?  @db.VarChar(36)
+  schoolId      String   @db.VarChar(36)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Assignment {
+  id                String   @id @default(uuid()) @db.VarChar(36)
+  title             String   @db.VarChar(255)
+  description       String?  @db.Text
+  subjectId         String?  @db.VarChar(36)
+  classLevel        String?  @db.VarChar(36)
+  teacherId         String?  @db.VarChar(36)
+  dueDate           DateTime?
+  totalPoints       Int?     @default(100)
+  attachments       String?  @db.Text
+  schoolId          String   @db.VarChar(36)
+  academicYear      String?  @db.VarChar(36)
+  academicTerm      String?  @db.VarChar(36)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model AssignmentSubmission {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  assignmentId    String   @db.VarChar(36)
+  studentId       String   @db.VarChar(36)
+  content         String?  @db.Text
+  fileUrl         String?  @db.Text
+  submittedAt     DateTime?
+  grade           Int?
+  feedback        String?  @db.Text
+  status          String?  @db.VarChar(50)
+  schoolId        String   @db.VarChar(36)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FeePayment {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  studentId     String   @db.VarChar(36)
+  totalAmount   Float?
+  amountPaid    Float?   @default(0)
+  balanceDue    Float?
+  dueDate       DateTime?
+  paymentMethod String?  @db.VarChar(50)
+  status        String?  @db.VarChar(50)
+  academicYear  String?  @db.VarChar(36)
+  schoolId      String   @db.VarChar(36)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model FeeStructure {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  name          String   @db.VarChar(255)
+  academicYear  String   @db.VarChar(36)
+  feeCategories String?  @db.Text
+  status        String   @default("active") @db.VarChar(50)
+  schoolId      String   @db.VarChar(36)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Subject {

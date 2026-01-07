@@ -4,52 +4,105 @@ This file contains credentials for the Progress LMS Demo School populated with 1
 
 ## 🔑 Central Roles
 
-| Role | Email | Password |
-| :--- | :--- | :--- |
-| **Super Admin** | `SA@progresslms.com` | `Superpass` |
-| **School Admin** | `admin@school.com` | `admin123` |
+| Creating School...
+✅ School created: Al-Noor Islamic Academy
 
-## 👨‍🏫 Teachers (10 Created)
+👨‍💼 Creating School Admin...
+✅ Admin created: Dr. Muhammad Rashid
 
-| Name | Email | Password | Primary Subject |
-| :--- | :--- | :--- | :--- |
-| Robert Smith | `teacher1@progress.edu` | `password123` | Mathematics |
-| Maria Garcia | `teacher2@progress.edu` | `password123` | English Literature |
-| Suresh Kumar | `teacher3@progress.edu` | `password123` | Physics |
-| Elena Petrova | `teacher4@progress.edu` | `password123` | History |
-| Aisha Diallo | `teacher5@progress.edu` | `password123` | Biology |
-| Kenji Tanaka | `teacher6@progress.edu` | `password123` | Computer Science |
-| Sophie Martin | `teacher7@progress.edu` | `password123` | Art & Design |
-| Thomas Muller | `teacher8@progress.edu` | `password123` | Physical Education |
-| Isabella Rossi | `teacher9@progress.edu` | `password123` | Chemistry |
-| Liam O'Connor | `teacher10@progress.edu` | `password123` | Music |
+🏫 Creating Class Levels...
+✅ Created 10 class levels
 
-## 🎓 Students (25 Created)
+📖 Creating Subjects...
+✅ Created 6 subjects
 
-| Name | Email | Password | Class |
-| :--- | :--- | :--- | :--- |
-| Liam Martinez | `student1@progress.edu` | `password123` | Grade 1 |
-| Noah Miller | `student2@progress.edu` | `password123` | Grade 2 |
-| Oliver Wilson | `student3@progress.edu` | `password123` | Grade 3 |
-| James Hernandez | `student4@progress.edu` | `password123` | Grade 4 |
-| Elijah Martinez | `student5@progress.edu` | `password123` | Grade 5 |
-| William Johnson | `student6@progress.edu` | `password123` | Grade 1 |
-| Henry Johnson | `student7@progress.edu` | `password123` | Grade 2 |
-| Lucas Martinez | `student8@progress.edu` | `password123` | Grade 3 |
-| Benjamin Lopez | `student9@progress.edu` | `password123` | Grade 4 |
-| Theodore Hernandez | `student10@progress.edu` | `password123` | Grade 5 |
-| Emma Anderson | `student11@progress.edu` | `password123` | Grade 1 |
-| Olivia Garcia | `student12@progress.edu` | `password123` | Grade 2 |
-| Ava Lopez | `student13@progress.edu` | `password123` | Grade 3 |
-| Sophia Thomas | `student14@progress.edu` | `password123` | Grade 4 |
-| Charlotte Miller | `student15@progress.edu` | `password123` | Grade 5 |
-| Amelia Jones | `student16@progress.edu` | `password123` | Grade 1 |
-| Mia Rodriguez | `student17@progress.edu` | `password123` | Grade 2 |
-| Harper Gonzalez | `student18@progress.edu` | `password123` | Grade 3 |
-| Evelyn Jones | `student19@progress.edu` | `password123` | Grade 4 |
-| Abigail Davis | `student20@progress.edu` | `password123` | Grade 5 |
-| Daniel Gonzalez | `student21@progress.edu` | `password123` | Grade 1 |
-| Matthew Rodriguez | `student22@progress.edu` | `password123` | Grade 2 |
-| Jacob Brown | `student23@progress.edu` | `password123` | Grade 3 |
-| Michael Wilson | `student24@progress.edu` | `password123` | Grade 4 |
-| Alexander Lopez | `student25@progress.edu` | `password123` | Grade 5 |
+👨‍🏫 Creating Teachers...
+  ✅ Muhammad Hassan Al-Rashid (Quranic Studies)
+  ✅ Fatima Zahra Ahmed (Islamic History)
+  ✅ Ali ibn Omar (Mathematics)
+  ✅ Aisha Malik Khan (Arabic Language)
+  ✅ Ibrahim Abdullah (Science)
+  ✅ Zainab Hussain (English Literature)
+  ✅ Yousuf Rahman (Islamic Ethics)
+  ✅ Leila Nasrallah (Geography)
+  ✅ Khalid Al-Mansouri (Physical Education)
+  ✅ Noor Salim (Computer Science)
+
+✅ Created 10 teachers
+
+🎓 Creating Students...
+  ✅ Amr Abdullah (Grade 1 A)
+  ✅ Layla Hassan (Grade 1 A)
+  ✅ Tariq Ahmed (Grade 1 B)
+  ✅ Hana Ibrahim (Grade 1 B)
+  ✅ Karim Malik (Grade 1 A)
+  ✅ Nadia Rahman (Grade 2 A)
+  ✅ Bilal Khan (Grade 2 A)
+  ✅ Maryam Ali (Grade 2 B)
+  ✅ Samir Nasri (Grade 2 B)
+  ✅ Rania Hassan (Grade 2 A)
+  ✅ Omar Ibrahim (Grade 3 A)
+  ✅ Samira Abdullah (Grade 3 A)
+  ✅ Zayn Ahmed (Grade 3 B)
+  ✅ Farah Malik (Grade 3 B)
+  ✅ Hassan Al-Rashid (Grade 3 A)
+  ✅ Yasmin Khan (Grade 4 A)
+  ✅ Mustafa Rahman (Grade 4 A)
+  ✅ Dina Hassan (Grade 4 B)
+  ✅ Adnan Ahmed (Grade 4 B)
+  ✅ Sara Ali (Grade 4 A)
+  ✅ Waleed Ibrahim (Grade 5 A)
+  ✅ Huda Nasrallah (Grade 5 A)
+  ✅ Rashid Malik (Grade 5 B)
+  ✅ Lina Abdullah (Grade 5 B)
+  ✅ Sami Khan (Grade 5 A)
+
+✅ Created 25 students
+
+📝 Creating Student Enrollments...
+✅ Created 87 enrollments
+
+✏️  Creating Sample Assignments...
+  ✅ Assignment 1: Quranic Studies Task
+  ✅ Assignment 2: English Literature Task
+  ✅ Assignment 3: Arabic Language Task
+  ✅ Assignment 4: Quranic Studies Task
+  ✅ Assignment 5: Islamic History Task
+
+✅ Created 5 assignments
+
+📋 Creating Sample Attendance Records...
+✅ Created 3 attendance records
+
+💰 Creating Fee Payments...
+✅ Created 10 fee payment records
+
+
+============================================================
+🎉 SEED COMPLETE - Islamic School Demo Data Created!
+============================================================
+
+📊 Summary:
+   🏫 School: Al-Noor Islamic Academy
+   👨‍💼 Admin: Dr. Muhammad Rashid
+   👨‍🏫 Teachers: 10
+   🎓 Students: 25
+   📚 Subjects: 6
+   🏛️  Class Levels: 10
+   📝 Enrollments: 87
+   ✏️  Assignments: 5
+   📋 Attendance Records: 3
+   💰 Fee Records: 10
+
+🔐 Login Credentials:
+   Admin Email: admin@alnoor-academy.edu
+   Admin Password: admin123
+
+   Teacher Email: hassan.rashid@islamic-school.edu
+   Teacher Password: password123
+
+   Student Email: amr.abdullah@islamic-school.edu
+   Student Password: password123
+
+🌟 Superadmin Email: SA@progresslms.com
+🌟 Superadmin Password: Superpass
