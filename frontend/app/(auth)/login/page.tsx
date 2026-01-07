@@ -132,23 +132,22 @@ export default function LoginPage() {
                         token
                     )
 
-                        toast.success(`Welcome back, ${userData.name}!`)
-                        success = true;
+                    toast.success(`Welcome back, ${userData.name}!`)
+                    success = true;
 
-                        await new Promise((r) => setTimeout(r, 400))
+                    await new Promise((r) => setTimeout(r, 400))
 
-                        const redirectMap: Record<string, string> = {
-                            super_admin: "/superadmin/dashboard",
-                            superadmin: "/superadmin/dashboard",
-                            admin: "/admin/dashboard",
-                            teacher: "/teacher/dashboard",
-                            student: "/student/dashboard",
-                        }
-
-                        const destination = redirectMap[resolvedRole] || redirectMap[roleConfig.id] || "/dashboard"
-                        router.push(destination)
-                        break;
+                    const redirectMap: Record<string, string> = {
+                        super_admin: "/superadmin/dashboard",
+                        superadmin: "/superadmin/dashboard",
+                        admin: "/admin/dashboard",
+                        teacher: "/teacher/dashboard",
+                        student: "/student/dashboard",
                     }
+
+                    const destination = redirectMap[resolvedRole] || redirectMap[roleConfig.id] || "/dashboard"
+                    router.push(destination)
+                    break;
                 }
             } catch (error: any) {
                 if (error.response && error.response.status !== 401 && error.response.status !== 404 && error.response.status !== 400) {
