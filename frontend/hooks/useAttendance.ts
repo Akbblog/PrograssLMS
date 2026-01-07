@@ -11,10 +11,25 @@ export function useStudentsForAttendance(classLevel?: string, enabled = !!classL
 
 export function useMarkAttendance() {
   const qc = useQueryClient();
-  return useMutation((data: any) => attendanceAPI.markAttendance(data), {
+  type MarkPayload = {
+    classLevel: string;
+    date: string;
+    academicYear: string;
+    academicTerm: string;
+    records: Array<{ student: string; status: 'present' | 'absent'; remarks?: string }>;
+  };
+
+  const m = useMutation<any, Error, MarkPayload>((data: MarkPayload) => attendanceAPI.markAttendance(data), {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['attendance'] });
       qc.invalidateQueries({ queryKey: ['attendanceStudents'] });
     },
   });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
