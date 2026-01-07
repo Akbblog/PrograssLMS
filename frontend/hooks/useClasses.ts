@@ -11,7 +11,7 @@ export function useClass(id?: string, enabled = !!id) {
 
 export function useCreateClass() {
   const qc = useQueryClient();
-  const m = useMutation((data: any) => academicAPI.createClass(data), {
+  const m = useMutation<any, Error, any>((data: any) => academicAPI.createClass(data), {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['classes'] }),
   });
 
