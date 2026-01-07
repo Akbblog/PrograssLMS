@@ -11,7 +11,16 @@ export function useSubject(id?: string, enabled = !!id) {
 
 export function useCreateSubject() {
   const qc = useQueryClient();
-  return useMutation((data: any) => academicAPI.createSimpleSubject(data), { onSuccess: () => qc.invalidateQueries({ queryKey: ['subjects'] }) });
+  const m = useMutation<any, Error, any>((data: any) => academicAPI.createSimpleSubject(data), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['subjects'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
 
 export function useUpdateSubject(id?: string) {
@@ -26,5 +35,14 @@ export function useUpdateSubject(id?: string) {
 
 export function useDeleteSubject() {
   const qc = useQueryClient();
-  return useMutation((id: string) => academicAPI.deleteSubject(id), { onSuccess: () => qc.invalidateQueries({ queryKey: ['subjects'] }) });
+  const m = useMutation<any, Error, string>((id: string) => academicAPI.deleteSubject(id), {
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['subjects'] }),
+  });
+
+  return {
+    mutateAsync: m.mutateAsync,
+    isLoading: (m as any).isLoading ?? m.status === 'loading',
+    reset: m.reset,
+    mutation: m,
+  };
 }
