@@ -52,7 +52,7 @@ curl -X POST https://progresslms-backend.vercel.app/api/seed \
 
 ## 👨‍🏫 Teachers (10 Total)
 
-All teachers use password: **`password123`**
+All teachers use password: **`teacher123`**
 
 | Name | Email | Subject |
 |------|-------|---------|
@@ -71,7 +71,7 @@ All teachers use password: **`password123`**
 
 ## 🎓 Students (25 Total)
 
-All students use password: **`password123`**
+All students use password: **`student123`**
 
 **Grade 1:**
 - Amr Abdullah (`amr.abdullah@islamic-school.edu`)
@@ -121,12 +121,12 @@ curl -X POST http://localhost:5000/api/v1/auth/admin/login \
 # Test Teacher Login
 curl -X POST http://localhost:5000/api/v1/auth/teacher/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "hassan.rashid@islamic-school.edu", "password": "password123"}'
+  -d '{"email": "hassan.rashid@islamic-school.edu", "password": "teacher123"}'
 
 # Test Student Login
 curl -X POST http://localhost:5000/api/v1/auth/student/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "amr.abdullah@islamic-school.edu", "password": "password123"}'
+  -d '{"email": "amr.abdullah@islamic-school.edu", "password": "student123"}'
 ```
 
 ---
@@ -143,8 +143,15 @@ curl -X POST https://progresslms-backend.vercel.app/api/seed \
 ```
 
 ### Incorrect Password Error
-- Teachers & Students: `password123`
+- Teachers: `teacher123`
+- Students: `student123`
 - Admin: `admin123`
 - Superadmin: `Superpass`
 
 All passwords are **case-sensitive**.
+
+**Note:** If you seeded the database before this fix, you need to re-seed it:
+```bash
+curl -X POST https://progresslms-backend.vercel.app/api/v1/seed \
+  -H "Authorization: Bearer YOUR_SEED_SECRET"
+```
