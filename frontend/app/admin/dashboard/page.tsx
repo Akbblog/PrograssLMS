@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth/useAuth";
 import dynamic from 'next/dynamic';
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useStudents } from "@/hooks/useStudents";
+import { unwrapArray } from "@/lib/utils";
 
 // Dynamically import heavy chart components to reduce initial bundle
 const AreaChart = dynamic(() => import('recharts').then(m => m.AreaChart), { ssr: false });
@@ -71,10 +72,9 @@ export default function AdminDashboard() {
         newEnrollments: (statsRes as any).data.newEnrollments ?? 8
     } : { totalStudents: 0, totalTeachers: 0, totalClasses: 0, totalRevenue: 0, pendingFees: 0, attendanceRate: 0, newEnrollments: 0 };
 
-    const recentStudents = (() => {
-        const sd = studentsRes?.data || studentsRes || [];
-        const students = Array.isArray(sd) ? sd : (sd?.students || []);
-        return students.slice(0, 5);
+    const recentStudents: any[] = (() => {
+        const s = unwrapArray(studentsRes, 'students');
+        return s.slice(0, 5);
     })();
 
     const statCards = [
