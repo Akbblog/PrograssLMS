@@ -8,6 +8,10 @@ exports.getStats = async (req, res) => {
     const prisma = getPrisma();
     if (prisma) {
       try {
+        // If Prisma client doesn't have Book model (schema without library), short-circuit
+        if (!prisma.book) {
+          return res.status(200).json({ status: 'success', data: { totalBooks: 0, issuedCount: 0, overdueCount: 0, mostBorrowed: [] } });
+        }
         const totalBooks = await prisma.book.count({ where: { schoolId } });
         const issuedCount = await prisma.bookIssue.count({ where: { schoolId, status: 'issued' } });
         const overdueCount = await prisma.bookIssue.count({ where: { schoolId, status: 'issued', dueDate: { lt: new Date() } } });

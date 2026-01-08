@@ -26,9 +26,45 @@ exports.superAdminLoginService = async (data, res) => {
     const incomingEmail = (email || "").toLowerCase();
     console.log('[SuperAdmin Login] Normalized incoming:', incomingEmail, 'vs expected:', SUPERADMIN_EMAIL);
 
-    // Verify credentials
+    // Verify credentials via env first
     if (incomingEmail !== SUPERADMIN_EMAIL || password !== SUPERADMIN_PASSWORD) {
-      console.log('[SuperAdmin Login] FAILED - Email match:', incomingEmail === SUPERADMIN_EMAIL, 'Password match:', password === SUPERADMIN_PASSWORD);
+      console.log('[SuperAdmin Login] Env credentials did not match. Attempting DB-backed lookup...');
+
+      // Try to validate against an Admin user in the DB (Prisma or Mongoose)
+      try {
+        const { getPrisma } = require("../../lib/prismaClient");
+        const prisma = getPrisma();
+        if (prisma && prisma.admin) {
+          const user = await prisma.admin.findUnique({ where: { email: incomingEmail } });
+          if (user) {
+            const matched = await isPassMatched(password, user.password);
+            if (matched) {
+              // use DB user data for token
+              const token = generateToken(user.id, user.role || 'super_admin', user.schoolId || null);
+              return responseStatus(res, 200, 'success', { _id: user.id, name: user.name, email: user.email, role: user.role, token });
+            }
+          }
+        }
+      } catch (dbErr) {
+        console.warn('[SuperAdmin Login] Prisma DB lookup failed:', dbErr.message);
+      }
+
+      // Fallback to Mongoose Admin lookup
+      try {
+        const Admin = require('../../models/Staff/admin.model');
+        const mongoUser = await Admin.findOne({ email: incomingEmail }).lean();
+        if (mongoUser) {
+          const matched = await isPassMatched(password, mongoUser.password);
+          if (matched) {
+            const token = generateToken(mongoUser._id.toString(), mongoUser.role || 'super_admin', mongoUser.schoolId || null);
+            return responseStatus(res, 200, 'success', { _id: mongoUser._id.toString(), name: mongoUser.name, email: mongoUser.email, role: mongoUser.role, token });
+          }
+        }
+      } catch (mongoErr) {
+        console.warn('[SuperAdmin Login] Mongoose lookup failed:', mongoErr.message);
+      }
+
+      console.log('[SuperAdmin Login] FAILED - No matching DB user found');
       return responseStatus(res, 401, "failed", "Invalid login credentials");
     }
 
