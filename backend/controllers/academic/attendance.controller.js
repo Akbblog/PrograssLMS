@@ -1,13 +1,30 @@
-const Attendance = require("../../models/Academic/Attendance.model");
-const Student = require("../../models/Students/students.model");
-const Admin = require("../../models/Staff/admin.model");
-const Teacher = require("../../models/Staff/teachers.model");
 const responseStatus = require("../../handlers/responseStatus.handler.js");
 
+// Check if Prisma mode is enabled
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+
+// Conditionally load models/services based on USE_PRISMA
+let Attendance, Student, Admin, Teacher, prismaService;
+
+if (usePrisma) {
+    // Use Prisma service implementations
+    prismaService = require("../../services/academic/attendance.service.prisma_impl");
+} else {
+    // Use Mongoose models
+    Attendance = require("../../models/Academic/Attendance.model");
+    Student = require("../../models/Students/students.model");
+    Admin = require("../../models/Staff/admin.model");
+    Teacher = require("../../models/Staff/teachers.model");
+}
+
 /**
- * Helper to get schoolId from user
+ * Helper to get schoolId from user (Mongoose mode)
  */
 const getSchoolId = async (userId, userRole) => {
+    if (usePrisma) {
+        // Prisma service handles schoolId resolution internally
+        return null;
+    }
     if (userRole === "admin") {
         const admin = await Admin.findById(userId);
         return admin?.schoolId;
@@ -23,6 +40,15 @@ const getSchoolId = async (userId, userRole) => {
  */
 exports.markAttendance = async (req, res) => {
     try {
+        if (usePrisma) {
+            return await prismaService.markAttendanceService(
+                req.body, 
+                req.userAuth?.id || req.userAuth?._id, 
+                req.userAuth?.role || "admin", 
+                res
+            );
+        }
+        
         const { classLevel, academicYear, academicTerm, date, records } = req.body;
 
         // Get schoolId from authenticated user
@@ -79,11 +105,18 @@ exports.markAttendance = async (req, res) => {
 exports.getAttendance = async (req, res) => {
     try {
         const { classLevel, date } = req.query;
-        const schoolId = req.schoolId || await getSchoolId(req.userAuth?._id, req.userAuth?.role || "admin");
 
         if (!classLevel) {
             return responseStatus(res, 400, "failed", "classLevel is required");
         }
+
+        if (usePrisma) {
+            const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+            const attendance = await prismaService.getAttendanceService(classLevel, date, schoolId);
+            return responseStatus(res, 200, "success", attendance);
+        }
+
+        const schoolId = req.schoolId || await getSchoolId(req.userAuth?._id, req.userAuth?.role || "admin");
 
         // If date provided, get attendance for that date
         // Otherwise return null (no pre-existing attendance)
@@ -114,6 +147,13 @@ exports.getAttendance = async (req, res) => {
 exports.getStudentsForAttendance = async (req, res) => {
     try {
         const { classLevel } = req.params;
+
+        if (usePrisma) {
+            const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+            const students = await prismaService.getStudentsForAttendanceService(classLevel, schoolId);
+            return responseStatus(res, 200, "success", students);
+        }
+
         const schoolId = req.schoolId || await getSchoolId(req.userAuth?._id, req.userAuth?.role || "admin");
 
         const students = await Student.find({
@@ -142,6 +182,13 @@ exports.getAttendanceHistory = async (req, res) => {
     try {
         const { classLevel } = req.params;
         const { startDate, endDate } = req.query;
+
+        if (usePrisma) {
+            const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+            const history = await prismaService.getAttendanceHistoryService(classLevel, startDate, endDate, schoolId);
+            return responseStatus(res, 200, "success", history);
+        }
+
         const schoolId = req.schoolId || await getSchoolId(req.userAuth?._id, req.userAuth?.role || "admin");
 
         const query = { schoolId, classLevel };
@@ -171,6 +218,14 @@ exports.getAttendanceHistory = async (req, res) => {
 exports.getStudentAttendance = async (req, res) => {
     try {
         const { studentId } = req.params;
+        const { startDate, endDate } = req.query;
+
+        if (usePrisma) {
+            const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+            const attendance = await prismaService.getStudentAttendanceService(studentId, startDate, endDate, schoolId);
+            return responseStatus(res, 200, "success", attendance);
+        }
+
         const schoolId = req.schoolId || await getSchoolId(req.userAuth?._id, req.userAuth?.role || "admin");
 
         const attendance = await Attendance.find({
@@ -204,6 +259,13 @@ exports.getAttendanceSummary = async (req, res) => {
     try {
         const { classLevel } = req.params;
         const { startDate, endDate } = req.query;
+
+        if (usePrisma) {
+            const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+            const summary = await prismaService.getAttendanceSummaryService(classLevel, startDate, endDate, schoolId);
+            return responseStatus(res, 200, "success", summary);
+        }
+
         const schoolId = req.schoolId || await getSchoolId(req.userAuth?._id, req.userAuth?.role || "admin");
 
         const query = { schoolId, classLevel };

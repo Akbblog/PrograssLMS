@@ -6,6 +6,12 @@ require("colors");
 let isConnected = false;
 
 const dbConnect = async () => {
+  // Skip Mongoose/MongoDB connection if USE_PRISMA is enabled
+  if (process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1') {
+    console.log('[Database] USE_PRISMA is set. Skipping Mongoose/MongoDB connection.'.cyan);
+    return;
+  }
+
   if (isConnected) {
     return;
   }
