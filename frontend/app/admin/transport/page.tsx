@@ -6,15 +6,26 @@ import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { Card, CardContent } from "@/components/ui/card"
 import { Bus, Route, Users, ChevronRight } from "lucide-react"
+import { transportAPI } from '@/lib/api/endpoints'
 
 export default function TransportPage() {
   const [stats, setStats] = useState<any>({})
 
   useEffect(() => {
-    fetch('/api/v1/transport/stats')
-      .then(r => r.json())
-      .then(d => setStats(d.data || {}))
-      .catch(() => {})
+    let cancelled = false;
+    (async () => {
+      try {
+        const res: any = await transportAPI.getStats();
+        const payload = (res as any)?.data;
+        if (!cancelled) setStats(payload || {});
+      } catch {
+        if (!cancelled) setStats({});
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [])
 
   const transportLinks = [

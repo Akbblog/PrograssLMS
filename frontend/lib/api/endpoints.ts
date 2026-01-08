@@ -170,6 +170,8 @@ export const adminAPI = {
   // Export utilities
   exportStudents: () => api.get('/admin/export/students', { responseType: 'blob' as any }),
   exportTeachers: () => api.get('/admin/export/teachers', { responseType: 'blob' as any }),
+  bulkDownloadCards: (data: { ids: string[]; type: string }) =>
+    api.post('/admin/cards/bulk-download', data, { responseType: 'blob' as any }),
 };
 
 // Finance endpoints
@@ -194,6 +196,8 @@ export const attendanceAPI = {
   getStudentsForAttendance: (classLevel: string) => api.get(`/attendance/students/${classLevel}`),
   getStudentAttendance: (studentId: string) => api.get(`/attendance/student/${studentId}`),
   getStudentAttendanceRecord: (studentId: string) => api.get(`/attendance/student/${studentId}`),
+  // Live / QR
+  getLiveStats: () => api.get('/attendance/live-stats'),
   getAttendanceHistory: (classLevel: string, startDate?: string, endDate?: string) =>
     api.get(`/attendance/history/${classLevel}`, { params: { startDate, endDate } }),
   getAttendanceSummary: (classLevel: string, startDate?: string, endDate?: string) =>

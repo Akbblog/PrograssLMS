@@ -3,16 +3,16 @@ import adminAPI from '../lib/api/endpoints';
 import { hrAPI } from '@/lib/api/endpoints';
 
 export function usePayroll(params: { page?: number; search?: string } = { page: 1 }) {
-  return useQuery(['payroll', params], () => adminAPI.get('/payroll', { params }).then((r) => r.data));
+  return useQuery(['payroll', params], () => hrAPI.getPayrolls(params).then((r: any) => r.data));
 }
 
 export function usePayrollRecord(id?: string, enabled = !!id) {
-  return useQuery(['payroll', id], () => adminAPI.get(`/payroll/${id}`).then((r) => r.data), { enabled });
+  return useQuery(['payroll', id], () => adminAPI.get(`/hr/payroll/${id}`).then((r) => r.data), { enabled });
 }
 
 export function useCreatePayroll() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/payroll', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/hr/payroll', payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); }
   });
 
@@ -27,7 +27,7 @@ export function useCreatePayroll() {
 
 export function useUpdatePayroll(id?: string) {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/payroll/${id}`, payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>((payload: any) => adminAPI.put(`/hr/payroll/${id}`, payload).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); qc.invalidateQueries(['payroll', id]); }
   });
 
@@ -42,7 +42,7 @@ export function useUpdatePayroll(id?: string) {
 
 export function useDeletePayroll() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/payroll/${id}`).then((r) => r.data), {
+  const m = useMutation<any, Error, string>((id: string) => adminAPI.delete(`/hr/payroll/${id}`).then((r) => r.data), {
     onSuccess() { qc.invalidateQueries(['payroll']); }
   });
 

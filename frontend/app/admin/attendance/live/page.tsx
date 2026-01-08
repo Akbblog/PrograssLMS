@@ -3,21 +3,46 @@
 import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import { io } from 'socket.io-client'
+import { attendanceAPI } from '@/lib/api/endpoints'
 
 export default function LivePage() {
   const [stats, setStats] = useState({ totalToday: 0 })
 
   useEffect(() => {
-    fetch('/api/v1/attendance/live-stats').then(r=>r.json()).then(d=>setStats({ totalToday: d.data.totalToday }))
+    let cancelled = false;
 
+    (async () => {
+      try {
+        const res: any = await attendanceAPI.getLiveStats();
+        const totalToday = (res as any)?.data?.totalToday;
+        if (!cancelled) {
+          setStats({ totalToday: typeof totalToday === 'number' ? totalToday : 0 });
+        }
+      } catch {
+        if (!cancelled) setStats({ totalToday: 0 });
+      }
+    })();
+
+    // Socket.IO is not available on Vercel serverless backend; only connect
+    // when an explicit socket URL is provided.
     let socket: any = null;
-    socket = io();
-    socket.on('attendance:marked', (payload: any) => {
-      setStats((s: any) => ({ ...s, totalToday: s.totalToday + 1 }))
-    })
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+    if (socketUrl) {
+      import('socket.io-client')
+        .then(({ io }) => {
+          if (cancelled) return;
+          socket = io(socketUrl, { transports: ['polling'] });
+          socket.on('attendance:marked', () => {
+            setStats((s: any) => ({ ...s, totalToday: (s?.totalToday || 0) + 1 }));
+          });
+        })
+        .catch(() => {});
+    }
 
-    return () => { socket?.disconnect && socket.disconnect(); };
+    return () => {
+      cancelled = true;
+      socket?.disconnect && socket.disconnect();
+    };
   }, [])
 
   return (

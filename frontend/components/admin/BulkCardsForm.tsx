@@ -7,6 +7,7 @@ import { Label } from "../ui/label"
 import { toast } from "sonner"
 import PaginatedUserPicker from "@/components/admin/PaginatedUserPicker"
 import { Dialog } from "@/components/ui/dialog"
+import { adminAPI } from "@/lib/api/endpoints"
 
 export default function BulkCardsForm({}) {
   const [ids, setIds] = useState("")
@@ -20,14 +21,7 @@ export default function BulkCardsForm({}) {
     if (arr.length === 0) return toast.error("Provide at least one id")
     setLoading(true)
     try {
-      const res = await fetch(`/api/v1/admin/cards/bulk-download`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: arr, type }),
-        credentials: "include",
-      })
-      if (!res.ok) throw new Error(`Server responded ${res.status}`)
-      const blob = await res.blob()
+      const blob = await adminAPI.bulkDownloadCards({ ids: arr, type })
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url

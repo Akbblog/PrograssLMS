@@ -3,15 +3,26 @@
 import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { libraryAPI } from '@/lib/api/endpoints'
 
 export default function ReportsPage() {
   const [stats, setStats] = useState<any>(null)
 
   useEffect(() => {
-    fetch('/api/v1/library/stats')
-      .then(r => r.json())
-      .then(d => setStats(d.data || {}))
-      .catch(() => {})
+    let cancelled = false;
+    (async () => {
+      try {
+        const res: any = await libraryAPI.getStats();
+        const payload = (res as any)?.data;
+        if (!cancelled) setStats(payload || {});
+      } catch {
+        if (!cancelled) setStats({});
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [])
 
   return (

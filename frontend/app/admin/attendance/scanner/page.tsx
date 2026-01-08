@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Button } from '@/components/ui/button'
+import api from '@/lib/api/endpoints'
 
 export default function ScannerPage() {
   const [scanned, setScanned] = useState(null)
@@ -10,8 +11,7 @@ export default function ScannerPage() {
 
   const handleManualScan = async () => {
     try {
-      const res = await fetch('/api/v1/attendance/qr/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ qrData: manualData }) })
-      const data = await res.json()
+      const data = await api.post('/attendance/qr/scan', { qrData: manualData })
       setScanned(data)
     } catch (e) {
       console.error(e)

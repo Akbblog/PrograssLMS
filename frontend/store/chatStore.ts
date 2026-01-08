@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { communicationAPI } from '@/lib/api/endpoints'
+import { unwrapArray } from '@/lib/utils'
 
 interface User {
     _id: string
@@ -115,20 +116,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
         try {
             set({ isLoading: true })
             const response = await communicationAPI.getConversations()
+            const rawConversations = unwrapArray<any>(response?.data, 'conversations')
+
             // Map backend response (_id -> id, type mapping, etc.)
-            const conversations = response.data.map((conv: any) => ({
+            const conversations = rawConversations.map((conv: any) => ({
                 ...conv,
-                id: conv._id,
-                type: conv.type === 'private' ? 'direct' : conv.type,
-                lastMessage: conv.lastMessage ? {
+                id: conv?._id ?? conv?.id,
+                type: conv?.type === 'private' ? 'direct' : conv?.type,
+                lastMessage: conv?.lastMessage ? {
                     ...conv.lastMessage,
                     senderId: conv.lastMessage.sender,
                     sentAt: conv.lastMessage.createdAt
                 } : undefined
             }))
-            set({ conversations })
+
+            set({ conversations: Array.isArray(conversations) ? conversations : [] })
         } catch (error) {
             console.error('Failed to fetch conversations:', error)
+            set({ conversations: [] })
         } finally {
             set({ isLoading: false })
         }
@@ -138,13 +143,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
         try {
             const response = await communicationAPI.getConversation(conversationId)
             // Backend returns { conversation, messages }
-            const messages = response.data.messages.map((msg: any) => ({
+            const rawMessages = unwrapArray<any>(response?.data, 'messages')
+            const messages = rawMessages.map((msg: any) => ({
                 ...msg,
-                id: msg._id,
-                senderId: msg.sender,
-                senderType: msg.senderModel,
-                type: msg.messageType,
-                createdAt: msg.createdAt
+                id: msg?._id ?? msg?.id,
+                senderId: msg?.sender,
+                senderType: msg?.senderModel,
+                type: msg?.messageType,
+                createdAt: msg?.createdAt
             }))
             set((state) => ({
                 messages: {
@@ -156,6 +162,12 @@ export const useChatStore = create<ChatState>((set, get) => ({
             }))
         } catch (error) {
             console.error('Failed to fetch messages:', error)
+            set((state) => ({
+                messages: {
+                    ...state.messages,
+                    [conversationId]: page === 1 ? [] : (state.messages[conversationId] || [])
+                }
+            }))
         }
     },
 

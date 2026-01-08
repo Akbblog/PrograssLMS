@@ -5,6 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Button } from "@/components/ui/button"
 import { Table } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
+import { adminAPI, hrAPI } from "@/lib/api/endpoints"
+import { unwrapArray } from "@/lib/utils"
 
 export default function PaginatedUserPicker({ open, onClose, onConfirm, type = 'students' }: { open: boolean; onClose: ()=>void; onConfirm: (ids: string[])=>void; type?: string }) {
   const [page, setPage] = useState<number>(1)
@@ -17,14 +19,22 @@ export default function PaginatedUserPicker({ open, onClose, onConfirm, type = '
   async function fetchPage(p: number) {
     setLoading(true)
     try {
-      const res = await fetch(`/api/v1/${type}?page=${p}&limit=10`, { credentials: 'include' })
-      if (!res.ok) { setItems([]); return }
-      const json = await res.json()
-      const list = json?.data?.students || json?.data?.teachers || json?.students || []
+      let res: any
+      if (type === 'teachers') {
+        res = await adminAPI.getTeachers({ page: p, limit: 10 })
+      } else if (type === 'staff') {
+        res = await hrAPI.getStaff({ page: p, limit: 10 })
+      } else {
+        // default: students
+        res = await adminAPI.getStudents({ page: p, limit: 10 })
+      }
+
+      const list = unwrapArray(res, type)
       setItems(list)
       setPage(p)
     } catch (e) {
       console.error(e)
+      setItems([])
     } finally { setLoading(false) }
   }
 

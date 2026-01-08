@@ -5,19 +5,29 @@ import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { Book, BookOpen, AlertCircle } from 'lucide-react'
+import { libraryAPI } from '@/lib/api/endpoints'
 
 export default function LibraryAdminPage() {
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/v1/library/stats')
-      .then(r => r.json())
-      .then(data => {
-        setStats(data.data)
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    let cancelled = false;
+    (async () => {
+      try {
+        const res: any = await libraryAPI.getStats();
+        const payload = (res as any)?.data;
+        if (!cancelled) setStats(payload || null);
+      } catch {
+        if (!cancelled) setStats(null);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [])
 
   return (

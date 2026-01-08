@@ -78,7 +78,9 @@ export default function ConversationList({
 }: ConversationListProps) {
     const [activeTab, setActiveTab] = useState<"all" | "unread" | "groups" | "archived">("all")
 
-    const filteredConversations = conversations.filter(conv => {
+    const safeConversations = Array.isArray(conversations) ? conversations : []
+
+    const filteredConversations = safeConversations.filter(conv => {
         // Search filter
         const matchesSearch = !searchTerm ||
             conv.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

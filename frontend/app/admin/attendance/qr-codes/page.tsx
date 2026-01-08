@@ -4,12 +4,26 @@ import React, { useEffect, useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Button } from '@/components/ui/button'
 import { unwrapArray } from '@/lib/utils'
+import api, { attendanceAPI } from '@/lib/api/endpoints'
 
 export default function QRCodesPage() {
   const [qrs, setQrs] = useState<any[]>([])
 
   useEffect(() => {
-    fetch('/api/v1/attendance/recent-scans').then(r=>r.json()).then(d=>setQrs(unwrapArray(d, 'qrs')))
+    let cancelled = false;
+    (async () => {
+      try {
+        const res: any = await api.get('/attendance/recent-scans');
+        const list = unwrapArray((res as any)?.data ?? res, 'qrs');
+        if (!cancelled) setQrs(list);
+      } catch {
+        if (!cancelled) setQrs([]);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [])
 
   return (
@@ -19,8 +33,7 @@ export default function QRCodesPage() {
           <Button onClick={async () => {
             const studentId = prompt('Student ID');
             if (!studentId) return;
-            const res = await fetch(`/api/v1/attendance/qr/generate/${studentId}`, { method: 'POST' });
-            const d = await res.json();
+            await api.post(`/attendance/qr/generate/${studentId}`);
             alert('Generated');
           }}>Generate QR</Button>
         </div>

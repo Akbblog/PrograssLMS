@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import AdminPageLayout from "@/components/layouts/AdminPageLayout";
 import { Button } from "@/components/ui/button";
+import api from "@/lib/api/endpoints";
 
 type ScanResult = {
   status?: string;
@@ -43,17 +44,14 @@ export default function AttendanceQrScannerPage() {
   }, []);
 
   const sendScan = async (qrData: string) => {
-    const res = await fetch("/api/v1/attendance/qr/scan", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ qrData }),
-    });
-
-    const data = (await res.json()) as ScanResult;
-    setLastScan(data);
-
-    if (!res.ok) {
-      setError(data?.message || "Failed to record attendance.");
+    try {
+      const data = (await api.post("/attendance/qr/scan", { qrData })) as any;
+      setLastScan(data);
+      setError(null);
+    } catch (e: any) {
+      const data = e?.response?.data as ScanResult | undefined;
+      setLastScan(data || { status: "fail", message: e?.message, data: null });
+      setError(data?.message || e?.message || "Failed to record attendance.");
     }
   };
 
