@@ -165,10 +165,22 @@ exports.getTeacherByIdController = async (req, res) => {
 exports.deleteTeacherController = async (req, res) => {
   try {
     const id = req.params.id;
+    if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+      const { getPrisma } = require('../../lib/prismaClient');
+      const prisma = getPrisma();
+      if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
+
+      // Ensure multi-tenant safety: only delete within the requester's school.
+      const existing = await prisma.teacher.findFirst({ where: { id, schoolId: String(req.schoolId || '') } });
+      if (!existing) return responseStatus(res, 404, 'failed', 'Teacher not found');
+      await prisma.teacher.delete({ where: { id } });
+      return responseStatus(res, 200, 'success', existing, 'Teacher deleted');
+    }
+
     const Teacher = require('../../models/Staff/teachers.model');
     const deleted = await Teacher.findOneAndDelete({ _id: id, schoolId: req.schoolId });
     if (!deleted) return responseStatus(res, 404, 'failed', 'Teacher not found');
-    responseStatus(res, 200, 'success', deleted, 'Teacher deleted');
+    return responseStatus(res, 200, 'success', deleted, 'Teacher deleted');
   } catch (error) {
     responseStatus(res, 400, 'failed', error.message);
   }

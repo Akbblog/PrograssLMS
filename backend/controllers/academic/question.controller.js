@@ -1,4 +1,11 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
+
+// Dynamically load service based on USE_PRISMA flag
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+const servicePath = usePrisma
+    ? "../../services/academic/question.service.prisma_impl"
+    : "../../services/academic/question.service";
+
 const {
     createQuestionService,
     getAllQuestionsService,
@@ -6,7 +13,7 @@ const {
     updateQuestionService,
     deleteQuestionService,
     bulkImportQuestionsService,
-} = require("../../services/academic/question.service");
+} = require(servicePath);
 
 /**
  * @desc Create Question

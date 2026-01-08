@@ -3,6 +3,20 @@ const { hashPassword, isPassMatched } = require('../../handlers/passHash.handler
 const responseStatus = require('../../handlers/responseStatus.handler');
 const generateToken = require('../../utils/tokenGenerator');
 
+const teacherSafeSelect = {
+  id: true,
+  name: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  phone: true,
+  avatar: true,
+  role: true,
+  schoolId: true,
+  createdAt: true,
+  updatedAt: true,
+};
+
 exports.createTeacherService = async (data, adminId, res) => {
   const { name, email, password, phone, dateOfBirth, gender, employeeId, department, qualifications, specialization, experience, dateOfJoining, subject, classLevels, academicYear, address, nationality, employmentType, salary } = data;
 
@@ -52,23 +66,26 @@ exports.teacherLoginService = async (data, res) => {
 
 exports.getAllTeachersService = async (schoolId, options = {}) => {
   const prisma = getPrisma();
-  if (!prisma) return [];
-  const where = {};
-  if (schoolId) where.schoolId = String(schoolId);
   const page = parseInt(options.page) || 1;
   const limit = Math.min(parseInt(options.limit) || 25, 100);
+  if (!prisma) return { teachers: [], pagination: { total: 0, page, limit, pages: 0 } };
+  const where = {};
+  if (schoolId) where.schoolId = String(schoolId);
   const skip = (page -1) * limit;
   const total = await prisma.teacher.count({ where });
-  const teachers = await prisma.teacher.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' }, select: { password: false } });
+  const teachers = await prisma.teacher.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' }, select: teacherSafeSelect });
   return { teachers, pagination: { total, page, limit, pages: Math.ceil(total/limit) } };
 };
 
 exports.getTeacherProfileService = async (teacherId) => {
-  const t = await prisma.teacher.findUnique({ where: { id: teacherId }, select: { password: false } });
-  return t;
+  const prisma = getPrisma();
+  if (!prisma) return null;
+  return await prisma.teacher.findUnique({ where: { id: teacherId }, select: teacherSafeSelect });
 };
 
 exports.updateTeacherProfileService = async (data, teacherId, res) => {
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const { name, email, password } = data;
   if (email) {
     const exist = await prisma.teacher.findUnique({ where: { email } });
@@ -80,22 +97,30 @@ exports.updateTeacherProfileService = async (data, teacherId, res) => {
   if (password) update.password = await hashPassword(password);
   const updated = await prisma.teacher.update({ where: { id: teacherId }, data: update });
   if (updated.password) delete updated.password;
-  return { teacher: updated, token: generateToken(updated.id) };
+  return { teacher: updated, token: generateToken(updated.id, updated.role || 'teacher', updated.schoolId) };
 };
 
 exports.adminUpdateTeacherProfileService = async (data, teacherId) => {
+  const prisma = getPrisma();
+  if (!prisma) return null;
   const update = {};
-  if (data.program) update.program = data.program;
-  if (data.classLevel) update.classLevel = data.classLevel;
-  if (data.academicYear) update.academicYear = data.academicYear;
-  if (data.subject) update.subject = data.subject;
-  const updated = await prisma.teacher.update({ where: { id: teacherId }, data: update });
+  // Prisma Teacher model currently supports only a limited set of fields.
+  if (data.name) update.name = data.name;
+  if (data.email) update.email = data.email;
+  if (data.phone) update.phone = data.phone;
+  if (data.firstName) update.firstName = data.firstName;
+  if (data.lastName) update.lastName = data.lastName;
+  if (data.avatar) update.avatar = data.avatar;
+
+  const updated = await prisma.teacher.update({ where: { id: teacherId }, data: update, select: teacherSafeSelect });
   return updated;
 };
 
 exports.getTeacherDashboardService = async (teacherId, schoolId) => {
+  const prisma = getPrisma();
+  if (!prisma) return { error: 'Database unavailable' };
   // Minimal implementation using Prisma for assignments/enrollments not yet in schema
   const teacher = await prisma.teacher.findUnique({ where: { id: teacherId } });
   if (!teacher) return { error: 'Teacher not found' };
-  return { success: true, data: { classes: [], upcomingAssignments: [], todaysAssignments: [], counts: {} } };
+  return { success: true, data: { classes: [], upcomingAssignments: [], todaysAssignments: [], counts: {}, schoolId: String(schoolId || teacher.schoolId || '') } };
 };

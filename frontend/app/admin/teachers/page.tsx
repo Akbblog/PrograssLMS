@@ -42,6 +42,7 @@ import {
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 // Action Menu Component
 function ActionMenu({ onView, onEdit, onDelete }: {
@@ -208,7 +209,12 @@ export default function AdminTeachersPage() {
 
     useEffect(() => { filterTeachers(); }, [searchQuery, statusFilter, teachersData]);
 
-    const teachers = Array.isArray((teachersData as any)?.teachers) ? (teachersData as any).teachers : Array.isArray(teachersData) ? teachersData : (teachersData as any)?.data || [];
+    // teachersData may be:
+    // - []
+    // - { teachers: [] }
+    // - { success, data: { teachers: [] } }
+    // Normalize to an array to avoid runtime crashes.
+    const teachers = unwrapArray((teachersData as any)?.data ?? teachersData, "teachers");
 
     // lazy import virtualized list only when needed to avoid bundling for pages that don't use it
     const VirtualizedList = require('@/components/ui/VirtualizedList').default;
