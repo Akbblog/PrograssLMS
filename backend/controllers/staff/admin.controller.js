@@ -253,37 +253,47 @@ exports.getDashboardStatsController = async (req, res) => {
       const prisma = getPrisma();
       
       if (!prisma) {
-        return responseStatus(res, 500, "failed", "Database unavailable");
+        console.error('[Admin Stats] Prisma client not available');
+        return responseStatus(res, 500, "failed", "Database connection not available. Please check server logs.");
       }
       
       const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+      console.log('[Admin Stats] Fetching stats for schoolId:', schoolId);
       
-      const totalStudents = await prisma.student.count({ where: { schoolId } });
-      const totalTeachers = await prisma.teacher.count({ where: { schoolId } });
-      const totalClasses = await prisma.classLevel.count({ where: { schoolId } });
-      
-      // Calculate total revenue from payments
-      let totalRevenue = 0;
       try {
-        const payments = await prisma.feePayment.aggregate({
-          where: { schoolId },
-          _sum: { amountPaid: true }
+        const totalStudents = await prisma.student.count({ where: { schoolId } });
+        const totalTeachers = await prisma.teacher.count({ where: { schoolId } });
+        const totalClasses = await prisma.classLevel.count({ where: { schoolId } });
+        
+        // Calculate total revenue from payments
+        let totalRevenue = 0;
+        try {
+          const payments = await prisma.feePayment.aggregate({
+            where: { schoolId },
+            _sum: { amountPaid: true }
+          });
+          totalRevenue = payments._sum.amountPaid || 0;
+        } catch (feeError) {
+          console.log("[Admin Stats] FeePayment query error:", feeError.message);
+          totalRevenue = 0;
+        }
+        
+        console.log('[Admin Stats] Success - Students:', totalStudents, 'Teachers:', totalTeachers, 'Classes:', totalClasses);
+        
+        return res.status(200).json({
+          status: "success",
+          data: {
+            totalStudents,
+            totalTeachers,
+            totalClasses,
+            totalRevenue
+          },
         });
-        totalRevenue = payments._sum.amountPaid || 0;
-      } catch (feeError) {
-        console.log("FeePayment query error:", feeError.message);
-        totalRevenue = 0;
+      } catch (prismaQueryError) {
+        console.error('[Admin Stats] Prisma query error:', prismaQueryError.message);
+        console.error('[Admin Stats] Stack:', prismaQueryError.stack);
+        return responseStatus(res, 500, "failed", `Database query failed: ${prismaQueryError.message}`);
       }
-      
-      return res.status(200).json({
-        status: "success",
-        data: {
-          totalStudents,
-          totalTeachers,
-          totalClasses,
-          totalRevenue
-        },
-      });
     }
     
     // Mongoose path

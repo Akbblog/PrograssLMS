@@ -36,11 +36,22 @@ exports.createSubjectService = async (data, programId, userId, res) => {
 };
 
 exports.getAllSubjectsService = async (schoolId) => {
-  const prisma = getPrisma();
-  if (!prisma) return [];
-  const where = schoolId ? { schoolId: String(schoolId) } : {};
-  const subjects = await prisma.subject.findMany({ where });
-  return subjects;
+  try {
+    const prisma = getPrisma();
+    if (!prisma) {
+      console.error('[Get Subjects] Prisma client not available');
+      return [];
+    }
+    const where = schoolId ? { schoolId: String(schoolId) } : {};
+    console.log('[Get Subjects] Querying with schoolId:', schoolId);
+    const subjects = await prisma.subject.findMany({ where });
+    console.log('[Get Subjects] Found', subjects.length, 'subjects');
+    return subjects;
+  } catch (error) {
+    console.error('[Get Subjects] Query error:', error.message);
+    console.error('[Get Subjects] Stack:', error.stack);
+    return [];
+  }
 };
 
 exports.getSubjectsService = async (id) => {

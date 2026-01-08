@@ -4,6 +4,13 @@ const Teacher = require("../models/Staff/teachers.model");
 
 const isAdminOrTeacher = async (req, res, next) => {
     try {
+        const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+        // In Prisma mode we don't have a Mongoose connection; rely on the signed token role.
+        if (usePrisma) {
+            if (req.userRole === 'admin' || req.userRole === 'teacher' || req.userRole === 'super_admin') return next();
+            return responseStatus(res, 403, 'failed', 'Access denied');
+        }
+
         // allow super_admin to pass
         if (req.userRole === "super_admin") return next();
 

@@ -52,22 +52,37 @@ exports.getStudentsProfileService = async (id, res) => {
 };
 
 exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
-  const prisma = getPrisma();
-  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
-  const where = {};
-  if (schoolId) where.schoolId = schoolId;
-  if (filters.enrollmentStatus) where.enrollmentStatus = filters.enrollmentStatus;
-  if (filters.currentClassLevel) where.OR = [ { currentClassLevel: filters.currentClassLevel }, { currentClassLevels: { has: filters.currentClassLevel } } ];
+  try {
+    const prisma = getPrisma();
+    if (!prisma) {
+      console.error('[Get Students] Prisma client not available');
+      return responseStatus(res, 500, 'failed', 'Database connection not available. Please check server logs.');
+    }
+    
+    const where = {};
+    if (schoolId) where.schoolId = schoolId;
+    if (filters.enrollmentStatus) where.enrollmentStatus = filters.enrollmentStatus;
+    if (filters.currentClassLevel) where.OR = [ { currentClassLevel: filters.currentClassLevel }, { currentClassLevels: { has: filters.currentClassLevel } } ];
 
-  const page = parseInt(filters.page) || 1;
-  const limit = Math.min(parseInt(filters.limit) || 100, 100);
-  const skip = (page -1) * limit;
+    const page = parseInt(filters.page) || 1;
+    const limit = Math.min(parseInt(filters.limit) || 100, 100);
+    const skip = (page -1) * limit;
 
-  const total = await prisma.student.count({ where });
-  const students = await prisma.student.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' } });
-  // strip passwords
-  students.forEach(s => { if (s.password) delete s.password; });
-  return responseStatus(res, 200, 'success', { students, pagination: { total, page, limit, pages: Math.ceil(total/limit) } });
+    console.log('[Get Students] Querying with schoolId:', schoolId, 'page:', page);
+    
+    const total = await prisma.student.count({ where });
+    const students = await prisma.student.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' } });
+    
+    // strip passwords
+    students.forEach(s => { if (s.password) delete s.password; });
+    
+    console.log('[Get Students] Found', students.length, 'students, total:', total);
+    return responseStatus(res, 200, 'success', { students, pagination: { total, page, limit, pages: Math.ceil(total/limit) } });
+  } catch (error) {
+    console.error('[Get Students] Query error:', error.message);
+    console.error('[Get Students] Stack:', error.stack);
+    return responseStatus(res, 500, 'failed', `Failed to fetch students: ${error.message}`);
+  }
 };
 
 exports.getStudentByAdminService = async (studentID, res) => {

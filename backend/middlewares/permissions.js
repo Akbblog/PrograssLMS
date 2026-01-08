@@ -5,6 +5,14 @@ const Admin = require("../models/Staff/admin.model");
 const hasPermission = (permissionName) => {
   return async (req, res, next) => {
     try {
+      const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+      // Prisma schema does not yet include an Admin.permissions field.
+      // In Prisma mode, authorize based on role (JWT is signed), otherwise many admin routes 500.
+      if (usePrisma) {
+        if (req.userRole === 'admin' || req.userRole === 'super_admin') return next();
+        return responseStatus(res, 403, 'failed', 'Insufficient permissions');
+      }
+
       // super_admin bypass
       if (req.userRole === "super_admin") return next();
 
