@@ -52,6 +52,7 @@ import {
     Hash
 } from "lucide-react";
 import { toast } from "sonner";
+import { unwrapArray } from "@/lib/utils";
 
 // Native Select
 function NativeSelect({ value, onValueChange, placeholder, options, required = false }: {
@@ -205,17 +206,17 @@ export default function AdminStudentsPage() {
 
     // set default academic year when query returns
     useEffect(() => {
-        const _years = Array.isArray((yearsData as any)?.years) ? (yearsData as any).years : Array.isArray(yearsData) ? yearsData : (yearsData as any)?.data || [];
-        const currentYear = _years.find((y: any) => y.isCurrent);
+        const _years = unwrapArray<any>(yearsData, "years");
+        const currentYear = _years.find((y: any) => y?.isCurrent);
         if (currentYear) setEnrollmentForm(prev => ({ ...prev, academicYear: currentYear._id }));
     }, [yearsData]);
 
     // Helper to normalize query data
-    const students = (Array.isArray((studentsData as any)?.students) ? (studentsData as any).students : Array.isArray(studentsData) ? studentsData : (studentsData as any)?.data || []) as any[];
-    const subjects = (Array.isArray((subjectsData as any)?.subjects) ? (subjectsData as any).subjects : Array.isArray(subjectsData) ? subjectsData : (subjectsData as any)?.data || []) as any[];
-    const classes = (Array.isArray((classesData as any)?.classes) ? (classesData as any).classes : Array.isArray(classesData) ? classesData : (classesData as any)?.data || []) as any[];
-    const years = (Array.isArray((yearsData as any)?.years) ? (yearsData as any).years : Array.isArray(yearsData) ? yearsData : (yearsData as any)?.data || []) as any[];
-    const terms = (Array.isArray((termsData as any)?.terms) ? (termsData as any).terms : Array.isArray(termsData) ? termsData : (termsData as any)?.data || []) as any[];
+    const students = unwrapArray<any>(studentsData, "students");
+    const subjects = unwrapArray<any>(subjectsData, "subjects");
+    const classes = unwrapArray<any>(classesData, "classes");
+    const years = unwrapArray<any>(yearsData, "years");
+    const terms = unwrapArray<any>(termsData, "terms");
 
     const filterStudents = () => {
         let filtered = [...students];
