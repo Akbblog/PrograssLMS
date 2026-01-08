@@ -1,4 +1,10 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
+
+const usePrisma = process.env.USE_PRISMA === "true" || process.env.USE_PRISMA === "1";
+const chatServicePath = usePrisma
+    ? "../../services/communication/chat.service.prisma_impl"
+    : "../../services/communication/chat.service";
+
 const {
     createConversationService,
     getConversationsService,
@@ -10,7 +16,7 @@ const {
     deleteConversationService,
     markMessagesReadService,
     searchMessagesService,
-} = require("../../services/communication/chat.service");
+} = require(chatServicePath);
 
 /**
  * @desc Create Conversation/Group

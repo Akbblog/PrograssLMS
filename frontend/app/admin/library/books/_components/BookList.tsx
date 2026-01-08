@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { unwrapArray } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -77,7 +78,9 @@ export default function BookList({ data, onAdd, onEdit, onDelete, onView }: Book
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredData = data.filter((book) => {
+    const safeData = unwrapArray<Book>(data);
+
+    const filteredData = safeData.filter((book) => {
     const matchesSearch =
       book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       book.authors.some(a => a.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -98,7 +101,7 @@ export default function BookList({ data, onAdd, onEdit, onDelete, onView }: Book
       }
   };
 
-  const uniqueCategories = Array.from(new Set(data.map(b => b.category).filter(Boolean)));
+    const uniqueCategories = Array.from(new Set(safeData.map(b => b.category).filter(Boolean)));
 
   return (
     <div className="space-y-6">
@@ -106,24 +109,24 @@ export default function BookList({ data, onAdd, onEdit, onDelete, onView }: Book
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">Total Books</div>
-            <div className="text-2xl font-bold">{data.length}</div>
+            <div className="text-2xl font-bold">{safeData.length}</div>
         </Card>
         <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">Available</div>
             <div className="text-2xl font-bold text-green-600">
-                {data.reduce((acc, curr) => acc + (curr.availableCopies || 0), 0)}
+                {safeData.reduce((acc, curr) => acc + (curr.availableCopies || 0), 0)}
             </div>
         </Card>
         <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">Issued</div>
             <div className="text-2xl font-bold text-blue-600">
-                {data.reduce((acc, curr) => acc + ((curr.totalCopies || 0) - (curr.availableCopies || 0)), 0)}
+                {safeData.reduce((acc, curr) => acc + ((curr.totalCopies || 0) - (curr.availableCopies || 0)), 0)}
             </div>
         </Card>
          <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">Low Stock</div>
             <div className="text-2xl font-bold text-yellow-600">
-                {data.filter(b => b.status === 'low_stock').length}
+                {safeData.filter(b => b.status === 'low_stock').length}
             </div>
         </Card>
       </div>

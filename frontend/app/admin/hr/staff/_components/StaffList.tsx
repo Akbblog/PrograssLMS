@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { unwrapArray } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -79,7 +80,9 @@ export default function StaffList({ data, onEdit, onDelete, onView, onAdd }: Sta
   const [deptFilter, setDeptFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredData = data.filter((staff) => {
+  const safeData = unwrapArray<StaffMember>(data);
+
+  const filteredData = safeData.filter((staff) => {
     const matchesSearch =
       staff.personalInfo?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       staff.personalInfo?.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -107,15 +110,15 @@ export default function StaffList({ data, onEdit, onDelete, onView, onAdd }: Sta
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">Total Staff</div>
-            <div className="text-2xl font-bold">{data.length}</div>
+            <div className="text-2xl font-bold">{safeData.length}</div>
         </Card>
         <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">Active</div>
-            <div className="text-2xl font-bold text-green-600">{data.filter(s => s.status === 'active').length}</div>
+            <div className="text-2xl font-bold text-green-600">{safeData.filter(s => s.status === 'active').length}</div>
         </Card>
         <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">On Leave</div>
-            <div className="text-2xl font-bold text-yellow-600">{data.filter(s => s.status === 'on_leave').length}</div>
+            <div className="text-2xl font-bold text-yellow-600">{safeData.filter(s => s.status === 'on_leave').length}</div>
         </Card>
          <Card className="p-6 rounded-xl shadow-sm">
             <div className="text-sm font-medium text-muted-foreground">New This Month</div>

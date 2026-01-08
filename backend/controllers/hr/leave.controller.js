@@ -1,8 +1,13 @@
 const LeaveApplication = require('../../models/HR/LeaveApplication.model');
 const LeaveBalance = require('../../models/HR/LeaveBalance.model');
 
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+
 exports.listLeaves = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(200).json({ status: 'success', data: [] });
+    }
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const leaves = await LeaveApplication.find({ schoolId }).populate('staff leaveType');
     res.status(200).json({ status: 'success', data: leaves });
@@ -11,6 +16,9 @@ exports.listLeaves = async (req, res) => {
 
 exports.applyLeave = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'HR leave is not yet supported in Prisma mode' });
+    }
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const payload = { ...req.body, schoolId };
     const app = await LeaveApplication.create(payload);
@@ -20,6 +28,9 @@ exports.applyLeave = async (req, res) => {
 
 exports.approveLeave = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'HR leave is not yet supported in Prisma mode' });
+    }
     const { id } = req.params;
     const approver = req.user?._id || req.userId || req.userAuth?.id;
     const leave = await LeaveApplication.findById(id);
@@ -33,6 +44,9 @@ exports.approveLeave = async (req, res) => {
 
 exports.rejectLeave = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'HR leave is not yet supported in Prisma mode' });
+    }
     const { id } = req.params;
     const { remarks } = req.body;
     const leave = await LeaveApplication.findById(id);
@@ -46,6 +60,9 @@ exports.rejectLeave = async (req, res) => {
 
 exports.getBalance = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(200).json({ status: 'success', data: null });
+    }
     const { staffId } = req.params;
     const bal = await LeaveBalance.findOne({ staff: staffId });
     res.status(200).json({ status: 'success', data: bal });

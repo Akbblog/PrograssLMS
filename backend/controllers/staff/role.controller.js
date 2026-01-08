@@ -1,4 +1,11 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
+
+// Dynamically load service based on USE_PRISMA flag
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+const servicePath = usePrisma
+    ? "../../services/staff/role.service.prisma_impl"
+    : "../../services/staff/role.service";
+
 const {
     createRoleService,
     getRolesService,
@@ -7,7 +14,7 @@ const {
     deleteRoleService,
     assignRoleService,
     getPermissionsService,
-} = require("../../services/staff/role.service");
+} = require(servicePath);
 
 /**
  * @desc Create Role

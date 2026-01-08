@@ -19,7 +19,7 @@ exports.getAllocations = async (req, res) => {
     const prisma = getPrisma();
     if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const allocations = await prisma.transportAllocation.findMany({ where: { schoolId }, include: { student: true, route: true, vehicleAssigned: true } });
+    const allocations = await prisma.transportAllocation.findMany({ where: { schoolId } });
     return res.status(200).json({ status: 'success', data: allocations });
   } catch (err) {
     console.error('[Prisma][Allocation] list error', err);
@@ -60,9 +60,11 @@ exports.deleteAllocation = async (req, res) => {
 
 exports.getStudentAllocation = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params; // student id
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const allocation = await prisma.transportAllocation.findFirst({ where: { studentId: id, schoolId }, include: { route: true, vehicleAssigned: true } });
+    const allocation = await prisma.transportAllocation.findFirst({ where: { studentId: id, schoolId } });
     if (!allocation) return res.status(404).json({ status: 'fail', message: 'Allocation not found' });
     return res.status(200).json({ status: 'success', data: allocation });
   } catch (err) {
@@ -73,9 +75,11 @@ exports.getStudentAllocation = async (req, res) => {
 
 exports.getRouteAllocations = async (req, res) => {
   try {
+    const prisma = getPrisma();
+    if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const { id } = req.params; // route id
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const allocations = await prisma.transportAllocation.findMany({ where: { routeId: id, schoolId }, include: { student: true, vehicleAssigned: true } });
+    const allocations = await prisma.transportAllocation.findMany({ where: { routeId: id, schoolId } });
     return res.status(200).json({ status: 'success', data: allocations });
   } catch (err) {
     console.error('[Prisma][Allocation] route allocations error', err);

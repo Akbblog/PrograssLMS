@@ -19,7 +19,7 @@ exports.getRoutes = async (req, res) => {
     const prisma = getPrisma();
     if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const routes = await prisma.route.findMany({ where: { schoolId }, include: { vehicle: true } });
+    const routes = await prisma.route.findMany({ where: { schoolId } });
     return res.status(200).json({ status: 'success', data: routes });
   } catch (err) {
     console.error('[Prisma][Route] list error', err);

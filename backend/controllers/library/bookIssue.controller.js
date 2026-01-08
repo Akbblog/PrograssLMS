@@ -2,8 +2,13 @@ const Book = require('../../models/Library/Book.model');
 const BookIssue = require('../../models/Library/BookIssue.model');
 const LibrarySettings = require('../../models/Library/LibrarySettings.model');
 
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+
 exports.issueBook = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'Library issuing is not supported in Prisma mode yet.' });
+    }
     const { bookId, borrowerId, borrowerType, dueDate } = req.body;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
 
@@ -36,6 +41,9 @@ exports.issueBook = async (req, res) => {
 
 exports.returnBook = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'Library returns are not supported in Prisma mode yet.' });
+    }
     const { issueId } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
 
@@ -71,6 +79,9 @@ exports.returnBook = async (req, res) => {
 
 exports.renewBook = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'Library renewals are not supported in Prisma mode yet.' });
+    }
     const { issueId } = req.params;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
 
@@ -100,6 +111,9 @@ exports.renewBook = async (req, res) => {
 
 exports.listIssues = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(200).json({ status: 'success', data: [] });
+    }
     const schoolId = req.userAuth.schoolId;
     const issues = await BookIssue.find({ schoolId }).populate('book').populate('borrower');
     res.status(200).json({ status: 'success', data: issues });
@@ -110,6 +124,9 @@ exports.listIssues = async (req, res) => {
 
 exports.listOverdue = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(200).json({ status: 'success', data: [] });
+    }
     const schoolId = req.userAuth.schoolId;
     const now = new Date();
     const overdue = await BookIssue.find({ schoolId, status: 'issued', dueDate: { $lt: now } }).populate('book').populate('borrower');
@@ -121,6 +138,9 @@ exports.listOverdue = async (req, res) => {
 
 exports.borrowerHistory = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(200).json({ status: 'success', data: [] });
+    }
     const { id } = req.params; // borrower id
     const schoolId = req.userAuth.schoolId;
     const history = await BookIssue.find({ schoolId, borrower: id }).populate('book');

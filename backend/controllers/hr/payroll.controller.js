@@ -1,7 +1,12 @@
 const Payroll = require('../../models/HR/Payroll.model');
 
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+
 exports.listPayrolls = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(200).json({ status: 'success', data: [] });
+    }
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const list = await Payroll.find({ schoolId }).populate('staff');
     res.status(200).json({ status: 'success', data: list });
@@ -10,6 +15,9 @@ exports.listPayrolls = async (req, res) => {
 
 exports.generatePayroll = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'Payroll is not yet supported in Prisma mode' });
+    }
     // payload: staff, month, year, earnings, deductions
     const { staff, month, year, earnings, deductions } = req.body;
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
@@ -26,6 +34,9 @@ exports.generatePayroll = async (req, res) => {
 
 exports.processPayroll = async (req, res) => {
   try {
+    if (usePrisma) {
+      return res.status(501).json({ status: 'fail', message: 'Payroll is not yet supported in Prisma mode' });
+    }
     const { id } = req.params;
     const payroll = await Payroll.findById(id);
     if (!payroll) return res.status(404).json({ status: 'fail', message: 'Not found' });

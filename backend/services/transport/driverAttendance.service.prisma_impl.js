@@ -19,7 +19,7 @@ exports.getAttendance = async (req, res) => {
     const prisma = getPrisma();
     if (!prisma) return res.status(500).json({ status: 'fail', message: 'Database unavailable' });
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const records = await prisma.driverAttendance.findMany({ where: { schoolId }, include: { driver: true, vehicle: true, route: true } });
+    const records = await prisma.driverAttendance.findMany({ where: { schoolId } });
     return res.status(200).json({ status: 'success', data: records });
   } catch (err) {
     console.error('[Prisma][DriverAttendance] list error', err);
