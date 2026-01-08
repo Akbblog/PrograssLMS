@@ -54,7 +54,7 @@ export default function AdminSettingsPage() {
     const [academicYear, setAcademicYear] = useState("2024-2025")
 
     // React Query hook for server-backed school settings
-    const { school, isLoading: schoolLoading, updateSchool } = require('@/hooks/useSchoolSettings')()
+    const { school, isLoading: schoolLoading, updateSchool } = useSchoolSettings()
 
     // Hydrate local state when server data arrives
     useEffect(() => {
