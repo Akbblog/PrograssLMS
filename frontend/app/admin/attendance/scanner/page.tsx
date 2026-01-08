@@ -1,18 +1,20 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import { Button } from '@/components/ui/button'
 import api from '@/lib/api/endpoints'
 
 export default function ScannerPage() {
-  const [scanned, setScanned] = useState(null)
+  const [scanned, setScanned] = useState<any>(null)
   const [manualData, setManualData] = useState('')
 
   const handleManualScan = async () => {
     try {
-      const data = await api.post('/attendance/qr/scan', { qrData: manualData })
-      setScanned(data)
+      const res = await api.post('/attendance/qr/scan', { qrData: manualData })
+      // `api` has a response interceptor that returns `response.data`, but Axios typing still
+      // reports AxiosResponse. This keeps runtime + typing safe.
+      setScanned((res as any)?.data ?? res)
     } catch (e) {
       console.error(e)
     }
