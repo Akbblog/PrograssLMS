@@ -3,6 +3,7 @@ const StudentQRCode = require('../../models/Students/StudentQRCode.model');
 const AttendanceDevice = require('../../models/Academic/AttendanceDevice.model');
 const qrService = require('../../services/qrcode/qrGenerator.service');
 const attendanceSocket = require('../../services/realtime/attendanceSocket.service');
+const { getPrisma } = require('../../lib/prismaClient');
 
 exports.scanQRCode = async (req, res) => {
   try {
@@ -118,6 +119,17 @@ exports.liveStats = async (req, res) => {
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
     const today = new Date();
     today.setHours(0,0,0,0);
+    const prisma = getPrisma();
+    if (prisma) {
+      try {
+        const totalToday = await prisma.attendance.count({ where: { schoolId, date: { gte: today } } });
+        const recent = await prisma.attendance.findMany({ where: { schoolId }, orderBy: { createdAt: 'desc' }, take: 50 });
+        return res.status(200).json({ status: 'success', data: { totalToday, recent } });
+      } catch (e) {
+        console.warn('[Prisma][Attendance] liveStats fallback failed', e.message);
+        // fall through to mongoose implementation
+      }
+    }
 
     const totalToday = await Attendance.countDocuments({ schoolId, date: { $gte: today } });
     const recent = await Attendance.find({ schoolId })
@@ -136,6 +148,17 @@ exports.liveStats = async (req, res) => {
 exports.recentScans = async (req, res) => {
   try {
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
+    const prisma = getPrisma();
+    if (prisma) {
+      try {
+        const recent = await prisma.attendance.findMany({ where: { schoolId }, orderBy: { createdAt: 'desc' }, take: 50 });
+        return res.status(200).json({ status: 'success', data: recent });
+      } catch (e) {
+        console.warn('[Prisma][Attendance] recentScans fallback failed', e.message);
+        // fall through to mongoose implementation
+      }
+    }
+
     const recent = await Attendance.find({ schoolId })
       .select('student status date createdAt classLevel')
       .sort({ createdAt: -1 })

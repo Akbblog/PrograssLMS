@@ -64,7 +64,17 @@ exports.loginAdminService = async (data, res) => {
 exports.getAdminsService = async () => {
   const prisma = getPrisma();
   if (!prisma) return [];
-  const users = await prisma.admin.findMany({ select: { password: false } });
+  const users = await prisma.admin.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      schoolId: true,
+      createdAt: true,
+      updatedAt: true
+    }
+  });
   return users;
 };
 

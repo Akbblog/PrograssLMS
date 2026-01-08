@@ -1,9 +1,43 @@
 const Book = require('../../models/Library/Book.model');
 const BookIssue = require('../../models/Library/BookIssue.model');
+const { getPrisma } = require('../../lib/prismaClient');
 
 exports.getStats = async (req, res) => {
   try {
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
+    const prisma = getPrisma();
+    if (prisma) {
+      try {
+        const totalBooks = await prisma.book.count({ where: { schoolId } });
+        const issuedCount = await prisma.bookIssue.count({ where: { schoolId, status: 'issued' } });
+        const overdueCount = await prisma.bookIssue.count({ where: { schoolId, status: 'issued', dueDate: { lt: new Date() } } });
+
+        // Most borrowed via groupBy
+        let mostBorrowed = [];
+        try {
+          const grouped = await prisma.bookIssue.groupBy({
+            by: ['bookId'],
+            where: { schoolId },
+            _count: { _all: true },
+            orderBy: { _count: { _all: 'desc' } },
+            take: 10
+          });
+          const mapped = await Promise.all(grouped.map(async g => {
+            const book = await prisma.book.findUnique({ where: { id: g.bookId } });
+            return { book, count: g._count._all };
+          }));
+          mostBorrowed = mapped;
+        } catch (e) {
+          console.warn('[Prisma][Library] groupBy failed', e.message);
+        }
+
+        return res.status(200).json({ status: 'success', data: { totalBooks, issuedCount, overdueCount, mostBorrowed } });
+      } catch (e) {
+        console.warn('[Prisma][Library] getStats fallback failed', e.message);
+        // fall through to mongoose implementation
+      }
+    }
+
     const totalBooks = await Book.countDocuments({ schoolId });
     const issuedCount = await BookIssue.countDocuments({ schoolId, status: 'issued' });
     const overdueCount = await BookIssue.countDocuments({ schoolId, status: 'issued', dueDate: { $lt: new Date() } });
