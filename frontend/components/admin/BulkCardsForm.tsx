@@ -21,7 +21,8 @@ export default function BulkCardsForm({}) {
     if (arr.length === 0) return toast.error("Provide at least one id")
     setLoading(true)
     try {
-      const blob = await adminAPI.bulkDownloadCards({ ids: arr, type })
+      const res = await adminAPI.bulkDownloadCards({ ids: arr, type })
+      const blob: Blob = (res as any)?.data ?? (res as any)
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
