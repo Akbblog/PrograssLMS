@@ -1,11 +1,18 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
+
+// Dynamically load service based on USE_PRISMA flag
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+const servicePath = usePrisma 
+  ? "../../services/staff/admin.service.prisma_impl"
+  : "../../services/staff/admin.service";
+
 const {
   registerAdminService,
   getAdminsService,
   loginAdminService,
   getSingleProfileService,
   updateAdminService,
-} = require("../../services/staff/admin.service");
+} = require(servicePath);
 
 /**
  * @desc Register Admin
@@ -238,6 +245,48 @@ exports.adminUnPublishResultsController = (req, res) => {
  **/
 exports.getDashboardStatsController = async (req, res) => {
   try {
+    const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+    
+    if (usePrisma) {
+      // Use Prisma for stats
+      const { getPrisma } = require("../../lib/prismaClient");
+      const prisma = getPrisma();
+      
+      if (!prisma) {
+        return responseStatus(res, 500, "failed", "Database unavailable");
+      }
+      
+      const schoolId = req.schoolId || 'SCHOOL-IMPORT-1';
+      
+      const totalStudents = await prisma.student.count({ where: { schoolId } });
+      const totalTeachers = await prisma.teacher.count({ where: { schoolId } });
+      const totalClasses = await prisma.classLevel.count({ where: { schoolId } });
+      
+      // Calculate total revenue from payments
+      let totalRevenue = 0;
+      try {
+        const payments = await prisma.feePayment.aggregate({
+          where: { schoolId },
+          _sum: { amountPaid: true }
+        });
+        totalRevenue = payments._sum.amountPaid || 0;
+      } catch (feeError) {
+        console.log("FeePayment query error:", feeError.message);
+        totalRevenue = 0;
+      }
+      
+      return res.status(200).json({
+        status: "success",
+        data: {
+          totalStudents,
+          totalTeachers,
+          totalClasses,
+          totalRevenue
+        },
+      });
+    }
+    
+    // Mongoose path
     const mongoose = require("mongoose");
     const Student = require("../../models/Students/students.model");
     const Teacher = require("../../models/Staff/teachers.model");

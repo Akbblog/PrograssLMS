@@ -122,4 +122,9 @@ exports.studentSelfRegisterService = async (data, res) => {
   return responseStatus(res, 201, 'success', { message: 'Registration successful. Please login.', student: { id: created.id, name: created.name, email: created.email, role: created.role } });
 };
 
+// Stub for student exam writing - requires Exam model implementation
+exports.studentWriteExamService = async (examId, answers, userId, res) => {
+  return responseStatus(res, 501, 'failed', 'Exam writing via Prisma not yet implemented');
+};
+
 // export other helpers as needed

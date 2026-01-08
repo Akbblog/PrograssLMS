@@ -1,4 +1,11 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
+
+// Dynamically load service based on USE_PRISMA flag
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+const servicePath = usePrisma 
+  ? "../../services/staff/teachers.service.prisma_impl"
+  : "../../services/staff/teachers.service";
+
 const {
   createTeacherService,
   teacherLoginService,
@@ -6,9 +13,13 @@ const {
   getTeacherProfileService,
   updateTeacherProfileService,
   adminUpdateTeacherProfileService,
-} = require("../../services/staff/teachers.service");
+} = require(servicePath);
 
-const ProfileQRCode = require('../../models/ProfileQRCode.model');
+// Conditionally load ProfileQRCode model (Mongoose only)
+let ProfileQRCode = null;
+if (!usePrisma) {
+  ProfileQRCode = require('../../models/ProfileQRCode.model');
+}
 const { uploadSingle, processAttachments } = require('../../middlewares/fileUpload');
 
 // card generation
@@ -225,7 +236,7 @@ exports.getTeacherDashboardController = async (req, res) => {
   try {
     const teacherId = req.userAuth.id;
     const schoolId = req.schoolId;
-    const { getTeacherDashboardService } = require("../../services/staff/teachers.service");
+    const { getTeacherDashboardService } = require(servicePath);
     const result = await getTeacherDashboardService(teacherId, schoolId);
     if (result.error) return responseStatus(res, 404, "failed", result.error);
     responseStatus(res, 200, "success", result.data);

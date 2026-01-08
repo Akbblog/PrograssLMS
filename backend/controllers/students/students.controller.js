@@ -1,4 +1,11 @@
 const responseStatus = require("../../handlers/responseStatus.handler.js");
+
+// Dynamically load service based on USE_PRISMA flag
+const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+const servicePath = usePrisma 
+  ? "../../services/students/students.service.prisma_impl"
+  : "../../services/students/students.service";
+
 const {
   adminRegisterStudentService,
   studentLoginService,
@@ -9,10 +16,15 @@ const {
   adminUpdateStudentService,
   studentWriteExamService,
   studentSelfRegisterService,
-} = require("../../services/students/students.service");
+} = require(servicePath);
 
 const { uploadSingle, processAttachments } = require('../../middlewares/fileUpload');
-const ProfileQRCode = require('../../models/ProfileQRCode.model');
+
+// Conditionally load ProfileQRCode model (Mongoose only)
+let ProfileQRCode = null;
+if (!usePrisma) {
+  ProfileQRCode = require('../../models/ProfileQRCode.model');
+}
 
 // For card generation
 const qrGenerator = require('../../services/qrcode/qrGenerator.service');
