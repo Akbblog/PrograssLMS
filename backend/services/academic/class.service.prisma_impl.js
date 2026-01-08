@@ -1,22 +1,20 @@
 const { getPrisma } = require('../../lib/prismaClient');
-const Admin = require('../../models/Staff/admin.model');
 const responseStatus = require('../../handlers/responseStatus.handler');
 
 exports.createClassLevelService = async (data, userId, res) => {
   const { name, description } = data;
-  const admin = await Admin.findById(userId);
+  const prisma = getPrisma();
+  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
+  
+  // Get admin from Prisma
+  const admin = await prisma.admin.findUnique({ where: { id: userId } });
   if (!admin) return responseStatus(res, 401, 'failed', 'Admin not found');
   const schoolId = admin.schoolId || 'SCHOOL-IMPORT-1';
 
-  const prisma = getPrisma();
-  if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const exists = await prisma.classLevel.findFirst({ where: { name, schoolId: String(schoolId) } });
   if (exists) return responseStatus(res, 400, 'failed', 'Class already exists');
 
-  const created = await prisma.classLevel.create({ data: { name, description: description || null, schoolId: String(schoolId) } });
-  // push to admin (mongoose)
-  admin.classLevels.push(created.id);
-  await admin.save();
+  const created = await prisma.classLevel.create({ data: { name, section: null, schoolId: String(schoolId) } });
   return responseStatus(res, 200, 'success', created);
 };
 
@@ -25,7 +23,6 @@ exports.getAllClassesService = async (schoolId) => {
   if (!prisma) return [];
   const where = schoolId ? { schoolId: String(schoolId) } : {};
   const classes = await prisma.classLevel.findMany({ where, orderBy: { createdAt: 'desc' } });
-  // student counts require joining with students table which may need data normalization; skip heavy joins here
   return classes;
 };
 
@@ -60,7 +57,11 @@ exports.getSubjectsByClassService = async (classId, schoolId) => {
 };
 
 exports.getTeachersByClassService = async (classId, schoolId) => {
-  return await prisma.teacher.findMany({ where: { schoolId: String(schoolId) } , select: { password: false } });
+  const prisma = getPrisma();
+  if (!prisma) return [];
+  const teachers = await prisma.teacher.findMany({ where: { schoolId: String(schoolId) } });
+  // Remove passwords from results
+  return teachers.map(t => { const { password, ...rest } = t; return rest; });
 };
 
 exports.assignSubjectToClassService = async (classId, subjectId, res) => {

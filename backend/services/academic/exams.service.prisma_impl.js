@@ -1,21 +1,40 @@
 const { getPrisma } = require('../../lib/prismaClient');
-const Teacher = require('../../models/Staff/teachers.model');
-const Admin = require('../../models/Staff/admin.model');
 const responseStatus = require('../../handlers/responseStatus.handler');
 
 exports.createExamService = async (data, userId, res) => {
   const prisma = getPrisma();
   if (!prisma) return responseStatus(res, 500, 'failed', 'Database unavailable');
   const { name, description, subject, program, passMark, totalMark, academicTerm, duration, examDate, examTime, classLevel, questions } = data;
-  let user = await Teacher.findById(userId);
+  
+  // Try to find user as teacher first, then admin
+  let user = await prisma.teacher.findUnique({ where: { id: userId } });
   let userRole = 'teacher';
-  if (!user) { user = await Admin.findById(userId); userRole = 'admin'; }
+  if (!user) { 
+    user = await prisma.admin.findUnique({ where: { id: userId } }); 
+    userRole = 'admin'; 
+  }
   if (!user) return responseStatus(res, 404, 'failed', 'User not found');
   if (!user.schoolId) return responseStatus(res, 400, 'failed', 'User does not belong to a school');
+  
   const exists = await prisma.exam.findFirst({ where: { name, schoolId: String(user.schoolId) } });
   if (exists) return responseStatus(res, 402, 'failed', 'Exam with this name already exists in your school');
-  const created = await prisma.exam.create({ data: { name, description: description || null, subject: subject || null, passMark: passMark || null, totalMark: totalMark || null, academicTerm: academicTerm || null, duration: duration || null, examDate: examDate ? new Date(examDate) : null, examTime: examTime || null, classLevel: classLevel || null, questions: questions ? JSON.stringify(questions) : null, createdBy: String(user._id), schoolId: String(user.schoolId) } });
-  if (userRole === 'teacher') { user.examsCreated.push(created.id); await user.save(); }
+  
+  const created = await prisma.exam.create({ data: { 
+    name, 
+    description: description || null, 
+    subject: subject || null, 
+    passMark: passMark || null, 
+    totalMark: totalMark || null, 
+    academicTerm: academicTerm || null, 
+    duration: duration || null, 
+    examDate: examDate ? new Date(examDate) : null, 
+    examTime: examTime || null, 
+    classLevel: classLevel || null, 
+    questions: questions ? JSON.stringify(questions) : null, 
+    createdBy: String(user.id), 
+    schoolId: String(user.schoolId) 
+  }});
+  
   return responseStatus(res, 201, 'success', created);
 };
 

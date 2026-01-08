@@ -2,6 +2,14 @@ const http = require("http");
 require("colors");
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+// Auto-enable Prisma mode on Vercel if DATABASE_URL is set (MySQL)
+// This ensures USE_PRISMA works even if not explicitly set in Vercel dashboard
+if (process.env.VERCEL && process.env.DATABASE_URL && !process.env.USE_PRISMA) {
+  process.env.USE_PRISMA = 'true';
+  console.log('[Server] Auto-enabled USE_PRISMA=true for Vercel deployment');
+}
+
 // CORS headers that we'll add to ALL responses, even errors
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

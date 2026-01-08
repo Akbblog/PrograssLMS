@@ -2,7 +2,6 @@ const { getPrisma } = require('../../lib/prismaClient');
 const { hashPassword, isPassMatched } = require('../../handlers/passHash.handler');
 const responseStatus = require('../../handlers/responseStatus.handler');
 const generateToken = require('../../utils/tokenGenerator');
-const Admin = require('../../models/Staff/admin.model');
 
 exports.createTeacherService = async (data, adminId, res) => {
   const { name, email, password, phone, dateOfBirth, gender, employeeId, department, qualifications, specialization, experience, dateOfJoining, subject, classLevels, academicYear, address, nationality, employmentType, salary } = data;
@@ -14,22 +13,16 @@ exports.createTeacherService = async (data, adminId, res) => {
   const existing = await prisma.teacher.findUnique({ where: { email } });
   if (existing) return responseStatus(res, 400, 'failed', 'Teacher with this email already exists');
 
-  // Get admin to find schoolId
-  const admin = await Admin.findById(adminId);
+  // Get admin from Prisma to find schoolId
+  const admin = await prisma.admin.findUnique({ where: { id: adminId } });
   if (!admin) return responseStatus(res, 401, 'fail', 'Unauthorized access');
   const schoolId = admin.schoolId || 'SCHOOL-IMPORT-1';
 
   const hashed = await hashPassword(password);
   const created = await prisma.teacher.create({ data: {
-    name, email, password: hashed, phone, dateOfBirth, gender, employeeId, department,
-    qualifications, specialization, experience, dateEmployed: dateOfJoining || dateOfJoining,
-    subject: subject || null, classLevels: classLevels || [], academicYear: academicYear || null,
-    address: address || null, nationality, employmentType, salary, createdBy: adminId, schoolId: String(schoolId)
+    name, email, password: hashed, phone: phone || null, firstName: null, lastName: null,
+    avatar: null, role: 'teacher', schoolId: String(schoolId)
   }});
-
-  // push to admin (mongoose)
-  admin.teachers.push(created.id);
-  await admin.save();
 
   return responseStatus(res, 201, 'success', created);
 };
