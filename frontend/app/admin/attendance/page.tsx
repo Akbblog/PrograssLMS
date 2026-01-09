@@ -18,7 +18,7 @@ import Icon from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { unwrapArray } from "@/lib/utils";
 
 export default function AdminAttendancePage() {
@@ -254,7 +254,7 @@ export default function AdminAttendancePage() {
 
                 {/* Mark Attendance Dialog */}
                 <Dialog open={isMarkOpen} onOpenChange={setIsMarkOpen}>
-                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="sm:max-w-[800px] max-h-[90vh] p-0 overflow-hidden flex flex-col">
                         <DialogHeader>
                             <div className="flex items-center gap-4">
                                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
@@ -267,8 +267,8 @@ export default function AdminAttendancePage() {
                             </div>
                         </DialogHeader>
 
-                        <div className="p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <DialogBody className="flex-1 overflow-y-auto space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label>Class</Label>
                                     <Select onValueChange={(v:any) => setSelectedClass(v)}>
@@ -293,7 +293,7 @@ export default function AdminAttendancePage() {
                                 </div>
                             </div>
 
-                            <div className="mb-4">
+                            <div>
                                 <Card className="border-0 shadow-lg">
                                     <CardHeader className="p-4 border-b">
                                         <div className="flex items-center justify-between">
@@ -331,11 +331,13 @@ export default function AdminAttendancePage() {
                                     </CardContent>
                                 </Card>
                             </div>
-                        </div>
+                        </DialogBody>
 
-                        <DialogFooter className="gap-2 mt-4">
-                            <Button variant="outline" onClick={() => setIsMarkOpen(false)}>Cancel</Button>
-                            <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700" onClick={async () => {
+                        <DialogFooter className="gap-3">
+                            <Button type="button" variant="outline" onClick={() => setIsMarkOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button className="min-w-[160px]" onClick={async () => {
                                 setMarkLoading(true);
                                 try {
                                     // reuse existing save handler

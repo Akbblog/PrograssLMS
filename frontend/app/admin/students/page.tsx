@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AdminPageLayout from '@/components/layouts/AdminPageLayout'
 import SummaryStatCard from '@/components/admin/SummaryStatCard'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -439,35 +439,46 @@ export default function AdminStudentsPage() {
 
             {/* Enrollment Dialog */}
             <Dialog open={!!enrollmentDialog} onOpenChange={() => setEnrollmentDialog(null)}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <BookOpen className="h-5 w-5 text-blue-600" />
-                            Enroll in Course
-                        </DialogTitle>
-                        <DialogDescription>Enrolling <strong>{enrollmentDialog?.name}</strong></DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleEnrollStudent} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Subject *</Label>
-                            <NativeSelect value={enrollmentForm.subject} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, subject: v })} placeholder="Select Subject" options={subjects.map((s: any) => ({ value: s._id, label: s.name }))} required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Class Level *</Label>
-                            <NativeSelect value={enrollmentForm.classLevel} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, classLevel: v })} placeholder="Select Class" options={classes.map((c: any) => ({ value: c._id, label: c.name }))} required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Academic Year *</Label>
-                            <NativeSelect value={enrollmentForm.academicYear} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, academicYear: v })} placeholder="Select Year" options={years.map((y: any) => ({ value: y._id, label: y.name }))} required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Academic Term *</Label>
-                            <NativeSelect value={enrollmentForm.academicTerm} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, academicTerm: v })} placeholder="Select Term" options={terms.map((t: any) => ({ value: t._id, label: t.name }))} required />
-                        </div>
-                        <Button type="submit" className="w-full" disabled={enrolling}>
-                            {enrolling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Enroll Student
-                        </Button>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+                    <form onSubmit={handleEnrollStudent}>
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                    <BookOpen className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>Enroll in Course</DialogTitle>
+                                    <DialogDescription>Enrolling <strong>{enrollmentDialog?.name}</strong></DialogDescription>
+                                </div>
+                            </div>
+                        </DialogHeader>
+                        <DialogBody className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Subject <span className="text-destructive">*</span></Label>
+                                <NativeSelect value={enrollmentForm.subject} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, subject: v })} placeholder="Select Subject" options={subjects.map((s: any) => ({ value: s._id, label: s.name }))} required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Class Level <span className="text-destructive">*</span></Label>
+                                <NativeSelect value={enrollmentForm.classLevel} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, classLevel: v })} placeholder="Select Class" options={classes.map((c: any) => ({ value: c._id, label: c.name }))} required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Academic Year <span className="text-destructive">*</span></Label>
+                                <NativeSelect value={enrollmentForm.academicYear} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, academicYear: v })} placeholder="Select Year" options={years.map((y: any) => ({ value: y._id, label: y.name }))} required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Academic Term <span className="text-destructive">*</span></Label>
+                                <NativeSelect value={enrollmentForm.academicTerm} onValueChange={(v) => setEnrollmentForm({ ...enrollmentForm, academicTerm: v })} placeholder="Select Term" options={terms.map((t: any) => ({ value: t._id, label: t.name }))} required />
+                            </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button type="button" variant="outline" onClick={() => setEnrollmentDialog(null)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" className="min-w-[140px]" disabled={enrolling}>
+                                {enrolling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Enroll Student
+                            </Button>
+                        </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
@@ -481,9 +492,14 @@ export default function AdminStudentsPage() {
                             This will permanently delete <strong>{studentToDelete?.name}</strong> and their data.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">Delete</AlertDialogAction>
+                    <AlertDialogFooter className="gap-3">
+                        <AlertDialogCancel className="min-w-[120px]">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="min-w-[120px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            Delete
+                        </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import {
     Loader2,
     Plus,
@@ -827,7 +827,7 @@ export default function AdminAcademicPage() {
                                                     <Button variant="ghost" size="sm" onClick={() => openEditTerm(term)}>
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleDeleteTerm(term._id)}>
+                                                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteTerm(term._id)}>
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </TableCell>
@@ -843,23 +843,22 @@ export default function AdminAcademicPage() {
 
             {/* Class Dialog */}
             <Dialog open={classDialogOpen} onOpenChange={(open) => { setClassDialogOpen(open); if (!open) resetClassForm(); }}>
-                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
-                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-blue-50/50">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                                <GraduationCap className="h-6 w-6 text-white" />
+                <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmitClass} className="flex flex-col flex-1">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                    <GraduationCap className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>{editingClass ? "Edit Class" : "Create New Class"}</DialogTitle>
+                                    <DialogDescription>
+                                        {editingClass ? "Update class details" : "Add a new class level to your school"}
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <div>
-                                <DialogTitle className="text-xl font-semibold text-slate-900">
-                                    {editingClass ? "Edit Class" : "Create New Class"}
-                                </DialogTitle>
-                                <DialogDescription className="text-slate-500">
-                                    {editingClass ? "Update class details" : "Add a new class level to your school"}
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitClass} className="px-6 py-6 space-y-6">
+                        </DialogHeader>
+                        <DialogBody className="flex-1 overflow-y-auto space-y-6">
                         {/* Basic Information Section */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
@@ -869,7 +868,7 @@ export default function AdminAcademicPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="className" className="text-sm font-medium flex items-center gap-1">
-                                        Class Name <span className="text-red-500">*</span>
+                                        Class Name <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
                                         id="className"
@@ -917,43 +916,38 @@ export default function AdminAcademicPage() {
                                 />
                             </div>
                         </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button variant="outline" type="button" onClick={() => setClassDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={submitting} className="min-w-[140px]">
+                                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {editingClass ? "Update Class" : "Create Class"}
+                            </Button>
+                        </DialogFooter>
                     </form>
-                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
-                        <Button variant="ghost" type="button" onClick={() => setClassDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={submitting}
-                            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 min-w-[140px]"
-                            onClick={handleSubmitClass}
-                        >
-                            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {editingClass ? "Update Class" : "Create Class"}
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Subject Dialog */}
             <Dialog open={subjectDialogOpen} onOpenChange={(open) => { setSubjectDialogOpen(open); if (!open) resetSubjectForm(); }}>
-                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
-                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-purple-50/50">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                <BookOpen className="h-6 w-6 text-white" />
+                <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmitSubject} className="flex flex-col flex-1">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                                    <BookOpen className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>{editingSubject ? "Edit Subject" : "Create New Subject"}</DialogTitle>
+                                    <DialogDescription>
+                                        {editingSubject ? "Update subject details" : "Add a new subject to your school"}
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <div>
-                                <DialogTitle className="text-xl font-semibold text-slate-900">
-                                    {editingSubject ? "Edit Subject" : "Create New Subject"}
-                                </DialogTitle>
-                                <DialogDescription className="text-slate-500">
-                                    {editingSubject ? "Update subject details" : "Add a new subject to your school"}
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitSubject} className="px-6 py-6 space-y-6">
+                        </DialogHeader>
+                        <DialogBody className="flex-1 overflow-y-auto space-y-6">
                         {/* Basic Information Section */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
@@ -963,7 +957,7 @@ export default function AdminAcademicPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="subjectName" className="text-sm font-medium flex items-center gap-1">
-                                        Subject Name <span className="text-red-500">*</span>
+                                        Subject Name <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
                                         id="subjectName"
@@ -1007,43 +1001,38 @@ export default function AdminAcademicPage() {
                                 />
                             </div>
                         </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button variant="outline" type="button" onClick={() => setSubjectDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={submitting} className="min-w-[140px]">
+                                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {editingSubject ? "Update Subject" : "Create Subject"}
+                            </Button>
+                        </DialogFooter>
                     </form>
-                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
-                        <Button variant="ghost" type="button" onClick={() => setSubjectDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={submitting}
-                            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 min-w-[140px]"
-                            onClick={handleSubmitSubject}
-                        >
-                            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {editingSubject ? "Update Subject" : "Create Subject"}
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Program Dialog */}
             <Dialog open={programDialogOpen} onOpenChange={(open) => { setProgramDialogOpen(open); if (!open) resetProgramForm(); }}>
-                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
-                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-indigo-50/50">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                                <School className="h-6 w-6 text-white" />
+                <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmitProgram} className="flex flex-col flex-1">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                                    <School className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>{editingProgram ? "Edit Program" : "Create New Program"}</DialogTitle>
+                                    <DialogDescription>
+                                        {editingProgram ? "Update program details" : "Add a new academic program"}
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <div>
-                                <DialogTitle className="text-xl font-semibold text-slate-900">
-                                    {editingProgram ? "Edit Program" : "Create New Program"}
-                                </DialogTitle>
-                                <DialogDescription className="text-slate-500">
-                                    {editingProgram ? "Update program details" : "Add a new academic program"}
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitProgram} className="px-6 py-6 space-y-6">
+                        </DialogHeader>
+                        <DialogBody className="flex-1 overflow-y-auto space-y-6">
                         {/* Basic Information Section */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
@@ -1053,7 +1042,7 @@ export default function AdminAcademicPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="programName" className="text-sm font-medium flex items-center gap-1">
-                                        Program Name <span className="text-red-500">*</span>
+                                        Program Name <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
                                         id="programName"
@@ -1100,43 +1089,38 @@ export default function AdminAcademicPage() {
                                 />
                             </div>
                         </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button variant="outline" type="button" onClick={() => setProgramDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={submitting} className="min-w-[140px]">
+                                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {editingProgram ? "Update Program" : "Create Program"}
+                            </Button>
+                        </DialogFooter>
                     </form>
-                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
-                        <Button variant="ghost" type="button" onClick={() => setProgramDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={submitting}
-                            className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 min-w-[140px]"
-                            onClick={handleSubmitProgram}
-                        >
-                            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {editingProgram ? "Update Program" : "Create Program"}
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Year Dialog */}
             <Dialog open={yearDialogOpen} onOpenChange={(open) => { setYearDialogOpen(open); if (!open) resetYearForm(); }}>
-                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
-                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-green-50/50">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
-                                <Calendar className="h-6 w-6 text-white" />
+                <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmitYear} className="flex flex-col flex-1">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                                    <Calendar className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>{editingYear ? "Edit Academic Year" : "Create Academic Year"}</DialogTitle>
+                                    <DialogDescription>
+                                        {editingYear ? "Update academic year details" : "Define a new academic year for your school"}
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <div>
-                                <DialogTitle className="text-xl font-semibold text-slate-900">
-                                    {editingYear ? "Edit Academic Year" : "Create Academic Year"}
-                                </DialogTitle>
-                                <DialogDescription className="text-slate-500">
-                                    {editingYear ? "Update academic year details" : "Define a new academic year for your school"}
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitYear} className="px-6 py-6 space-y-6">
+                        </DialogHeader>
+                        <DialogBody className="flex-1 overflow-y-auto space-y-6">
                         {/* Basic Information Section */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
@@ -1145,7 +1129,7 @@ export default function AdminAcademicPage() {
                             </h3>
                             <div className="space-y-2">
                                 <Label htmlFor="yearName" className="text-sm font-medium flex items-center gap-1">
-                                    Year Name <span className="text-red-500">*</span>
+                                    Year Name <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="yearName"
@@ -1167,7 +1151,7 @@ export default function AdminAcademicPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="fromYear" className="text-sm font-medium flex items-center gap-1">
-                                        Start Date <span className="text-red-500">*</span>
+                                        Start Date <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
                                         id="fromYear"
@@ -1180,7 +1164,7 @@ export default function AdminAcademicPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="toYear" className="text-sm font-medium flex items-center gap-1">
-                                        End Date <span className="text-red-500">*</span>
+                                        End Date <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
                                         id="toYear"
@@ -1213,43 +1197,38 @@ export default function AdminAcademicPage() {
                             </div>
                             <p className="text-xs text-slate-500">Only one academic year can be marked as current</p>
                         </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button variant="outline" type="button" onClick={() => setYearDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={submitting} className="min-w-[160px]">
+                                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {editingYear ? "Update Academic Year" : "Create Academic Year"}
+                            </Button>
+                        </DialogFooter>
                     </form>
-                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
-                        <Button variant="ghost" type="button" onClick={() => setYearDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={submitting}
-                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 min-w-[140px]"
-                            onClick={handleSubmitYear}
-                        >
-                            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {editingYear ? "Update Academic Year" : "Create Academic Year"}
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             {/* Term Dialog */}
             <Dialog open={termDialogOpen} onOpenChange={(open) => { setTermDialogOpen(open); if (!open) resetTermForm(); }}>
-                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0">
-                    <DialogHeader className="px-6 py-5 border-b bg-gradient-to-r from-slate-50 to-amber-50/50">
-                        <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg">
-                                <Clock className="h-6 w-6 text-white" />
+                <DialogContent className="sm:max-w-lg max-h-[90vh] p-0 overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmitTerm} className="flex flex-col flex-1">
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                                    <Clock className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>{editingTerm ? "Edit Academic Term" : "Create Academic Term"}</DialogTitle>
+                                    <DialogDescription>
+                                        {editingTerm ? "Update academic term details" : "Add a new academic term or semester"}
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <div>
-                                <DialogTitle className="text-xl font-semibold text-slate-900">
-                                    {editingTerm ? "Edit Academic Term" : "Create Academic Term"}
-                                </DialogTitle>
-                                <DialogDescription className="text-slate-500">
-                                    {editingTerm ? "Update academic term details" : "Add a new academic term or semester"}
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmitTerm} className="px-6 py-6 space-y-6">
+                        </DialogHeader>
+                        <DialogBody className="flex-1 overflow-y-auto space-y-6">
                         {/* Basic Information Section */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
@@ -1258,7 +1237,7 @@ export default function AdminAcademicPage() {
                             </h3>
                             <div className="space-y-2">
                                 <Label htmlFor="termName" className="text-sm font-medium flex items-center gap-1">
-                                    Term Name <span className="text-red-500">*</span>
+                                    Term Name <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="termName"
@@ -1338,21 +1317,17 @@ export default function AdminAcademicPage() {
                                 <p className="text-xs text-slate-500">Additional information about this term</p>
                             </div>
                         </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button variant="outline" type="button" onClick={() => setTermDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={submitting} className="min-w-[160px]">
+                                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {editingTerm ? "Update Academic Term" : "Create Academic Term"}
+                            </Button>
+                        </DialogFooter>
                     </form>
-                    <DialogFooter className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
-                        <Button variant="ghost" type="button" onClick={() => setTermDialogOpen(false)}>
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={submitting}
-                            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 min-w-[140px]"
-                            onClick={handleSubmitTerm}
-                        >
-                            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {editingTerm ? "Update Academic Term" : "Create Academic Term"}
-                        </Button>
-                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

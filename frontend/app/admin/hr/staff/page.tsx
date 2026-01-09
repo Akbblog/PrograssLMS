@@ -5,9 +5,10 @@ import AdminPageLayout from "@/components/layouts/AdminPageLayout";
 import { useStaff, useCreateStaff, useDeleteStaff } from '@/hooks/useStaff';
 import StaffList from "./_components/StaffList";
 import StaffForm from "./_components/StaffForm";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetBody, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
+import { Users } from "lucide-react";
 
 export default function StaffPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -65,18 +66,26 @@ export default function StaffPage() {
         />
 
         <Sheet open={isAddOpen} onOpenChange={setIsAddOpen}>
-            <SheetContent side="right" className="w-[100%] sm:w-[800px] sm:max-w-[90vw] p-0 overflow-hidden">
-                <SheetHeader className="px-6 py-4 border-b">
-                    <SheetTitle>{editingStaff ? "Edit Staff Profile" : "Add New Staff Member"}</SheetTitle>
-                </SheetHeader>
-                <div className="h-[calc(100vh-80px)]">
-                    <StaffForm 
-                      onSubmit={handleAddStaff} 
-                      onCancel={() => setIsAddOpen(false)} 
-                      isLoading={staffLoading}
-                      defaultValues={editingStaff}
-                    />
+          <SheetContent side="right" className="w-[100%] sm:w-[800px] sm:max-w-[90vw] p-0 overflow-hidden gap-0">
+            <SheetHeader className="px-6 py-5 border-b">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
+                <div>
+                  <SheetTitle>{editingStaff ? "Edit Staff Profile" : "Add New Staff Member"}</SheetTitle>
+                  <SheetDescription>Capture staff details, contracts, and documents</SheetDescription>
+                </div>
+              </div>
+            </SheetHeader>
+            <SheetBody className="flex-1 overflow-hidden p-0">
+              <StaffForm 
+                onSubmit={handleAddStaff} 
+                onCancel={() => setIsAddOpen(false)} 
+                isLoading={staffLoading}
+                defaultValues={editingStaff}
+              />
+            </SheetBody>
             </SheetContent>
         </Sheet>
       </div>

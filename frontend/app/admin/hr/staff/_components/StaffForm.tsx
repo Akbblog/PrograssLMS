@@ -193,23 +193,23 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
             <div className="grid gap-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>First Name <span className="text-red-500">*</span></Label>
-                  <Input {...register("personalInfo.firstName")} className={errors.personalInfo?.firstName && "border-red-500"} />
-                  {errors.personalInfo?.firstName && <span className="text-xs text-red-500">{errors.personalInfo.firstName.message}</span>}
+                  <Label>First Name <span className="text-destructive">*</span></Label>
+                  <Input {...register("personalInfo.firstName")} className={errors.personalInfo?.firstName && "border-destructive"} />
+                  {errors.personalInfo?.firstName && <span className="text-xs text-destructive">{errors.personalInfo.firstName.message}</span>}
                 </div>
                 <div className="space-y-2">
-                  <Label>Last Name <span className="text-red-500">*</span></Label>
+                  <Label>Last Name <span className="text-destructive">*</span></Label>
                   <Input {...register("personalInfo.lastName")} />
                 </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Date of Birth <span className="text-red-500">*</span></Label>
+                  <Label>Date of Birth <span className="text-destructive">*</span></Label>
                   <Input type="date" {...register("personalInfo.dateOfBirth")} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Gender <span className="text-red-500">*</span></Label>
+                  <Label>Gender <span className="text-destructive">*</span></Label>
                   <Controller
                     control={control}
                     name="personalInfo.gender"
@@ -229,7 +229,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
 
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-2">
-                  <Label>National ID <span className="text-red-500">*</span></Label>
+                  <Label>National ID <span className="text-destructive">*</span></Label>
                   <Input {...register("personalInfo.nationalId")} />
                 </div>
                 <div className="space-y-2">
@@ -259,11 +259,11 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
              <div className="grid gap-6">
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>Email Address <span className="text-red-500">*</span></Label>
+                    <Label>Email Address <span className="text-destructive">*</span></Label>
                         <Input type="email" {...register("contactInfo.email")} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Phone Number <span className="text-red-500">*</span></Label>
+                    <Label>Phone Number <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.phone")} />
                     </div>
                  </div>
@@ -275,26 +275,26 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                  <Separator />
                  <h4 className="font-semibold text-sm">Address</h4>
                  <div className="space-y-2">
-                    <Label>Street Address <span className="text-red-500">*</span></Label>
+                  <Label>Street Address <span className="text-destructive">*</span></Label>
                     <Input {...register("contactInfo.address.street")} />
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>City <span className="text-red-500">*</span></Label>
+                    <Label>City <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.address.city")} />
                     </div>
                     <div className="space-y-2">
-                        <Label>State <span className="text-red-500">*</span></Label>
+                    <Label>State <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.address.state")} />
                     </div>
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>Postal Code <span className="text-red-500">*</span></Label>
+                    <Label>Postal Code <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.address.postalCode")} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Country <span className="text-red-500">*</span></Label>
+                    <Label>Country <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.address.country")} />
                     </div>
                  </div>
@@ -303,15 +303,15 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                  <h4 className="font-semibold text-sm">Emergency Contact</h4>
                  <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
-                        <Label>Name <span className="text-red-500">*</span></Label>
+                    <Label>Name <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.emergencyContact.name")} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Relationship <span className="text-red-500">*</span></Label>
+                    <Label>Relationship <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.emergencyContact.relationship")} />
                     </div>
                     <div className="space-y-2">
-                        <Label>Phone <span className="text-red-500">*</span></Label>
+                    <Label>Phone <span className="text-destructive">*</span></Label>
                         <Input {...register("contactInfo.emergencyContact.phone")} />
                     </div>
                  </div>
@@ -323,7 +323,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
             <div className="grid gap-6">
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>Department <span className="text-red-500">*</span></Label>
+                      <Label>Department <span className="text-destructive">*</span></Label>
                          <Controller
                             control={control}
                             name="employmentInfo.department"
@@ -341,14 +341,14 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>Designation <span className="text-red-500">*</span></Label>
+                      <Label>Designation <span className="text-destructive">*</span></Label>
                         <Input {...register("employmentInfo.designation")} placeholder="e.g. Senior Teacher" />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                      <div className="space-y-2">
-                        <Label>Employment Type <span className="text-red-500">*</span></Label>
+                      <Label>Employment Type <span className="text-destructive">*</span></Label>
                          <Controller
                             control={control}
                             name="employmentInfo.employmentType"
@@ -366,7 +366,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label>Joining Date <span className="text-red-500">*</span></Label>
+                      <Label>Joining Date <span className="text-destructive">*</span></Label>
                         <Input type="date" {...register("employmentInfo.joiningDate")} />
                     </div>
                 </div>
@@ -393,7 +393,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                             type="button" 
                             variant="ghost" 
                             size="icon" 
-                            className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                            className="absolute top-2 right-2 text-destructive hover:text-destructive"
                             onClick={() => removeQual(index)}
                           >
                               <X className="h-4 w-4" />
@@ -401,17 +401,17 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                           <CardContent className="p-4 grid gap-4">
                               <div className="grid grid-cols-2 gap-4">
                                   <div className="space-y-2">
-                                      <Label>Degree/Certificate <span className="text-red-500">*</span></Label>
+                                      <Label>Degree/Certificate <span className="text-destructive">*</span></Label>
                                       <Input {...register(`qualifications.${index}.degree`)} />
                                   </div>
                                   <div className="space-y-2">
-                                      <Label>Institution <span className="text-red-500">*</span></Label>
+                                      <Label>Institution <span className="text-destructive">*</span></Label>
                                       <Input {...register(`qualifications.${index}.institution`)} />
                                   </div>
                               </div>
                                <div className="grid grid-cols-2 gap-4">
                                   <div className="space-y-2">
-                                      <Label>Year of Completion <span className="text-red-500">*</span></Label>
+                                      <Label>Year of Completion <span className="text-destructive">*</span></Label>
                                       <Input type="number" {...register(`qualifications.${index}.year`, { valueAsNumber: true })} />
                                   </div>
                                   <div className="space-y-2">
@@ -434,21 +434,21 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                 <h4 className="font-semibold text-sm">Bank Details</h4>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>Account Number <span className="text-red-500">*</span></Label>
+                      <Label>Account Number <span className="text-destructive">*</span></Label>
                         <Input {...register("bankDetails.accountNumber")} />
                     </div>
                      <div className="space-y-2">
-                        <Label>IFSC Code <span className="text-red-500">*</span></Label>
+                      <Label>IFSC Code <span className="text-destructive">*</span></Label>
                         <Input {...register("bankDetails.ifscCode")} />
                     </div>
                  </div>
                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <Label>Bank Name <span className="text-red-500">*</span></Label>
+                      <Label>Bank Name <span className="text-destructive">*</span></Label>
                         <Input {...register("bankDetails.bankName")} />
                     </div>
                      <div className="space-y-2">
-                        <Label>Branch Name <span className="text-red-500">*</span></Label>
+                      <Label>Branch Name <span className="text-destructive">*</span></Label>
                         <Input {...register("bankDetails.branchName")} />
                     </div>
                  </div>
@@ -456,7 +456,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                  <Separator />
                  <h4 className="font-semibold text-sm">Salary Structure</h4>
                   <div className="space-y-2">
-                        <Label>Basic Salary <span className="text-red-500">*</span></Label>
+                    <Label>Basic Salary <span className="text-destructive">*</span></Label>
                         <Input type="number" {...register("salary.basicSalary", { valueAsNumber: true })} />
                   </div>
                   

@@ -101,6 +101,16 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+function SheetBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sheet-body"
+      className={cn("px-6 py-5", className)}
+      {...props}
+    />
+  )
+}
+
 function SheetTitle({
   className,
   ...props
@@ -132,6 +142,7 @@ export {
   SheetTrigger,
   SheetClose,
   SheetContent,
+  SheetBody,
   SheetHeader,
   SheetFooter,
   SheetTitle,

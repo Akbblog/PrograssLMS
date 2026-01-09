@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import AdminPageLayout from "@/components/layouts/AdminPageLayout";
 import BookList from "./_components/BookList";
 import BookForm from "./_components/BookForm";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetBody, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { toast } from "sonner";
@@ -72,25 +72,23 @@ export default function BooksPage() {
         />
 
         <Sheet open={isAddOpen} onOpenChange={setIsAddOpen}>
-            <SheetContent side="right" className="w-[100%] sm:w-[920px] sm:max-w-[95vw] p-0 overflow-hidden">
-                <div className="max-w-5xl mx-auto w-full p-4 md:p-8">
-                    <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-4">
-                            <Button asChild variant="ghost" size="sm" className="-ml-2">
-                                <a onClick={() => setIsAddOpen(false)}>
-                                    <ArrowLeft className="h-4 w-4 text-slate-600" />
-                                </a>
-                            </Button>
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                                <BookOpen className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-bold text-slate-900">{editingBook ? "Edit Book Details" : "Add New Book"}</h2>
-                                <p className="text-sm text-slate-500">Enter book metadata, inventory and acquisition details</p>
-                            </div>
+            <SheetContent side="right" className="w-[100%] sm:w-[920px] sm:max-w-[95vw] p-0 overflow-hidden gap-0">
+                <SheetHeader className="px-6 py-5 border-b">
+                    <div className="flex items-center gap-4">
+                        <Button type="button" variant="ghost" size="sm" className="-ml-2" onClick={() => setIsAddOpen(false)}>
+                            <ArrowLeft className="h-4 w-4 text-slate-600" />
+                        </Button>
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                            <BookOpen className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                            <SheetTitle>{editingBook ? "Edit Book Details" : "Add New Book"}</SheetTitle>
+                            <SheetDescription>Enter book metadata, inventory and acquisition details</SheetDescription>
                         </div>
                     </div>
-                    <div className="h-[calc(100vh-200px)] overflow-y-auto px-0 py-0">
+                </SheetHeader>
+                <SheetBody className="flex-1 overflow-y-auto">
+                    <div className="max-w-5xl mx-auto w-full">
                         <BookForm 
                             onSubmit={handleAddBook} 
                             onCancel={() => setIsAddOpen(false)} 
@@ -98,7 +96,7 @@ export default function BooksPage() {
                             defaultValues={editingBook}
                         />
                     </div>
-                </div>
+                </SheetBody>
             </SheetContent>
         </Sheet>
       </div>

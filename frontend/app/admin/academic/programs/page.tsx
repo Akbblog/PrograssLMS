@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, Plus, School, ArrowLeft, Pencil, Trash2, Clock, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
@@ -153,7 +153,7 @@ export default function AdminProgramsPage() {
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => handleDelete(program._id)}
-                                                className="text-red-600 hover:text-red-700"
+                                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
@@ -167,41 +167,52 @@ export default function AdminProgramsPage() {
             </Card>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <School className="h-5 w-5 text-indigo-600" />
-                            Create New Program
-                        </DialogTitle>
-                        <DialogDescription>Add a new academic program to your school</DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleCreate} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Program Name <span className="text-red-500">*</span></Label>
-                            <Input
-                                required
-                                placeholder="e.g. Science, Arts"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Duration</Label>
-                            <Input
-                                placeholder="e.g. 4 years"
-                                value={formData.duration}
-                                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Textarea
-                                placeholder="Optional description"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            />
-                        </div>
-                        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">Create Program</Button>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+                    <form onSubmit={handleCreate}>
+                        <DialogHeader>
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                                    <School className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <DialogTitle>Create New Program</DialogTitle>
+                                    <DialogDescription>Add a new academic program to your school</DialogDescription>
+                                </div>
+                            </div>
+                        </DialogHeader>
+                        <DialogBody className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Program Name <span className="text-destructive">*</span></Label>
+                                <Input
+                                    required
+                                    placeholder="e.g. Science, Arts"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Duration</Label>
+                                <Input
+                                    placeholder="e.g. 4 years"
+                                    value={formData.duration}
+                                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Description</Label>
+                                <Textarea
+                                    placeholder="Optional description"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                />
+                            </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" className="min-w-[140px]">Create Program</Button>
+                        </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>

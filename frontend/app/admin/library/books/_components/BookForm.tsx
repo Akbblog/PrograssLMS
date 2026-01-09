@@ -130,16 +130,16 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                          </div>
                      </div>
                      <div className="space-y-2">
-                         <Label>Language <span className="text-red-500">*</span></Label>
+                         <Label>Language <span className="text-destructive">*</span></Label>
                          <Input {...register("language")} className="h-10" />
                      </div>
                  </div>
 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
-                         <Label>Title <span className="text-red-500">*</span></Label>
-                         <Input {...register("title")} className={errors.title && "border-red-500"} />
-                         {errors.title && <span className="text-xs text-red-500">{errors.title.message}</span>}
+                         <Label>Title <span className="text-destructive">*</span></Label>
+                         <Input {...register("title")} className={errors.title && "border-destructive"} />
+                         {errors.title && <span className="text-xs text-destructive">{errors.title.message}</span>}
                      </div>
                      <div className="space-y-2">
                          <Label>Subtitle</Label>
@@ -148,7 +148,7 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                  </div>
 
                  <div className="space-y-2">
-                     <Label>Authors <span className="text-red-500">*</span></Label>
+                     <Label>Authors <span className="text-destructive">*</span></Label>
                      {authorFields.map((field, index) => (
                          <div key={field.id} className="flex gap-2">
                              <Input {...register(`authors.${index}.name`)} placeholder="Author Name" />
@@ -160,14 +160,14 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                      <Button type="button" variant="link" size="sm" className="px-0" onClick={() => appendAuthor({ name: "" })}>
                          + Add Another Author
                      </Button>
-                     {errors.authors && <span className="text-xs text-red-500">{errors.authors.message}</span>}
+                     {errors.authors && <span className="text-xs text-destructive">{errors.authors.message}</span>}
                  </div>
 
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      <div className="space-y-2">
-                         <Label>Publisher <span className="text-red-500">*</span></Label>
+                         <Label>Publisher <span className="text-destructive">*</span></Label>
                          <Input {...register("publisher")} />
-                         {errors.publisher && <span className="text-xs text-red-500">{errors.publisher.message}</span>}
+                         {errors.publisher && <span className="text-xs text-destructive">{errors.publisher.message}</span>}
                      </div>
                      <div className="space-y-2">
                          <Label>Published Year</Label>
@@ -202,9 +202,9 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
             <CardContent className="p-6 space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
-                         <Label>Category <span className="text-red-500">*</span></Label>
+                         <Label>Category <span className="text-destructive">*</span></Label>
                          <Input {...register("category")} placeholder="e.g. Science, Fiction" className="h-10" />
-                         {errors.category && <span className="text-xs text-red-500">{errors.category.message}</span>}
+                         {errors.category && <span className="text-xs text-destructive">{errors.category.message}</span>}
                      </div>
                      <div className="space-y-2">
                          <Label>Subcategory</Label>
@@ -230,7 +230,7 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
             <CardContent className="p-6 space-y-6">
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
-                         <Label>Total Copies <span className="text-red-500">*</span></Label>
+                         <Label>Total Copies <span className="text-destructive">*</span></Label>
                          <Input type="number" {...register("totalCopies", { valueAsNumber: true })} className="h-10" />
                      </div>
                      <div className="space-y-2">
@@ -240,14 +240,14 @@ export default function BookForm({ defaultValues, onSubmit, onCancel, isLoading 
                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
-                         <Label>Shelf Location <span className="text-red-500">*</span></Label>
+                         <Label>Shelf Location <span className="text-destructive">*</span></Label>
                          <Input {...register("location.shelf")} className="h-10" />
-                         {errors.location?.shelf && <span className="text-xs text-red-500">{errors.location.shelf.message}</span>}
+                         {errors.location?.shelf && <span className="text-xs text-destructive">{errors.location.shelf.message}</span>}
                      </div>
                      <div className="space-y-2">
-                         <Label>Row Number <span className="text-red-500">*</span></Label>
+                         <Label>Row Number <span className="text-destructive">*</span></Label>
                          <Input {...register("location.row")} className="h-10" />
-                         {errors.location?.row && <span className="text-xs text-red-500">{errors.location.row.message}</span>}
+                         {errors.location?.row && <span className="text-xs text-destructive">{errors.location.row.message}</span>}
                      </div>
                  </div>
             </CardContent>

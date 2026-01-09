@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
     Dialog,
+    DialogBody,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -824,21 +825,23 @@ export default function CreateTeacherPage() {
 
             {/* Create New Class Modal */}
             <Dialog open={showNewClassModal} onOpenChange={setShowNewClassModal}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg bg-purple-100 flex items-center justify-center">
-                                <GraduationCap className="h-4 w-4 text-purple-600" />
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                                <GraduationCap className="h-6 w-6 text-white" />
                             </div>
-                            Create New Class
-                        </DialogTitle>
-                        <DialogDescription>
-                            Add a new class that will be available for all teachers in your school.
-                        </DialogDescription>
+                            <div>
+                                <DialogTitle>Create New Class</DialogTitle>
+                                <DialogDescription>
+                                    Add a new class that will be available for all teachers in your school.
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <DialogBody className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="newClassName">Class Name <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="newClassName">Class Name <span className="text-destructive">*</span></Label>
                             <Input
                                 id="newClassName"
                                 placeholder="e.g., Grade 10, Class A, Science Section"
@@ -856,8 +859,8 @@ export default function CreateTeacherPage() {
                                 className="min-h-[80px]"
                             />
                         </div>
-                    </div>
-                    <DialogFooter>
+                    </DialogBody>
+                    <DialogFooter className="gap-3">
                         <Button
                             type="button"
                             variant="outline"
@@ -869,7 +872,7 @@ export default function CreateTeacherPage() {
                             type="button"
                             onClick={handleCreateClass}
                             disabled={creatingClass || !newClassName.trim()}
-                            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                            className="min-w-[140px]"
                         >
                             {creatingClass && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create Class
@@ -880,21 +883,23 @@ export default function CreateTeacherPage() {
 
             {/* Create New Subject Modal */}
             <Dialog open={showNewSubjectModal} onOpenChange={setShowNewSubjectModal}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <BookOpen className="h-4 w-4 text-blue-600" />
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                <BookOpen className="h-6 w-6 text-white" />
                             </div>
-                            Create New Subject
-                        </DialogTitle>
-                        <DialogDescription>
-                            Add a new subject that will be available for all teachers in your school.
-                        </DialogDescription>
+                            <div>
+                                <DialogTitle>Create New Subject</DialogTitle>
+                                <DialogDescription>
+                                    Add a new subject that will be available for all teachers in your school.
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <DialogBody className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="newSubjectName">Subject Name <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="newSubjectName">Subject Name <span className="text-destructive">*</span></Label>
                             <Input
                                 id="newSubjectName"
                                 placeholder="e.g., Mathematics, Physics, Literature"
@@ -912,8 +917,8 @@ export default function CreateTeacherPage() {
                                 className="min-h-[80px]"
                             />
                         </div>
-                    </div>
-                    <DialogFooter>
+                    </DialogBody>
+                    <DialogFooter className="gap-3">
                         <Button
                             type="button"
                             variant="outline"
@@ -925,7 +930,7 @@ export default function CreateTeacherPage() {
                             type="button"
                             onClick={handleCreateSubject}
                             disabled={creatingSubject || !newSubjectName.trim()}
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                            className="min-w-[140px]"
                         >
                             {creatingSubject && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create Subject

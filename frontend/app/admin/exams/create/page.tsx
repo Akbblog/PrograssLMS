@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Loader2, Plus, ArrowLeft, Save, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
@@ -326,17 +326,24 @@ export default function CreateExamPage() {
                                     Add Questions from Bank
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
+                            <DialogContent className="max-w-3xl max-h-[80vh] p-0 overflow-hidden flex flex-col">
                                 <DialogHeader>
-                                    <DialogTitle>Select Questions</DialogTitle>
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+                                            <Search className="h-6 w-6 text-white" />
+                                        </div>
+                                        <div>
+                                            <DialogTitle>Select Questions</DialogTitle>
+                                            <DialogDescription>Choose questions to include in this exam</DialogDescription>
+                                        </div>
+                                    </div>
                                 </DialogHeader>
 
-                                <div className="py-4">
+                                <DialogBody className="flex-1 overflow-y-auto space-y-4">
                                     <Input
                                         placeholder="Search questions..."
                                         value={questionSearch}
                                         onChange={(e) => setQuestionSearch(e.target.value)}
-                                        className="mb-4"
                                     />
 
                                     <div className="border rounded-md overflow-hidden max-h-[400px] overflow-y-auto">
@@ -361,9 +368,10 @@ export default function CreateExamPage() {
                                             <div className="p-8 text-center text-slate-500">No questions found for this subject.</div>
                                         )}
                                     </div>
-                                </div>
-                                <DialogFooter>
-                                    <Button onClick={() => setIsQuestionModalOpen(false)}>Done</Button>
+                                </DialogBody>
+
+                                <DialogFooter className="gap-3">
+                                    <Button onClick={() => setIsQuestionModalOpen(false)} className="min-w-[120px]">Done</Button>
                                 </DialogFooter>
                             </DialogContent>
                         </Dialog>
@@ -395,7 +403,7 @@ export default function CreateExamPage() {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                             onClick={() => handleQuestionToggle(q)}
                                         >
                                             <Trash2 className="h-4 w-4" />
