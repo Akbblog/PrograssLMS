@@ -60,7 +60,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-white dark:bg-slate-800 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xl duration-200",
+          "bg-white dark:bg-slate-800 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg sm:min-w-[400px] translate-x-[-50%] translate-y-[-50%] rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xl duration-200",
           className
         )}
         {...props}
@@ -79,6 +79,15 @@ function DialogContent({
     </DialogPortal>
   )
 }
+
+function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn("px-6 py-5", className)}
+      {...props}
+    />
+  )
 
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -131,6 +140,7 @@ function DialogDescription({
 
 export {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,

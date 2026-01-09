@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogBody } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { hrAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
@@ -439,11 +439,11 @@ export default function LeavesPage() {
                 <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
                     <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <Calendar className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-sm">
+                                    <Calendar className="h-6 w-6 text-primary-foreground" />
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <DialogTitle>Apply for Leave</DialogTitle>
                                     <DialogDescription>
                                         Submit a new leave application
@@ -451,54 +451,56 @@ export default function LeavesPage() {
                                 </div>
                             </div>
                         </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                            <div className="space-y-2">
-                                <Label>Staff Member <span className="text-red-500">*</span></Label>
-                                <NativeSelect
-                                    value={formData.staffId}
-                                    onValueChange={(value) => setFormData({ ...formData, staffId: value })}
-                                    placeholder="Select staff member"
-                                    options={staffOptions}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Leave Type <span className="text-red-500">*</span></Label>
-                                <NativeSelect
-                                    value={formData.leaveType}
-                                    onValueChange={(value) => setFormData({ ...formData, leaveType: value })}
-                                    placeholder="Select leave type"
-                                    options={leaveTypeOptions}
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
+                        <DialogBody>
+                            <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>From Date <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        type="date"
-                                        value={formData.fromDate}
-                                        onChange={(e) => setFormData({ ...formData, fromDate: e.target.value })}
+                                    <Label className="text-sm font-medium text-foreground">Staff Member <span className="text-destructive ml-1">*</span></Label>
+                                    <NativeSelect
+                                        value={formData.staffId}
+                                        onValueChange={(value) => setFormData({ ...formData, staffId: value })}
+                                        placeholder="Select staff member"
+                                        options={staffOptions}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>To Date <span className="text-red-500">*</span></Label>
-                                    <Input
-                                        type="date"
-                                        value={formData.toDate}
-                                        onChange={(e) => setFormData({ ...formData, toDate: e.target.value })}
+                                    <Label className="text-sm font-medium text-foreground">Leave Type <span className="text-destructive ml-1">*</span></Label>
+                                    <NativeSelect
+                                        value={formData.leaveType}
+                                        onValueChange={(value) => setFormData({ ...formData, leaveType: value })}
+                                        placeholder="Select leave type"
+                                        options={leaveTypeOptions}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">From Date <span className="text-destructive ml-1">*</span></Label>
+                                        <Input
+                                            type="date"
+                                            value={formData.fromDate}
+                                            onChange={(e) => setFormData({ ...formData, fromDate: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">To Date <span className="text-destructive ml-1">*</span></Label>
+                                        <Input
+                                            type="date"
+                                            value={formData.toDate}
+                                            onChange={(e) => setFormData({ ...formData, toDate: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Reason <span className="text-destructive ml-1">*</span></Label>
+                                    <Textarea
+                                        placeholder="Explain the reason for leave..."
+                                        value={formData.reason}
+                                        onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                                        rows={3}
                                     />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Reason <span className="text-red-500">*</span></Label>
-                                <Textarea
-                                    placeholder="Explain the reason for leave..."
-                                    value={formData.reason}
-                                    onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                                    rows={3}
-                                />
-                            </div>
-                        </div>
-                        <DialogFooter className="gap-2 mt-4">
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
                             <Button
                                 variant="outline"
                                 onClick={() => { setApplyDialogOpen(false); resetForm(); }}
@@ -508,7 +510,7 @@ export default function LeavesPage() {
                             <Button
                                 onClick={handleApplyLeave}
                                 disabled={saving}
-                                className="bg-purple-600 hover:bg-purple-700"
+                                className="min-w-[120px]"
                             >
                                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Submit Application

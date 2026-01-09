@@ -24,14 +24,44 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Search, Users, MessageSquare } from "lucide-react"
 import { adminAPI } from "@/lib/api/endpoints"
 import { useChatStore } from "@/store/chatStore"
+import { unwrapArray } from "@/lib/utils"
 import { toast } from "sonner"
 
-const newChatSchema = z.object({
-    type: z.enum(["direct", "group"]),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    participants: z.array(z.string()).min(1, "Select at least one participant"),
-})
+const newChatSchema = z
+    .object({
+        type: z.enum(["direct", "group"]),
+        name: z.string().trim().optional(),
+        description: z.string().trim().optional(),
+        participants: z.array(z.string()).default([]),
+    })
+    .superRefine((val, ctx) => {
+        if (val.type === "direct") {
+            if (val.participants.length !== 1) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["participants"],
+                    message: "Select exactly one participant for a direct message",
+                })
+            }
+        }
+
+        if (val.type === "group") {
+            if (!val.name || val.name.length === 0) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["name"],
+                    message: "Group name is required",
+                })
+            }
+            if (val.participants.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    path: ["participants"],
+                    message: "Select at least two participants for a group chat",
+                })
+            }
+        }
+    })
 
 type NewChatForm = z.infer<typeof newChatSchema>
 
@@ -39,7 +69,7 @@ interface User {
     _id: string
     name: string
     email: string
-    role: string
+    role: "admin" | "teacher" | "student"
     avatar?: string
 }
 
@@ -67,7 +97,6 @@ export default function NewChatDialog({
         handleSubmit,
         formState: { errors },
         setValue,
-        watch,
         reset,
     } = useForm<NewChatForm>({
         resolver: zodResolver(newChatSchema),
@@ -99,18 +128,31 @@ export default function NewChatDialog({
                 adminAPI.getStudents(),
             ])
 
-            const admins = (adminsRes.data?.admins || []).map((admin: any) => ({
-                ...admin,
-                role: "admin"
-            }))
-            const teachers = (teachersRes.data?.teachers || []).map((teacher: any) => ({
-                ...teacher,
-                role: "teacher"
-            }))
-            const students = (studentsRes.data?.students || []).map((student: any) => ({
-                ...student,
-                role: "student"
-            }))
+            const normalizeUser = (item: unknown, role: User["role"]): User | null => {
+                if (!item || typeof item !== "object") return null
+                const record = item as Record<string, unknown>
+                const idValue = record._id ?? record.id
+                const nameValue = record.name
+                const emailValue = record.email
+
+                const _id = typeof idValue === "string" ? idValue : ""
+                const name = typeof nameValue === "string" ? nameValue : ""
+                const email = typeof emailValue === "string" ? emailValue : ""
+                const avatar = typeof record.avatar === "string" ? record.avatar : undefined
+
+                if (!_id || !name || !email) return null
+                return { _id, name, email, role, avatar }
+            }
+
+            const admins = unwrapArray<unknown>(adminsRes)
+                .map((item) => normalizeUser(item, "admin"))
+                .filter((u): u is User => Boolean(u))
+            const teachers = unwrapArray<unknown>(teachersRes)
+                .map((item) => normalizeUser(item, "teacher"))
+                .filter((u): u is User => Boolean(u))
+            const students = unwrapArray<unknown>(studentsRes)
+                .map((item) => normalizeUser(item, "student"))
+                .filter((u): u is User => Boolean(u))
 
             setUsers([...admins, ...teachers, ...students])
         } catch (error) {
@@ -121,35 +163,52 @@ export default function NewChatDialog({
         }
     }
 
-    const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const filteredUsers = users.filter(user => {
+        const name = user.name || ""
+        const email = user.email || ""
+        return (
+            name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    })
 
     const handleUserToggle = (userId: string) => {
         setSelectedUsers(prev => {
-            const newSelected = prev.includes(userId)
+            let nextSelected = prev.includes(userId)
                 ? prev.filter(id => id !== userId)
                 : [...prev, userId]
 
-            // For direct messages, limit to 1 participant
-            if (chatType === "direct" && newSelected.length > 1) {
-                return [newSelected[newSelected.length - 1]]
+            // For direct messages, keep only the most recently selected
+            if (chatType === "direct" && nextSelected.length > 1) {
+                nextSelected = [userId]
             }
 
-            setValue("participants", newSelected)
-            return newSelected
+            setValue("participants", nextSelected, { shouldValidate: true })
+            return nextSelected
         })
     }
 
     const handleTypeChange = (type: "direct" | "group") => {
         setChatType(type)
-        setValue("type", type)
+        setValue("type", type, { shouldValidate: true })
 
         // Reset participants if switching to direct and multiple selected
         if (type === "direct" && selectedUsers.length > 1) {
             setSelectedUsers([selectedUsers[0]])
-            setValue("participants", [selectedUsers[0]])
+            setValue("participants", [selectedUsers[0]], { shouldValidate: true })
+        }
+    }
+
+    const toUserModel = (role: User["role"]): "Admin" | "Teacher" | "Student" => {
+        switch (role) {
+            case "admin":
+                return "Admin"
+            case "teacher":
+                return "Teacher"
+            case "student":
+                return "Student"
+            default:
+                return "Teacher"
         }
     }
 
@@ -157,14 +216,22 @@ export default function NewChatDialog({
         try {
             setLoading(true)
 
-            // For direct messages, use the first participant
-            const participantIds = data.type === "direct"
-                ? [data.participants[0]]
-                : data.participants
+            const selectedParticipants = data.participants
+                .map((id) => {
+                    const user = users.find((u) => u._id === id)
+                    return {
+                        user: id,
+                        userModel: toUserModel(user?.role || "teacher"),
+                    }
+                })
 
             const conversation = await createConversation(
-                participantIds,
-                data.name || undefined
+                selectedParticipants,
+                {
+                    type: data.type,
+                    name: data.type === "group" ? data.name?.trim() : undefined,
+                    description: data.type === "group" ? data.description?.trim() : undefined,
+                }
             )
 
             toast.success(
@@ -175,9 +242,13 @@ export default function NewChatDialog({
 
             onConversationCreated?.(conversation)
             onOpenChange(false)
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Failed to create conversation:", error)
-            toast.error(error.response?.data?.message || "Failed to create conversation")
+            const message =
+                typeof error === "object" && error && "message" in error
+                    ? String((error as { message?: unknown }).message || "Failed to create conversation")
+                    : "Failed to create conversation"
+            toast.error(message)
         } finally {
             setLoading(false)
         }
@@ -282,10 +353,12 @@ export default function NewChatDialog({
                                             className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
                                             onClick={() => handleUserToggle(user._id)}
                                         >
-                                            <Checkbox
-                                                checked={selectedUsers.includes(user._id)}
-                                                onChange={() => handleUserToggle(user._id)}
-                                            />
+                                            <div onClick={(e) => e.stopPropagation()}>
+                                                <Checkbox
+                                                    checked={selectedUsers.includes(user._id)}
+                                                    onCheckedChange={() => handleUserToggle(user._id)}
+                                                />
+                                            </div>
                                             <Avatar className="w-8 h-8">
                                                 <AvatarImage src={user.avatar} alt={user.name} />
                                                 <AvatarFallback>

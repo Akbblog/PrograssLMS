@@ -34,7 +34,7 @@ export default function AdminClassesPage() {
     const handleCreateClass = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await createClass(formData);
+    import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogBody } from "@/components/ui/dialog";
             toast.success("Class created successfully");
             setCreateDialogOpen(false);
             setFormData({ name: "", description: "" });
@@ -158,3 +158,41 @@ export default function AdminClassesPage() {
         </AdminPageLayout>
     );
 }
+
+                        <form onSubmit={handleCreateClass}>
+                            <DialogBody>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="className" className="text-sm font-medium text-foreground">Class Name</Label>
+                                        <Input
+                                            id="className"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            placeholder="Enter class name"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
+                                        <Input
+                                            id="description"
+                                            value={formData.description}
+                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                            placeholder="Optional description"
+                                        />
+                                    </div>
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="gap-3">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setCreateDialogOpen(false)}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button type="submit" className="min-w-[120px]">
+                                    Create Class
+                                </Button>
+                            </DialogFooter>

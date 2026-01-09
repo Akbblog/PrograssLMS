@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogBody } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Plus, Calendar, Pencil, Trash2, Check } from "lucide-react";
@@ -236,71 +236,74 @@ export default function AcademicYearsPage() {
                             }
                         </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">
-                                Year Name <span className="text-red-500">*</span>
-                            </Label>
-                            <Input
-                                id="name"
-                                required
-                                placeholder="e.g. 2024-2025"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="fromYear">
-                                    Start Date <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="fromYear"
-                                    type="date"
-                                    required
-                                    value={formData.fromYear}
-                                    onChange={(e) => setFormData({ ...formData, fromYear: e.target.value })}
-                                />
+                    <form onSubmit={handleSubmit}>
+                        <DialogBody>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name" className="text-sm font-medium text-foreground">
+                                        Year Name <span className="text-destructive ml-1">*</span>
+                                    </Label>
+                                    <Input
+                                        id="name"
+                                        required
+                                        placeholder="e.g. 2024-2025"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="fromYear" className="text-sm font-medium text-foreground">
+                                            Start Date <span className="text-destructive ml-1">*</span>
+                                        </Label>
+                                        <Input
+                                            id="fromYear"
+                                            type="date"
+                                            required
+                                            value={formData.fromYear}
+                                            onChange={(e) => setFormData({ ...formData, fromYear: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="toYear" className="text-sm font-medium text-foreground">
+                                            End Date <span className="text-destructive ml-1">*</span>
+                                        </Label>
+                                        <Input
+                                            id="toYear"
+                                            type="date"
+                                            required
+                                            value={formData.toYear}
+                                            onChange={(e) => setFormData({ ...formData, toYear: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="isCurrent"
+                                        checked={formData.isCurrent}
+                                        onCheckedChange={(checked) => setFormData({ ...formData, isCurrent: checked })}
+                                    />
+                                    <Label htmlFor="isCurrent" className="text-sm font-medium text-foreground">Set as current academic year</Label>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="toYear">
-                                    End Date <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    id="toYear"
-                                    type="date"
-                                    required
-                                    value={formData.toYear}
-                                    onChange={(e) => setFormData({ ...formData, toYear: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Switch
-                                id="isCurrent"
-                                checked={formData.isCurrent}
-                                onCheckedChange={(checked) => setFormData({ ...formData, isCurrent: checked })}
-                            />
-                            <Label htmlFor="isCurrent">Set as current academic year</Label>
-                        </div>
-                        <div className="flex gap-3 pt-4">
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => setDialogOpen(false)}
-                                className="flex-1"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={saving}
-                                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                                className="min-w-[120px]"
                             >
                                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {editingYear ? "Update" : "Create"}
                             </Button>
-                        </div>
+                        </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>

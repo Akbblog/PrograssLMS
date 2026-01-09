@@ -2,13 +2,6 @@ import { create } from 'zustand'
 import { communicationAPI } from '@/lib/api/endpoints'
 import { unwrapArray } from '@/lib/utils'
 
-interface User {
-    _id: string
-    name: string
-    email: string
-    role: string
-}
-
 interface Participant {
     userId: string
     userType: 'admin' | 'teacher' | 'student' | 'parent'
@@ -95,7 +88,10 @@ interface ChatState {
     setReplyingTo: (message: Message | null) => void
     deleteMessage: (messageId: string, forEveryone?: boolean) => Promise<void>
     addReaction: (messageId: string, emoji: string) => Promise<void>
-    createConversation: (participantIds: string[], name?: string) => Promise<Conversation>
+    createConversation: (
+        participants: Array<{ user: string; userModel: 'Admin' | 'Teacher' | 'Student' | 'Parent' }>,
+        options: { type: 'direct' | 'group'; name?: string; description?: string }
+    ) => Promise<Conversation>
     handleNewMessage: (message: Message) => void
     handleTyping: (conversationId: string, userId: string) => void
     updateTypingUsers: (conversationId: string, users: string[]) => void
@@ -266,18 +262,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }
     },
 
-    createConversation: async (participantIds: string[], name?: string) => {
+    createConversation: async (
+        participants: Array<{ user: string; userModel: 'Admin' | 'Teacher' | 'Student' | 'Parent' }>,
+        options: { type: 'direct' | 'group'; name?: string; description?: string }
+    ) => {
         try {
-            // For now, assume all participants are Admins. In a real app, you'd need to determine the user type
-            // This should be enhanced to look up user types from the user data
-            const participants = participantIds.map(id => ({
-                user: id,
-                userModel: 'Admin' // TODO: Determine actual user model (Admin, Teacher, Student)
-            }))
-
             const payload = {
-                type: participantIds.length > 2 ? 'group' : 'private',
-                name: name || undefined,
+                type: options.type === 'direct' ? 'private' : 'group',
+                name: options.name || undefined,
+                description: options.description || undefined,
                 participants
             }
 

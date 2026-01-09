@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogBody } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { hrAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
@@ -394,11 +394,11 @@ export default function PayrollPage() {
                 <Dialog open={generateDialogOpen} onOpenChange={setGenerateDialogOpen}>
                     <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <DollarSign className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-sm">
+                                    <DollarSign className="h-6 w-6 text-primary-foreground" />
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <DialogTitle>Generate Payroll</DialogTitle>
                                     <DialogDescription>
                                         Generate payroll for staff members
@@ -406,41 +406,43 @@ export default function PayrollPage() {
                                 </div>
                             </div>
                         </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Month <span className="text-red-500">*</span></Label>
-                                    <NativeSelect
-                                        value={generateForm.month}
-                                        onValueChange={(value) => setGenerateForm({ ...generateForm, month: value })}
-                                        placeholder="Select month"
-                                        options={monthOptions}
-                                    />
+                        <DialogBody>
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Month <span className="text-destructive ml-1">*</span></Label>
+                                        <NativeSelect
+                                            value={generateForm.month}
+                                            onValueChange={(value) => setGenerateForm({ ...generateForm, month: value })}
+                                            placeholder="Select month"
+                                            options={monthOptions}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Year <span className="text-destructive ml-1">*</span></Label>
+                                        <NativeSelect
+                                            value={generateForm.year}
+                                            onValueChange={(value) => setGenerateForm({ ...generateForm, year: value })}
+                                            placeholder="Select year"
+                                            options={yearOptions}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Year <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Staff Member (Optional)</Label>
                                     <NativeSelect
-                                        value={generateForm.year}
-                                        onValueChange={(value) => setGenerateForm({ ...generateForm, year: value })}
-                                        placeholder="Select year"
-                                        options={yearOptions}
+                                        value={generateForm.staffId}
+                                        onValueChange={(value) => setGenerateForm({ ...generateForm, staffId: value })}
+                                        placeholder="All staff members"
+                                        options={[{ value: '', label: 'All Staff Members' }, ...staffOptions]}
                                     />
+                                    <p className="text-xs text-muted-foreground mt-1.5">
+                                        Leave empty to generate for all staff
+                                    </p>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Staff Member (Optional)</Label>
-                                <NativeSelect
-                                    value={generateForm.staffId}
-                                    onValueChange={(value) => setGenerateForm({ ...generateForm, staffId: value })}
-                                    placeholder="All staff members"
-                                    options={[{ value: '', label: 'All Staff Members' }, ...staffOptions]}
-                                />
-                                <p className="text-sm text-muted-foreground">
-                                    Leave empty to generate for all staff
-                                </p>
-                            </div>
-                        </div>
-                        <DialogFooter className="gap-2 mt-4">
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
                             <Button
                                 variant="outline"
                                 onClick={() => setGenerateDialogOpen(false)}
@@ -450,7 +452,7 @@ export default function PayrollPage() {
                             <Button
                                 onClick={handleGeneratePayroll}
                                 disabled={generating}
-                                className="bg-purple-600 hover:bg-purple-700"
+                                className="min-w-[120px]"
                             >
                                 {generating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Generate Payroll
@@ -469,7 +471,8 @@ export default function PayrollPage() {
                             </DialogDescription>
                         </DialogHeader>
                         {selectedPayroll && (
-                            <div className="space-y-4">
+                            <DialogBody>
+                                <div className="space-y-4">
                                 <div className="p-4 rounded-lg bg-slate-50">
                                     <h4 className="font-medium mb-2">Staff: {getStaffName(selectedPayroll.staff)}</h4>
                                     <div className="grid grid-cols-2 gap-2 text-sm">
@@ -510,13 +513,14 @@ export default function PayrollPage() {
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                                </div>
+                            </DialogBody>
                         )}
-                        <DialogFooter>
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setSelectedPayroll(null)}>
                                 Close
                             </Button>
-                            <Button className="bg-purple-600 hover:bg-purple-700">
+                            <Button className="min-w-[120px]">
                                 <Download className="mr-2 h-4 w-4" /> Download Payslip
                             </Button>
                         </DialogFooter>

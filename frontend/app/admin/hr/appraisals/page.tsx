@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogBody } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { hrAPI, adminAPI, academicAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
@@ -515,11 +515,11 @@ export default function AppraisalsPage() {
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <Award className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shrink-0 shadow-sm">
+                                    <Award className="h-6 w-6 text-primary-foreground" />
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <DialogTitle>New Performance Appraisal</DialogTitle>
                                     <DialogDescription>
                                         Evaluate staff performance and provide feedback
@@ -528,11 +528,12 @@ export default function AppraisalsPage() {
                             </div>
                         </DialogHeader>
 
-                        <div className="space-y-6 mt-4">
+                        <DialogBody>
+                        <div className="space-y-6">
                             {/* Staff & Period Selection */}
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Staff Member <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Staff Member <span className="text-destructive ml-1">*</span></Label>
                                     <NativeSelect
                                         value={formData.staffId}
                                         onValueChange={(value) => setFormData({ ...formData, staffId: value })}
@@ -541,7 +542,7 @@ export default function AppraisalsPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Academic Year <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Academic Year <span className="text-destructive ml-1">*</span></Label>
                                     <NativeSelect
                                         value={formData.academicYearId}
                                         onValueChange={(value) => setFormData({ ...formData, academicYearId: value })}
@@ -550,7 +551,7 @@ export default function AppraisalsPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Review Period</Label>
+                                    <Label className="text-sm font-medium text-foreground">Review Period</Label>
                                     <NativeSelect
                                         value={formData.reviewPeriod}
                                         onValueChange={(value) => setFormData({ ...formData, reviewPeriod: value })}
@@ -644,7 +645,7 @@ export default function AppraisalsPage() {
                             {/* Feedback */}
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Strengths</Label>
+                                    <Label className="text-sm font-medium text-foreground">Strengths</Label>
                                     <Textarea
                                         value={formData.strengths}
                                         onChange={(e) => setFormData({ ...formData, strengths: e.target.value })}
@@ -653,7 +654,7 @@ export default function AppraisalsPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Areas for Improvement</Label>
+                                    <Label className="text-sm font-medium text-foreground">Areas for Improvement</Label>
                                     <Textarea
                                         value={formData.areasForImprovement}
                                         onChange={(e) => setFormData({ ...formData, areasForImprovement: e.target.value })}
@@ -662,7 +663,7 @@ export default function AppraisalsPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Recommendations</Label>
+                                    <Label className="text-sm font-medium text-foreground">Recommendations</Label>
                                     <Textarea
                                         value={formData.recommendations}
                                         onChange={(e) => setFormData({ ...formData, recommendations: e.target.value })}
@@ -672,15 +673,16 @@ export default function AppraisalsPage() {
                                 </div>
                             </div>
                         </div>
+                        </DialogBody>
 
-                        <DialogFooter className="gap-2 mt-6">
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDialogOpen(false)}>
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={processing}
-                                className="bg-purple-600 hover:bg-purple-700"
+                                className="min-w-[120px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Create Appraisal
@@ -699,7 +701,8 @@ export default function AppraisalsPage() {
                             </DialogDescription>
                         </DialogHeader>
                         {selectedAppraisal && (
-                            <div className="space-y-4 mt-4">
+                            <DialogBody>
+                            <div className="space-y-4">
                                 <div className="p-4 bg-purple-50 rounded-lg">
                                     <div className="flex items-center justify-between">
                                         <div>
@@ -748,8 +751,9 @@ export default function AppraisalsPage() {
                                     </div>
                                 )}
                             </div>
+                            </DialogBody>
                         )}
-                        <DialogFooter>
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
                                 Close
                             </Button>

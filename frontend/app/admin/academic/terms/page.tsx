@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogBody } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Clock, Pencil, Trash2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
@@ -271,70 +271,95 @@ export default function AcademicTermsPage() {
                             }
                         </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">
-                                Term Name <span className="text-red-500">*</span>
-                            </Label>
-                            <Input
-                                id="name"
-                                required
-                                placeholder="e.g. Term 1, Fall Semester"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Academic Year</Label>
-                            <NativeSelect
-                                value={formData.academicYear}
-                                onValueChange={(val) => setFormData({ ...formData, academicYear: val })}
-                                placeholder="Select academic year"
-                                options={yearOptions}
-                            />
-                            {years.length === 0 && (
-                                <p className="text-xs text-amber-600">
-                                    No academic years available. Create one first.
-                                </p>
-                            )}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="duration">Duration</Label>
-                            <Input
-                                id="duration"
-                                placeholder="e.g. 3 months, Sep - Dec"
-                                value={formData.duration}
-                                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Optional description for this term"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="min-h-[80px]"
-                            />
-                        </div>
-                        <div className="flex gap-3 pt-4">
+                    <form onSubmit={handleSubmit}>
+                        <DialogBody>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name" className="text-sm font-medium text-foreground">
+                                        Term Name <span className="text-destructive ml-1">*</span>
+                                    </Label>
+                                    <Input
+                                        id="name"
+                                        required
+                                        placeholder="e.g. First Term"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="academicYear" className="text-sm font-medium text-foreground">
+                                        Academic Year <span className="text-destructive ml-1">*</span>
+                                    </Label>
+                                    <Select
+                                        value={formData.academicYear}
+                                        onValueChange={(value) => setFormData({ ...formData, academicYear: value })}
+                                        required
+                                    >
+                                        <SelectTrigger id="academicYear">
+                                            <SelectValue placeholder="Select academic year" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {yearOptions.map((year) => (
+                                                <SelectItem key={year.value} value={year.value}>
+                                                    {year.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="duration" className="text-sm font-medium text-foreground">
+                                        Duration
+                                    </Label>
+                                    <Input
+                                        id="duration"
+                                        placeholder="e.g. 3 months, Sep - Dec"
+                                        value={formData.duration}
+                                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="description" className="text-sm font-medium text-foreground">
+                                        Description
+                                    </Label>
+                                    <Textarea
+                                        id="description"
+                                        placeholder="Optional description for this term"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        className="min-h-[80px]"
+                                    />
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="isActive"
+                                        checked={formData.isActive}
+                                        onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                                    />
+                                    <Label htmlFor="isActive" className="text-sm font-medium text-foreground">Set as active term</Label>
+                                </div>
+                                <div className="text-xs text-muted-foreground mt-1.5">
+                                    Note: Only one term can be active at a time.
+                                </div>
+                            </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => setDialogOpen(false)}
-                                className="flex-1"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={saving}
-                                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                                className="min-w-[120px]"
                             >
                                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {editingTerm ? "Update" : "Create"}
                             </Button>
-                        </div>
+                        </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
