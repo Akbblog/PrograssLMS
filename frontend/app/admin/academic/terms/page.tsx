@@ -290,22 +290,18 @@ export default function AcademicTermsPage() {
                                     <Label htmlFor="academicYear" className="text-sm font-medium text-foreground">
                                         Academic Year <span className="text-destructive ml-1">*</span>
                                     </Label>
-                                    <Select
+                                    <NativeSelect
                                         value={formData.academicYear}
-                                        onValueChange={(value) => setFormData({ ...formData, academicYear: value })}
-                                        required
-                                    >
-                                        <SelectTrigger id="academicYear">
-                                            <SelectValue placeholder="Select academic year" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {yearOptions.map((year) => (
-                                                <SelectItem key={year.value} value={year.value}>
-                                                    {year.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                        onValueChange={(val) => setFormData({ ...formData, academicYear: val })}
+                                        placeholder="Select academic year"
+                                        options={yearOptions}
+                                        disabled={years.length === 0}
+                                    />
+                                    {years.length === 0 && (
+                                        <p className="text-xs text-amber-600 mt-1.5">
+                                            No academic years available. Create one first.
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="duration" className="text-sm font-medium text-foreground">
@@ -329,17 +325,6 @@ export default function AcademicTermsPage() {
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         className="min-h-[80px]"
                                     />
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Switch
-                                        id="isActive"
-                                        checked={formData.isActive}
-                                        onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                                    />
-                                    <Label htmlFor="isActive" className="text-sm font-medium text-foreground">Set as active term</Label>
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1.5">
-                                    Note: Only one term can be active at a time.
                                 </div>
                             </div>
                         </DialogBody>

@@ -32,7 +32,7 @@ const newChatSchema = z
         type: z.enum(["direct", "group"]),
         name: z.string().trim().optional(),
         description: z.string().trim().optional(),
-        participants: z.array(z.string()).default([]),
+        participants: z.array(z.string()),
     })
     .superRefine((val, ctx) => {
         if (val.type === "direct") {
