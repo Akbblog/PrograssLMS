@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { transportAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -484,11 +484,11 @@ export default function VehiclesPage() {
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <Bus className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Bus className="h-6 w-6" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <DialogTitle>{editingVehicle ? 'Edit Vehicle' : 'Add Vehicle'}</DialogTitle>
                                     <DialogDescription>
                                         {editingVehicle ? 'Update vehicle details' : 'Add a new vehicle to the fleet'}
@@ -497,11 +497,12 @@ export default function VehiclesPage() {
                             </div>
                         </DialogHeader>
 
-                        <div className="space-y-4 mt-4">
+                        <DialogBody>
+                        <div className="space-y-4">
                             {/* Vehicle Details */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Vehicle Number <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Vehicle Number <span className="text-destructive ml-1">*</span></Label>
                                     <Input
                                         value={formData.vehicleNumber}
                                         onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })}
@@ -509,7 +510,7 @@ export default function VehiclesPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Vehicle Type <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Vehicle Type <span className="text-destructive ml-1">*</span></Label>
                                     <NativeSelect
                                         value={formData.vehicleType}
                                         onValueChange={(value) => setFormData({ ...formData, vehicleType: value })}
@@ -521,7 +522,7 @@ export default function VehiclesPage() {
 
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Capacity <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Capacity <span className="text-destructive ml-1">*</span></Label>
                                     <Input
                                         type="number"
                                         value={formData.capacity}
@@ -530,7 +531,7 @@ export default function VehiclesPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Make</Label>
+                                    <Label className="text-sm font-medium text-foreground">Make</Label>
                                     <Input
                                         value={formData.make}
                                         onChange={(e) => setFormData({ ...formData, make: e.target.value })}
@@ -538,7 +539,7 @@ export default function VehiclesPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Model</Label>
+                                    <Label className="text-sm font-medium text-foreground">Model</Label>
                                     <Input
                                         value={formData.model}
                                         onChange={(e) => setFormData({ ...formData, model: e.target.value })}
@@ -552,7 +553,7 @@ export default function VehiclesPage() {
                                 <h4 className="text-sm font-medium mb-3">Driver Information</h4>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Driver Name</Label>
+                                        <Label className="text-sm font-medium text-foreground">Driver Name</Label>
                                         <Input
                                             value={formData.driverName}
                                             onChange={(e) => setFormData({ ...formData, driverName: e.target.value })}
@@ -560,7 +561,7 @@ export default function VehiclesPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Driver Phone</Label>
+                                        <Label className="text-sm font-medium text-foreground">Driver Phone</Label>
                                         <Input
                                             value={formData.driverPhone}
                                             onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value })}
@@ -575,7 +576,7 @@ export default function VehiclesPage() {
                                 <h4 className="text-sm font-medium mb-3">Compliance & Status</h4>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Insurance Expiry</Label>
+                                        <Label className="text-sm font-medium text-foreground">Insurance Expiry</Label>
                                         <Input
                                             type="date"
                                             value={formData.insuranceExpiry}
@@ -583,7 +584,7 @@ export default function VehiclesPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Fitness Expiry</Label>
+                                        <Label className="text-sm font-medium text-foreground">Fitness Expiry</Label>
                                         <Input
                                             type="date"
                                             value={formData.fitnessExpiry}
@@ -591,7 +592,7 @@ export default function VehiclesPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Status</Label>
+                                        <Label className="text-sm font-medium text-foreground">Status</Label>
                                         <NativeSelect
                                             value={formData.status}
                                             onValueChange={(value) => setFormData({ ...formData, status: value as 'active' | 'maintenance' | 'inactive' })}
@@ -603,14 +604,16 @@ export default function VehiclesPage() {
                             </div>
                         </div>
 
-                        <DialogFooter className="gap-2 mt-6">
+                        </DialogBody>
+
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDialogOpen(false)}>
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={processing}
-                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                                className="min-w-[160px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {editingVehicle ? 'Update Vehicle' : 'Save Vehicle'}
@@ -623,12 +626,19 @@ export default function VehiclesPage() {
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogContent className="sm:max-w-[400px]">
                         <DialogHeader>
-                            <DialogTitle className="text-red-600">Delete Vehicle</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to delete vehicle "{vehicleToDelete?.vehicleNumber}"? This action cannot be undone.
-                            </DialogDescription>
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Trash2 className="h-6 w-6" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <DialogTitle>Delete Vehicle</DialogTitle>
+                                    <DialogDescription>
+                                        Are you sure you want to delete vehicle "{vehicleToDelete?.vehicleNumber}"? This action cannot be undone.
+                                    </DialogDescription>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <DialogFooter className="gap-2 mt-4">
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
                                 Cancel
                             </Button>
@@ -636,6 +646,7 @@ export default function VehiclesPage() {
                                 variant="destructive"
                                 onClick={handleDelete}
                                 disabled={processing}
+                                className="min-w-[120px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Delete

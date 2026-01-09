@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -481,19 +481,27 @@ export default function QuestionBankPage() {
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>
-                            {editingQuestion ? "Edit Question" : "Create New Question"}
-                        </DialogTitle>
-                        <DialogDescription>
-                            Add question details, options, and metadata
-                        </DialogDescription>
+                        <div className="flex items-start gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                <HelpCircle className="h-6 w-6" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <DialogTitle>
+                                    {editingQuestion ? "Edit Question" : "Create New Question"}
+                                </DialogTitle>
+                                <DialogDescription>
+                                    Add question details, options, and metadata
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
 
-                    <div className="space-y-6 py-4">
+                    <DialogBody>
+                    <div className="space-y-6">
                         {/* Question Type & Basic Info */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>Question Type <span className="text-red-500">*</span></Label>
+                                <Label className="text-sm font-medium text-foreground">Question Type <span className="text-destructive ml-1">*</span></Label>
                                 <NativeSelect
                                     value={formData.questionType}
                                     onValueChange={(val) => setFormData({ ...formData, questionType: val })}
@@ -502,7 +510,7 @@ export default function QuestionBankPage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Difficulty</Label>
+                                <Label className="text-sm font-medium text-foreground">Difficulty</Label>
                                 <NativeSelect
                                     value={formData.difficulty}
                                     onValueChange={(val) => setFormData({ ...formData, difficulty: val })}
@@ -514,7 +522,7 @@ export default function QuestionBankPage() {
 
                         {/* Question Text */}
                         <div className="space-y-2">
-                            <Label>Question Text <span className="text-red-500">*</span></Label>
+                            <Label className="text-sm font-medium text-foreground">Question Text <span className="text-destructive ml-1">*</span></Label>
                             <Textarea
                                 placeholder="Enter your question here..."
                                 value={formData.questionText}
@@ -527,7 +535,7 @@ export default function QuestionBankPage() {
                         {formData.questionType === 'mcq' && (
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <Label>Answer Options <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Answer Options <span className="text-destructive ml-1">*</span></Label>
                                     <Button type="button" variant="outline" size="sm" onClick={addOption}>
                                         <Plus className="h-4 w-4 mr-1" /> Add Option
                                     </Button>
@@ -555,7 +563,7 @@ export default function QuestionBankPage() {
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => removeOption(index)}
-                                                className="text-red-500 hover:text-red-700"
+                                                className="text-destructive hover:text-destructive"
                                             >
                                                 <X className="h-4 w-4" />
                                             </Button>
@@ -571,7 +579,7 @@ export default function QuestionBankPage() {
                         {/* True/False */}
                         {formData.questionType === 'true-false' && (
                             <div className="space-y-2">
-                                <Label>Correct Answer <span className="text-red-500">*</span></Label>
+                                <Label className="text-sm font-medium text-foreground">Correct Answer <span className="text-destructive ml-1">*</span></Label>
                                 <NativeSelect
                                     value={formData.correctAnswer}
                                     onValueChange={(val) => setFormData({ ...formData, correctAnswer: val })}
@@ -660,14 +668,16 @@ export default function QuestionBankPage() {
                         </div>
                     </div>
 
-                    <DialogFooter>
+                    </DialogBody>
+
+                    <DialogFooter className="gap-3">
                         <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                             Cancel
                         </Button>
                         <Button
                             onClick={handleSubmit}
                             disabled={saving}
-                            className="bg-indigo-600 hover:bg-indigo-700"
+                            className="min-w-[160px]"
                         >
                             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {editingQuestion ? "Update Question" : "Create Question"}

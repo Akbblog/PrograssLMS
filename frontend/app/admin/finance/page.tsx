@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Loader2, Plus, DollarSign, CreditCard, FileText, TrendingUp, Landmark, Calendar, PieChart, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
@@ -306,35 +306,37 @@ export default function AdminFinancePage() {
                         <DialogDescription>Define advanced fee categories and behavioral discount logic.</DialogDescription>
                     </DialogHeader>
                     {/* Simplified form for demo */}
-                    <div className="space-y-6 py-4">
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 dark:text-slate-300">Policy Name</Label>
-                                <Input placeholder="Annual Tution 2024" value={feeForm.name} onChange={(e) => setFeeForm({ ...feeForm, name: e.target.value })} />
+                    <DialogBody>
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label className="font-bold text-slate-700 dark:text-slate-300">Policy Name</Label>
+                                    <Input placeholder="Annual Tution 2024" value={feeForm.name} onChange={(e) => setFeeForm({ ...feeForm, name: e.target.value })} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="font-bold text-slate-700 dark:text-slate-300">Academic Year</Label>
+                                    <Select value={feeForm.academicYear} onValueChange={(val) => setFeeForm({ ...feeForm, academicYear: val })}>
+                                        <SelectTrigger><SelectValue placeholder="Select Year" /></SelectTrigger>
+                                        <SelectContent>
+                                            {years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="font-bold text-slate-700 dark:text-slate-300">Academic Year</Label>
-                                <Select value={feeForm.academicYear} onValueChange={(val) => setFeeForm({ ...feeForm, academicYear: val })}>
-                                    <SelectTrigger><SelectValue placeholder="Select Year" /></SelectTrigger>
-                                    <SelectContent>
-                                        {years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
+                                <Label className="font-medium">Primary Amount</Label>
+                                <Input type="number" value={feeForm.feeCategories[0].amount} onChange={(e) => {
+                                    let cats = [...feeForm.feeCategories];
+                                    cats[0].amount = e.target.value;
+                                    setFeeForm({ ...feeForm, feeCategories: cats });
+                                }} />
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label className="font-medium">Primary Amount</Label>
-                            <Input type="number" value={feeForm.feeCategories[0].amount} onChange={(e) => {
-                                let cats = [...feeForm.feeCategories];
-                                cats[0].amount = e.target.value;
-                                setFeeForm({ ...feeForm, feeCategories: cats });
-                            }} />
-                        </div>
-                        <div className="flex items-center gap-3 pt-4">
-                            <Button onClick={handleCreateFee} className="flex-1">Create Policy</Button>
-                            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-                        </div>
-                    </div>
+                    </DialogBody>
+                    <DialogFooter className="gap-3">
+                        <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleCreateFee} className="min-w-[160px]">Create Policy</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </AdminPageLayout>

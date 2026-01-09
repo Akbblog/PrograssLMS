@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { transportAPI, adminAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -403,11 +403,11 @@ export default function AllocationsPage() {
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogContent className="sm:max-w-[500px]">
                         <DialogHeader>
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                    <Users className="h-5 w-5 text-purple-600" />
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Users className="h-6 w-6" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <DialogTitle>{editingAllocation ? 'Edit Allocation' : 'Allocate Student'}</DialogTitle>
                                     <DialogDescription>
                                         {editingAllocation ? 'Update transport allocation' : 'Assign a student to a transport route'}
@@ -416,9 +416,10 @@ export default function AllocationsPage() {
                             </div>
                         </DialogHeader>
 
-                        <div className="space-y-4 mt-4">
+                        <DialogBody>
+                        <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Student <span className="text-red-500">*</span></Label>
+                                <Label className="text-sm font-medium text-foreground">Student <span className="text-destructive ml-1">*</span></Label>
                                 <NativeSelect
                                     value={formData.studentId}
                                     onValueChange={(value) => setFormData({ ...formData, studentId: value })}
@@ -429,7 +430,7 @@ export default function AllocationsPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Route <span className="text-red-500">*</span></Label>
+                                <Label className="text-sm font-medium text-foreground">Route <span className="text-destructive ml-1">*</span></Label>
                                 <NativeSelect
                                     value={formData.routeId}
                                     onValueChange={handleRouteChange}
@@ -442,7 +443,7 @@ export default function AllocationsPage() {
                                 <>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label>Pickup Stop <span className="text-red-500">*</span></Label>
+                                            <Label className="text-sm font-medium text-foreground">Pickup Stop <span className="text-destructive ml-1">*</span></Label>
                                             <NativeSelect
                                                 value={formData.pickupStop}
                                                 onValueChange={(value) => setFormData({ ...formData, pickupStop: value })}
@@ -451,7 +452,7 @@ export default function AllocationsPage() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Drop Stop</Label>
+                                            <Label className="text-sm font-medium text-foreground">Drop Stop</Label>
                                             <NativeSelect
                                                 value={formData.dropStop}
                                                 onValueChange={(value) => setFormData({ ...formData, dropStop: value })}
@@ -463,7 +464,7 @@ export default function AllocationsPage() {
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label>Monthly Fee</Label>
+                                            <Label className="text-sm font-medium text-foreground">Monthly Fee</Label>
                                             <div className="relative">
                                                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                                 <Input
@@ -476,7 +477,7 @@ export default function AllocationsPage() {
                                             <p className="text-xs text-muted-foreground">Auto-filled from route fee</p>
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Start Date</Label>
+                                            <Label className="text-sm font-medium text-foreground">Start Date</Label>
                                             <Input
                                                 type="date"
                                                 value={formData.startDate}
@@ -488,14 +489,16 @@ export default function AllocationsPage() {
                             )}
                         </div>
 
-                        <DialogFooter className="gap-2 mt-6">
+                        </DialogBody>
+
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDialogOpen(false)}>
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={processing}
-                                className="bg-purple-600 hover:bg-purple-700"
+                                className="min-w-[160px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {editingAllocation ? 'Update Allocation' : 'Allocate Student'}
@@ -508,12 +511,19 @@ export default function AllocationsPage() {
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogContent className="sm:max-w-[400px]">
                         <DialogHeader>
-                            <DialogTitle className="text-red-600">Remove Allocation</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to remove "{allocationToDelete?.student?.name}" from route "{allocationToDelete?.route?.routeName}"?
-                            </DialogDescription>
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Trash2 className="h-6 w-6" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <DialogTitle>Remove Allocation</DialogTitle>
+                                    <DialogDescription>
+                                        Are you sure you want to remove "{allocationToDelete?.student?.name}" from route "{allocationToDelete?.route?.routeName}"?
+                                    </DialogDescription>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <DialogFooter className="gap-2 mt-4">
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
                                 Cancel
                             </Button>
@@ -521,6 +531,7 @@ export default function AllocationsPage() {
                                 variant="destructive"
                                 onClick={handleDelete}
                                 disabled={processing}
+                                className="min-w-[120px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Remove

@@ -8,7 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogBody,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Loader2, Plus, Settings2, Trash2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
@@ -119,115 +128,146 @@ export default function GradingPolicyPage() {
                             <Plus className="mr-2 h-4 w-4" /> Create Policy
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <DialogTitle className="text-base sm:text-lg">New Grading Policy</DialogTitle>
-                            <p className="text-xs sm:text-sm text-slate-500 mt-1">Define weights for different assessment types and set up your grading scale.</p>
-                        </DialogHeader>
-                        <form onSubmit={handleCreatePolicy} className="space-y-4 sm:space-y-6 py-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                <div className="grid gap-2">
-                                    <Label className="text-xs sm:text-sm">Policy Name</Label>
-                                    <Input
-                                        value={formData.policyName}
-                                        onChange={(e) => setFormData({ ...formData, policyName: e.target.value })}
-                                        placeholder="e.g. Standard 2024"
-                                        className="text-xs sm:text-sm"
-                                    />
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Settings2 className="h-6 w-6" />
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label className="text-xs sm:text-sm">Academic Year</Label>
-                                    <Select value={formData.academicYear} onValueChange={(v) => setFormData({ ...formData, academicYear: v })}>
-                                        <SelectTrigger className="text-xs sm:text-sm"><SelectValue placeholder="Select Year" /></SelectTrigger>
-                                        <SelectContent>
-                                            {years.map(y => <SelectItem key={y._id} value={y._id} className="text-xs sm:text-sm">{y.name}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
+                                <div className="min-w-0 flex-1">
+                                    <DialogTitle>New Grading Policy</DialogTitle>
+                                    <DialogDescription>
+                                        Define weights for different assessment types and set up your grading scale.
+                                    </DialogDescription>
                                 </div>
                             </div>
-
-                            <div className="space-y-3 sm:space-y-4">
-                                <h3 className="text-sm sm:text-base font-semibold border-b pb-2">Assessment Weights (%)</h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4">
-                                    {Object.entries(formData.assessmentWeights).map(([key, value]) => (
-                                        <div key={key} className="grid gap-1.5 sm:gap-2">
-                                            <Label className="text-xs sm:text-sm capitalize">{key}</Label>
+                        </DialogHeader>
+                        <form onSubmit={handleCreatePolicy}>
+                            <DialogBody>
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        <div className="grid gap-2">
+                                            <Label className="text-xs sm:text-sm">
+                                                Policy Name <span className="text-destructive ml-1">*</span>
+                                            </Label>
                                             <Input
-                                                type="number"
-                                                value={value}
-                                                onChange={(e) => setFormData({
-                                                    ...formData,
-                                                    assessmentWeights: { ...formData.assessmentWeights, [key]: parseInt(e.target.value) }
-                                                })}
+                                                value={formData.policyName}
+                                                onChange={(e) => setFormData({ ...formData, policyName: e.target.value })}
+                                                placeholder="e.g. Standard 2024"
                                                 className="text-xs sm:text-sm"
                                             />
                                         </div>
-                                    ))}
-                                </div>
-                                <p className="text-xs text-slate-500 italic">* Weights determine how much each assessment type contributes to the final grade.</p>
-                            </div>
-
-                            <div className="space-y-3 sm:space-y-4">
-                                <h3 className="text-sm sm:text-base font-semibold border-b pb-2 flex justify-between items-center gap-2">
-                                    <span>Grading Scale</span>
-                                    <Button type="button" variant="outline" size="sm" className="text-xs py-1 h-auto" onClick={() => setFormData({
-                                        ...formData,
-                                        gradingScale: [...formData.gradingScale, { letter: "", minPercentage: 0, maxPercentage: 0, gradePoints: 0 }]
-                                    })}>Add Level</Button>
-                                </h3>
-                                <div className="space-y-2 overflow-x-auto">
-                                    {formData.gradingScale.map((item, index) => (
-                                        <div key={index} className="grid grid-cols-5 gap-1 sm:gap-2 items-end min-w-min sm:min-w-fit">
-                                            <div className="grid gap-1">
-                                                <Label className="text-[10px] sm:text-xs">Letter</Label>
-                                                <Input value={item.letter} onChange={(e) => {
-                                                    const newScale = [...formData.gradingScale];
-                                                    newScale[index].letter = e.target.value;
-                                                    setFormData({ ...formData, gradingScale: newScale });
-                                                }} className="text-xs py-1 h-8" />
-                                            </div>
-                                            <div className="grid gap-1">
-                                                <Label className="text-[10px] sm:text-xs">Min %</Label>
-                                                <Input type="number" value={item.minPercentage} onChange={(e) => {
-                                                    const newScale = [...formData.gradingScale];
-                                                    newScale[index].minPercentage = parseInt(e.target.value);
-                                                    setFormData({ ...formData, gradingScale: newScale });
-                                                }} className="text-xs py-1 h-8" />
-                                            </div>
-                                            <div className="grid gap-1">
-                                                <Label className="text-[10px] sm:text-xs">Max %</Label>
-                                                <Input type="number" value={item.maxPercentage} onChange={(e) => {
-                                                    const newScale = [...formData.gradingScale];
-                                                    newScale[index].maxPercentage = parseInt(e.target.value);
-                                                    setFormData({ ...formData, gradingScale: newScale });
-                                                }} className="text-xs py-1 h-8" />
-                                            </div>
-                                            <div className="grid gap-1">
-                                                <Label className="text-[10px] sm:text-xs">GPA Pts</Label>
-                                                <Input type="number" step="0.1" value={item.gradePoints} onChange={(e) => {
-                                                    const newScale = [...formData.gradingScale];
-                                                    newScale[index].gradePoints = parseFloat(e.target.value);
-                                                    setFormData({ ...formData, gradingScale: newScale });
-                                                }} className="text-xs py-1 h-8" />
-                                            </div>
-                                            <Button type="button" variant="ghost" size="sm" className="mb-0.5 h-8 w-8 p-0" onClick={() => {
-                                                const newScale = formData.gradingScale.filter((_, i) => i !== index);
-                                                setFormData({ ...formData, gradingScale: newScale });
-                                            }}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+                                        <div className="grid gap-2">
+                                            <Label className="text-xs sm:text-sm">
+                                                Academic Year <span className="text-destructive ml-1">*</span>
+                                            </Label>
+                                            <Select value={formData.academicYear} onValueChange={(v) => setFormData({ ...formData, academicYear: v })}>
+                                                <SelectTrigger className="text-xs sm:text-sm"><SelectValue placeholder="Select Year" /></SelectTrigger>
+                                                <SelectContent>
+                                                    {years.map(y => <SelectItem key={y._id} value={y._id} className="text-xs sm:text-sm">{y.name}</SelectItem>)}
+                                                </SelectContent>
+                                            </Select>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
+                                    </div>
 
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-100/50 dark:bg-slate-900/50 p-3 sm:p-4 rounded-lg">
-                                <div className="space-y-0.5">
-                                    <Label className="text-xs sm:text-sm">Active Policy</Label>
-                                    <p className="text-xs text-slate-500">This will become the default policy for calculations.</p>
-                                </div>
-                                <Switch checked={formData.isActive} onCheckedChange={(v) => setFormData({ ...formData, isActive: v })} />
-                            </div>
+                                    <div className="space-y-3 sm:space-y-4">
+                                        <h3 className="text-sm sm:text-base font-semibold border-b pb-2">Assessment Weights (%)</h3>
+                                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4">
+                                            {Object.entries(formData.assessmentWeights).map(([key, value]) => (
+                                                <div key={key} className="grid gap-1.5 sm:gap-2">
+                                                    <Label className="text-xs sm:text-sm capitalize">{key}</Label>
+                                                    <Input
+                                                        type="number"
+                                                        value={value}
+                                                        onChange={(e) => setFormData({
+                                                            ...formData,
+                                                            assessmentWeights: { ...formData.assessmentWeights, [key]: parseInt(e.target.value) }
+                                                        })}
+                                                        className="text-xs sm:text-sm"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <p className="text-xs text-slate-500 italic">* Weights determine how much each assessment type contributes to the final grade.</p>
+                                    </div>
 
-                            <Button type="submit" className="w-full btn-responsive-lg">Create Grading Policy</Button>
+                                    <div className="space-y-3 sm:space-y-4">
+                                        <h3 className="text-sm sm:text-base font-semibold border-b pb-2 flex justify-between items-center gap-2">
+                                            <span>Grading Scale</span>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                className="text-xs py-1 h-auto"
+                                                onClick={() => setFormData({
+                                                    ...formData,
+                                                    gradingScale: [...formData.gradingScale, { letter: "", minPercentage: 0, maxPercentage: 0, gradePoints: 0 }]
+                                                })}
+                                            >
+                                                Add Level
+                                            </Button>
+                                        </h3>
+                                        <div className="space-y-2 overflow-x-auto">
+                                            {formData.gradingScale.map((item, index) => (
+                                                <div key={index} className="grid grid-cols-5 gap-1 sm:gap-2 items-end min-w-min sm:min-w-fit">
+                                                    <div className="grid gap-1">
+                                                        <Label className="text-[10px] sm:text-xs">Letter</Label>
+                                                        <Input value={item.letter} onChange={(e) => {
+                                                            const newScale = [...formData.gradingScale];
+                                                            newScale[index].letter = e.target.value;
+                                                            setFormData({ ...formData, gradingScale: newScale });
+                                                        }} className="text-xs py-1 h-8" />
+                                                    </div>
+                                                    <div className="grid gap-1">
+                                                        <Label className="text-[10px] sm:text-xs">Min %</Label>
+                                                        <Input type="number" value={item.minPercentage} onChange={(e) => {
+                                                            const newScale = [...formData.gradingScale];
+                                                            newScale[index].minPercentage = parseInt(e.target.value);
+                                                            setFormData({ ...formData, gradingScale: newScale });
+                                                        }} className="text-xs py-1 h-8" />
+                                                    </div>
+                                                    <div className="grid gap-1">
+                                                        <Label className="text-[10px] sm:text-xs">Max %</Label>
+                                                        <Input type="number" value={item.maxPercentage} onChange={(e) => {
+                                                            const newScale = [...formData.gradingScale];
+                                                            newScale[index].maxPercentage = parseInt(e.target.value);
+                                                            setFormData({ ...formData, gradingScale: newScale });
+                                                        }} className="text-xs py-1 h-8" />
+                                                    </div>
+                                                    <div className="grid gap-1">
+                                                        <Label className="text-[10px] sm:text-xs">GPA Pts</Label>
+                                                        <Input type="number" step="0.1" value={item.gradePoints} onChange={(e) => {
+                                                            const newScale = [...formData.gradingScale];
+                                                            newScale[index].gradePoints = parseFloat(e.target.value);
+                                                            setFormData({ ...formData, gradingScale: newScale });
+                                                        }} className="text-xs py-1 h-8" />
+                                                    </div>
+                                                    <Button type="button" variant="ghost" size="sm" className="mb-0.5 h-8 w-8 p-0" onClick={() => {
+                                                        const newScale = formData.gradingScale.filter((_, i) => i !== index);
+                                                        setFormData({ ...formData, gradingScale: newScale });
+                                                    }}><Trash2 className="h-3 w-3 text-destructive" /></Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-100/50 dark:bg-slate-900/50 p-3 sm:p-4 rounded-lg">
+                                        <div className="space-y-0.5">
+                                            <Label className="text-xs sm:text-sm">Active Policy</Label>
+                                            <p className="text-xs text-slate-500">This will become the default policy for calculations.</p>
+                                        </div>
+                                        <Switch checked={formData.isActive} onCheckedChange={(v) => setFormData({ ...formData, isActive: v })} />
+                                    </div>
+                                </div>
+                            </DialogBody>
+                            <DialogFooter className="gap-3">
+                                <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                                    Cancel
+                                </Button>
+                                <Button type="submit" className="min-w-[160px]">
+                                    Create Grading Policy
+                                </Button>
+                            </DialogFooter>
                         </form>
                     </DialogContent>
                 </Dialog>

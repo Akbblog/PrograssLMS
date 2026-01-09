@@ -16,6 +16,7 @@ import {
     DialogTitle,
     DialogTrigger,
     DialogFooter,
+    DialogBody,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import {
@@ -263,15 +264,23 @@ export default function RoleManagementPage() {
                         </DialogTrigger>
                         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
-                                <DialogTitle>{editingRole ? "Edit" : "Create"} Role</DialogTitle>
-                                <DialogDescription>
-                                    Define the role name and select permissions
-                                </DialogDescription>
+                                <div className="flex items-start gap-4">
+                                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                        <Shield className="h-6 w-6" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <DialogTitle>{editingRole ? "Edit" : "Create"} Role</DialogTitle>
+                                        <DialogDescription>
+                                            Define the role name and select permissions
+                                        </DialogDescription>
+                                    </div>
+                                </div>
                             </DialogHeader>
-                            <div className="space-y-6 py-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>Role Name *</Label>
+                            <DialogBody>
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-medium text-foreground">Role Name <span className="text-destructive ml-1">*</span></Label>
                                         <Input
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -279,7 +288,7 @@ export default function RoleManagementPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Color</Label>
+                                        <Label className="text-sm font-medium text-foreground">Color</Label>
                                         <div className="flex gap-2">
                                             {colorOptions.map(color => (
                                                 <button
@@ -296,7 +305,7 @@ export default function RoleManagementPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Description</Label>
+                                    <Label className="text-sm font-medium text-foreground">Description</Label>
                                     <Input
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -358,10 +367,10 @@ export default function RoleManagementPage() {
                                         })}
                                     </div>
                                 </div>
-                            </div>
-                            <DialogFooter>
+                            </DialogBody>
+                            <DialogFooter className="gap-3">
                                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                                <Button onClick={handleSubmit} disabled={saving}>
+                                <Button onClick={handleSubmit} disabled={saving} className="min-w-[120px]">
                                     {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                     {editingRole ? "Update Role" : "Create Role"}
                                 </Button>

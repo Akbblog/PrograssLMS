@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { transportAPI } from '@/lib/api/endpoints';
 import { unwrapArray } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -391,21 +391,22 @@ export default function RoutesPage() {
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                                    <Route className="h-6 w-6 text-white" />
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Route className="h-6 w-6" />
                                 </div>
-                                <div>
+                                <div className="min-w-0 flex-1">
                                     <DialogTitle>{editingRoute ? 'Edit Route' : 'Add Route'}</DialogTitle>
                                     <DialogDescription>{editingRoute ? 'Update route details' : 'Create a new route and its stops'}</DialogDescription>
                                 </div>
                             </div>
                         </DialogHeader>
 
-                        <div className="space-y-4 mt-4">
+                        <DialogBody>
+                        <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Route Name <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Route Name <span className="text-destructive ml-1">*</span></Label>
                                     <Input
                                         value={formData.routeName}
                                         onChange={(e) => setFormData({ ...formData, routeName: e.target.value })}
@@ -414,7 +415,7 @@ export default function RoutesPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Route Code <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Route Code <span className="text-destructive ml-1">*</span></Label>
                                     <Input
                                         value={formData.routeCode}
                                         onChange={(e) => setFormData({ ...formData, routeCode: e.target.value })}
@@ -426,7 +427,7 @@ export default function RoutesPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Assign Vehicle</Label>
+                                    <Label className="text-sm font-medium text-foreground">Assign Vehicle</Label>
                                     <NativeSelect
                                         value={formData.vehicleId}
                                         onValueChange={(value) => setFormData({ ...formData, vehicleId: value })}
@@ -435,7 +436,7 @@ export default function RoutesPage() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Monthly Fee <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Monthly Fee <span className="text-destructive ml-1">*</span></Label>
                                     <div className="relative">
                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -450,7 +451,7 @@ export default function RoutesPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Description</Label>
+                                <Label className="text-sm font-medium text-foreground">Description</Label>
                                 <Input
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -461,7 +462,7 @@ export default function RoutesPage() {
                             {/* Stops Section */}
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <Label>Route Stops <span className="text-red-500">*</span></Label>
+                                    <Label className="text-sm font-medium text-foreground">Route Stops <span className="text-destructive ml-1">*</span></Label>
                                     <Button type="button" variant="outline" size="sm" onClick={addStop}>
                                         <Plus className="h-3 w-3 mr-1" /> Add Stop
                                     </Button>
@@ -490,7 +491,7 @@ export default function RoutesPage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => removeStop(index)}
-                                                    className="text-red-600 hover:text-red-700"
+                                                    className="text-destructive hover:text-destructive"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
@@ -501,14 +502,16 @@ export default function RoutesPage() {
                             </div>
                         </div>
 
-                        <DialogFooter className="gap-2 mt-6">
+                        </DialogBody>
+
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDialogOpen(false)}>
                                 Cancel
                             </Button>
                             <Button
                                 onClick={handleSubmit}
                                 disabled={processing}
-                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                                className="min-w-[160px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {editingRoute ? 'Update Route' : 'Save Route'}
@@ -521,12 +524,19 @@ export default function RoutesPage() {
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogContent className="sm:max-w-[400px]">
                         <DialogHeader>
-                            <DialogTitle className="text-red-600">Delete Route</DialogTitle>
-                            <DialogDescription>
-                                Are you sure you want to delete the route "{routeToDelete?.routeName}"? This action cannot be undone.
-                            </DialogDescription>
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Trash2 className="h-6 w-6" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <DialogTitle>Delete Route</DialogTitle>
+                                    <DialogDescription>
+                                        Are you sure you want to delete the route "{routeToDelete?.routeName}"? This action cannot be undone.
+                                    </DialogDescription>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <DialogFooter className="gap-2 mt-4">
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
                                 Cancel
                             </Button>
@@ -534,6 +544,7 @@ export default function RoutesPage() {
                                 variant="destructive"
                                 onClick={handleDelete}
                                 disabled={processing}
+                                className="min-w-[120px]"
                             >
                                 {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Delete

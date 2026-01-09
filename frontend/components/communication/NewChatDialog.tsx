@@ -7,6 +7,7 @@ import * as z from "zod"
 import {
     Dialog,
     DialogContent,
+    DialogBody,
     DialogHeader,
     DialogTitle,
     DialogDescription,
@@ -254,148 +255,143 @@ export default function NewChatDialog({
         }
     }
 
-    const getUserRoleColor = (role: string) => {
-        switch (role) {
-            case "admin": return "bg-red-100 text-red-800"
-            case "teacher": return "bg-blue-100 text-blue-800"
-            case "student": return "bg-green-100 text-green-800"
-            default: return "bg-gray-100 text-gray-800"
-        }
-    }
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-hidden">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden">
                 <DialogHeader>
-                    <DialogTitle>Start New Conversation</DialogTitle>
-                    <DialogDescription>
-                        Create a direct message or group chat
-                    </DialogDescription>
+                    <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                            <MessageSquare className="h-6 w-6" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <DialogTitle>Start New Conversation</DialogTitle>
+                            <DialogDescription>
+                                Create a direct message or group chat
+                            </DialogDescription>
+                        </div>
+                    </div>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <Tabs value={chatType} onValueChange={(value) => handleTypeChange(value as "direct" | "group")}>
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="direct" className="flex items-center gap-2">
-                                <MessageSquare className="w-4 h-4" />
-                                Direct Message
-                            </TabsTrigger>
-                            <TabsTrigger value="group" className="flex items-center gap-2">
-                                <Users className="w-4 h-4" />
-                                Group Chat
-                            </TabsTrigger>
-                        </TabsList>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <DialogBody>
+                        <div className="space-y-6">
+                            <Tabs value={chatType} onValueChange={(value) => handleTypeChange(value as "direct" | "group")}>
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="direct" className="flex items-center gap-2">
+                                        <MessageSquare className="w-4 h-4" />
+                                        Direct Message
+                                    </TabsTrigger>
+                                    <TabsTrigger value="group" className="flex items-center gap-2">
+                                        <Users className="w-4 h-4" />
+                                        Group Chat
+                                    </TabsTrigger>
+                                </TabsList>
 
-                        <TabsContent value="direct" className="space-y-4">
-                            <div className="text-sm text-muted-foreground">
-                                Send a private message to one person
-                            </div>
-                        </TabsContent>
+                                <TabsContent value="direct" className="space-y-4">
+                                    <div className="text-sm text-muted-foreground">
+                                        Send a private message to one person
+                                    </div>
+                                </TabsContent>
 
-                        <TabsContent value="group" className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Group Name *</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="Enter group name"
-                                    {...register("name")}
-                                />
-                                {errors.name && (
-                                    <p className="text-sm text-red-600">{errors.name.message}</p>
-                                )}
-                            </div>
+                                <TabsContent value="group" className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name" className="text-sm font-medium text-foreground">
+                                            Group Name <span className="text-destructive ml-1">*</span>
+                                        </Label>
+                                        <Input
+                                            id="name"
+                                            placeholder="Enter group name"
+                                            {...register("name")}
+                                        />
+                                        {errors.name && (
+                                            <p className="text-sm text-destructive">{errors.name.message}</p>
+                                        )}
+                                    </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Description (Optional)</Label>
-                                <Textarea
-                                    id="description"
-                                    placeholder="Describe the purpose of this group"
-                                    rows={2}
-                                    {...register("description")}
-                                />
-                            </div>
-                        </TabsContent>
-                    </Tabs>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="description" className="text-sm font-medium text-foreground">Description (Optional)</Label>
+                                        <Textarea
+                                            id="description"
+                                            placeholder="Describe the purpose of this group"
+                                            rows={2}
+                                            {...register("description")}
+                                        />
+                                    </div>
+                                </TabsContent>
+                            </Tabs>
 
-                    {/* User Selection */}
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <Label>Select Participants</Label>
-                            {selectedUsers.length > 0 && (
-                                <Badge variant="secondary">
-                                    {selectedUsers.length} selected
-                                </Badge>
-                            )}
-                        </div>
-
-                        {/* Search */}
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search users..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-9"
-                            />
-                        </div>
-
-                        {/* User List */}
-                        <ScrollArea className="h-64 border rounded-md">
-                            {loading ? (
-                                <div className="flex items-center justify-center h-32">
-                                    <Loader2 className="w-6 h-6 animate-spin" />
-                                </div>
-                            ) : (
-                                <div className="p-4 space-y-2">
-                                    {filteredUsers.map((user) => (
-                                        <div
-                                            key={user._id}
-                                            className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
-                                            onClick={() => handleUserToggle(user._id)}
-                                        >
-                                            <div onClick={(e) => e.stopPropagation()}>
-                                                <Checkbox
-                                                    checked={selectedUsers.includes(user._id)}
-                                                    onCheckedChange={() => handleUserToggle(user._id)}
-                                                />
-                                            </div>
-                                            <Avatar className="w-8 h-8">
-                                                <AvatarImage src={user.avatar} alt={user.name} />
-                                                <AvatarFallback>
-                                                    {user.name.charAt(0).toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium truncate">
-                                                    {user.name}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground truncate">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-                                            <Badge
-                                                variant="secondary"
-                                                className={`text-xs ${getUserRoleColor(user.role)}`}
-                                            >
-                                                {user.role}
-                                            </Badge>
-                                        </div>
-                                    ))}
-                                    {filteredUsers.length === 0 && !loading && (
-                                        <div className="text-center text-muted-foreground py-8">
-                                            No users found
-                                        </div>
+                            {/* User Selection */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between gap-3">
+                                    <Label className="text-sm font-medium text-foreground">Select Participants</Label>
+                                    {selectedUsers.length > 0 && (
+                                        <Badge variant="secondary">{selectedUsers.length} selected</Badge>
                                     )}
                                 </div>
-                            )}
-                        </ScrollArea>
 
-                        {errors.participants && (
-                            <p className="text-sm text-red-600">{errors.participants.message}</p>
-                        )}
-                    </div>
+                                {/* Search */}
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                    <Input
+                                        placeholder="Search users..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-9"
+                                    />
+                                </div>
 
-                    <DialogFooter>
+                                {/* User List */}
+                                <ScrollArea className="h-64 border rounded-md">
+                                    {loading ? (
+                                        <div className="flex items-center justify-center h-32">
+                                            <Loader2 className="w-6 h-6 animate-spin" />
+                                        </div>
+                                    ) : (
+                                        <div className="p-4 space-y-2">
+                                            {filteredUsers.map((user) => (
+                                                <div
+                                                    key={user._id}
+                                                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted cursor-pointer"
+                                                    onClick={() => handleUserToggle(user._id)}
+                                                >
+                                                    <div onClick={(e) => e.stopPropagation()}>
+                                                        <Checkbox
+                                                            checked={selectedUsers.includes(user._id)}
+                                                            onCheckedChange={() => handleUserToggle(user._id)}
+                                                        />
+                                                    </div>
+                                                    <Avatar className="w-8 h-8">
+                                                        <AvatarImage src={user.avatar} alt={user.name} />
+                                                        <AvatarFallback>
+                                                            {user.name.charAt(0).toUpperCase()}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium truncate">{user.name}</p>
+                                                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                                                    </div>
+                                                    <Badge variant="secondary" className="text-xs capitalize">
+                                                        {user.role}
+                                                    </Badge>
+                                                </div>
+                                            ))}
+                                            {filteredUsers.length === 0 && !loading && (
+                                                <div className="text-center text-muted-foreground py-8">
+                                                    No users found
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </ScrollArea>
+
+                                {errors.participants && (
+                                    <p className="text-sm text-destructive">{errors.participants.message}</p>
+                                )}
+                            </div>
+                        </div>
+                    </DialogBody>
+
+                    <DialogFooter className="gap-3">
                         <Button
                             type="button"
                             variant="outline"
@@ -403,7 +399,11 @@ export default function NewChatDialog({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={loading || selectedUsers.length === 0}>
+                        <Button
+                            type="submit"
+                            className="min-w-[120px]"
+                            disabled={loading || selectedUsers.length === 0}
+                        >
                             {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             {chatType === "direct" ? "Start Chat" : "Create Group"}
                         </Button>

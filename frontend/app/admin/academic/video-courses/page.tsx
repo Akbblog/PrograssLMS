@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import {
     Dialog,
+    DialogBody,
     DialogContent,
     DialogDescription,
     DialogHeader,
@@ -220,99 +221,110 @@ export default function VideoCoursesPage() {
                             Add Video Course
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-lg">
+                    <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden">
                         <DialogHeader>
-                            <DialogTitle>{editingCourse ? "Edit" : "Add"} Video Course</DialogTitle>
-                            <DialogDescription>
-                                Configure the video course details
-                            </DialogDescription>
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <Video className="h-6 w-6" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <DialogTitle>{editingCourse ? "Edit" : "Add"} Video Course</DialogTitle>
+                                    <DialogDescription>
+                                        Configure the video course details
+                                    </DialogDescription>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
-                            <div className="space-y-2">
-                                <Label>Title *</Label>
-                                <Input
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    placeholder="Course title"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Description</Label>
-                                <Textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    placeholder="Brief description of the course"
-                                    rows={3}
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
+
+                        <DialogBody className="max-h-[60vh] overflow-y-auto">
+                            <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Instructor *</Label>
+                                    <Label className="text-sm font-medium text-foreground">Title <span className="text-destructive ml-1">*</span></Label>
                                     <Input
-                                        value={formData.instructor}
-                                        onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
-                                        placeholder="Instructor name"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        placeholder="Course title"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Duration</Label>
-                                    <Input
-                                        value={formData.duration}
-                                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                                        placeholder="e.g., 2h 30m"
+                                    <Label className="text-sm font-medium text-foreground">Description</Label>
+                                    <Textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        placeholder="Brief description of the course"
+                                        rows={3}
                                     />
                                 </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Category</Label>
-                                    <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Mathematics">Mathematics</SelectItem>
-                                            <SelectItem value="Science">Science</SelectItem>
-                                            <SelectItem value="Language">Language</SelectItem>
-                                            <SelectItem value="Arts">Arts</SelectItem>
-                                            <SelectItem value="Technology">Technology</SelectItem>
-                                            <SelectItem value="Other">Other</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Instructor <span className="text-destructive ml-1">*</span></Label>
+                                        <Input
+                                            value={formData.instructor}
+                                            onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
+                                            placeholder="Instructor name"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Duration</Label>
+                                        <Input
+                                            value={formData.duration}
+                                            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                                            placeholder="e.g., 2h 30m"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Category</Label>
+                                        <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Mathematics">Mathematics</SelectItem>
+                                                <SelectItem value="Science">Science</SelectItem>
+                                                <SelectItem value="Language">Language</SelectItem>
+                                                <SelectItem value="Arts">Arts</SelectItem>
+                                                <SelectItem value="Technology">Technology</SelectItem>
+                                                <SelectItem value="Other">Other</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Status</Label>
+                                        <Select value={formData.status} onValueChange={(v: any) => setFormData({ ...formData, status: v })}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="draft">Draft</SelectItem>
+                                                <SelectItem value="published">Published</SelectItem>
+                                                <SelectItem value="archived">Archived</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Status</Label>
-                                    <Select value={formData.status} onValueChange={(v: any) => setFormData({ ...formData, status: v })}>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="draft">Draft</SelectItem>
-                                            <SelectItem value="published">Published</SelectItem>
-                                            <SelectItem value="archived">Archived</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label className="text-sm font-medium text-foreground">Video URL</Label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={formData.videoUrl}
+                                            onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                                            placeholder="https://..."
+                                            className="flex-1"
+                                        />
+                                        <Button variant="outline" size="icon" type="button">
+                                            <Upload className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                    <p className="text-xs text-slate-500">Enter a video URL or upload a file</p>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Video URL</Label>
-                                <div className="flex gap-2">
-                                    <Input
-                                        value={formData.videoUrl}
-                                        onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                                        placeholder="https://..."
-                                        className="flex-1"
-                                    />
-                                    <Button variant="outline" size="icon">
-                                        <Upload className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                                <p className="text-xs text-slate-500">Enter a video URL or upload a file</p>
-                            </div>
-                        </div>
-                        <DialogFooter>
+                        </DialogBody>
+
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={handleSubmit} disabled={loading}>
+                            <Button onClick={handleSubmit} disabled={loading} className="min-w-[120px]">
                                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 {editingCourse ? "Update" : "Create"}
                             </Button>

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import {
     Dialog,
+    DialogBody,
     DialogContent,
     DialogDescription,
     DialogHeader,
@@ -184,59 +185,70 @@ export default function AssessmentTypesPage() {
                             Add Assessment Type
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="max-w-2xl">
                         <DialogHeader>
-                            <DialogTitle>{editingType ? "Edit" : "Add"} Assessment Type</DialogTitle>
-                            <DialogDescription>
-                                Configure the assessment type details and weightage
-                            </DialogDescription>
+                            <div className="flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-sm shrink-0">
+                                    <ClipboardCheck className="h-6 w-6" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <DialogTitle>{editingType ? "Edit" : "Add"} Assessment Type</DialogTitle>
+                                    <DialogDescription>
+                                        Configure the assessment type details and weightage
+                                    </DialogDescription>
+                                </div>
+                            </div>
                         </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label>Name</Label>
-                                <Input
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="e.g., Quiz, Exam, Project"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Description</Label>
-                                <Input
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    placeholder="Brief description of this assessment type"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
+
+                        <DialogBody>
+                            <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label>Weightage (%)</Label>
+                                    <Label className="text-sm font-medium text-foreground">Name <span className="text-destructive ml-1">*</span></Label>
                                     <Input
-                                        type="number"
-                                        min={0}
-                                        max={100}
-                                        value={formData.weightage}
-                                        onChange={(e) => setFormData({ ...formData, weightage: parseInt(e.target.value) || 0 })}
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        placeholder="e.g., Quiz, Exam, Project"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Category</Label>
-                                    <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="formative">Formative</SelectItem>
-                                            <SelectItem value="summative">Summative</SelectItem>
-                                            <SelectItem value="diagnostic">Diagnostic</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label className="text-sm font-medium text-foreground">Description</Label>
+                                    <Input
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        placeholder="Brief description of this assessment type"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Weightage (%)</Label>
+                                        <Input
+                                            type="number"
+                                            min={0}
+                                            max={100}
+                                            value={formData.weightage}
+                                            onChange={(e) => setFormData({ ...formData, weightage: parseInt(e.target.value) || 0 })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-foreground">Category</Label>
+                                        <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="formative">Formative</SelectItem>
+                                                <SelectItem value="summative">Summative</SelectItem>
+                                                <SelectItem value="diagnostic">Diagnostic</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <DialogFooter>
+                        </DialogBody>
+
+                        <DialogFooter className="gap-3">
                             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={handleSubmit} disabled={loading}>
+                            <Button onClick={handleSubmit} disabled={loading} className="min-w-[120px]">
                                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 {editingType ? "Update" : "Create"}
                             </Button>
