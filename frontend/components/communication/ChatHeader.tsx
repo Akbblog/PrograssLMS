@@ -22,22 +22,58 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { useEffect, useState } from "react"
+import { useAuthStore } from '@/store/authStore'
+import { useChatStore } from '@/store/chatStore'
+import { communicationAPI } from '@/lib/api/endpoints'
+
 interface ChatHeaderProps {
     conversationId: string
     onBack?: () => void
 }
 
 export default function ChatHeader({ conversationId, onBack }: ChatHeaderProps) {
-    // This would come from the chat store or API
-    const conversation = {
-        id: conversationId,
-        name: "Sample Conversation",
-        type: "group" as "direct" | "group",
-        avatar: null,
-        participants: [],
-        isOnline: true,
-        lastSeen: "2 hours ago"
-    }
+    const currentUser = useAuthStore((s) => s.user)
+    const conversations = useChatStore((s) => s.conversations)
+
+    const [conversation, setConversation] = useState<any | null>(() =>
+        conversations.find((c: any) => (c.id || c._id) === conversationId) || null
+    )
+
+    useEffect(() => {
+        let mounted = true
+
+        // If we already have conversation from store, ensure state is set
+        const fromStore = conversations.find((c: any) => (c.id || c._id) === conversationId)
+        if (fromStore) {
+            setConversation(fromStore)
+            return
+        }
+
+        // Otherwise fetch conversation metadata
+        const fetchConversation = async () => {
+            try {
+                const res: any = await communicationAPI.getConversation(conversationId)
+                // Backend returns { conversation, messages }
+                const conv = res?.data?.conversation || res?.data || res
+                if (!mounted) return
+                if (conv) {
+                    const normalized = {
+                        ...conv,
+                        id: conv._id ?? conv.id,
+                        type: conv.type === 'private' ? 'direct' : conv.type,
+                    }
+                    setConversation(normalized)
+                }
+            } catch (err) {
+                console.error('Failed to load conversation header:', err)
+            }
+        }
+
+        fetchConversation()
+
+        return () => { mounted = false }
+    }, [conversationId, conversations])
 
     const handleMute = () => {
         // TODO: implement mute functionality
@@ -74,33 +110,49 @@ export default function ChatHeader({ conversationId, onBack }: ChatHeaderProps) 
                     </Button>
                 )}
 
-                {/* Avatar */}
+                {/* Avatar and Info */}
                 <Avatar className="w-10 h-10">
-                    {conversation.avatar ? (
-                        <AvatarImage src={conversation.avatar} alt={conversation.name} />
+                    {conversation?.avatar ? (
+                        <AvatarImage src={conversation.avatar} alt={conversation.name || 'Conversation'} />
                     ) : (
                         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                            {conversation.name.charAt(0)}
+                            {(() => {
+                                // fallback letter: prefer conversation name, otherwise other participant
+                                if (conversation?.name && conversation.name.length) return conversation.name.charAt(0)
+                                const other = conversation?.participants?.find((p: any) => p?.user?._id !== currentUser?._id)
+                                return other?.user?.name?.charAt(0) || other?.user?.email?.charAt(0) || '?'
+                            })()}
                         </AvatarFallback>
                     )}
                 </Avatar>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-slate-900 truncate">
-                        {conversation.name}
+                        {(() => {
+                            if (!conversation) return 'Conversation'
+                            if (conversation.name && conversation.name.trim().length) return conversation.name
+                            if (conversation.type === 'direct') {
+                                // Pick the other participant
+                                const other = conversation.participants?.find((p: any) => p?.user?._id !== currentUser?._id)
+                                return other?.user?.name || other?.user?.email || 'Direct Message'
+                            }
+                            // Group fallback: show participant names or member count
+                            const names = (conversation.participants || []).map((p: any) => p?.user?.name).filter(Boolean)
+                            if (names.length > 0) return names.slice(0, 2).join(', ') + (names.length > 2 ? ` +${names.length - 2}` : '')
+                            return `${conversation.participants?.length || 0} members`
+                        })()}
                     </h3>
                     <div className="flex items-center gap-2">
-                        {conversation.type === "direct" ? (
+                        {conversation?.type === 'direct' ? (
                             <div className="flex items-center gap-1">
-                                <div className={`w-2 h-2 rounded-full ${conversation.isOnline ? 'bg-green-500' : 'bg-slate-400'}`} />
+                                <div className={`w-2 h-2 rounded-full ${conversation?.isOnline ? 'bg-green-500' : 'bg-slate-400'}`} />
                                 <span className="text-xs text-slate-500">
-                                    {conversation.isOnline ? "Online" : `Last seen ${conversation.lastSeen}`}
+                                    {conversation?.isOnline ? 'Online' : `Last seen ${conversation?.lastSeen || 'unknown'}`}
                                 </span>
                             </div>
                         ) : (
                             <span className="text-xs text-slate-500">
-                                {conversation.participants.length} members
+                                {conversation?.participants?.length || 0} members
                             </span>
                         )}
                     </div>
