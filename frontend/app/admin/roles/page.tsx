@@ -269,7 +269,7 @@ export default function RoleManagementPage() {
                                         <Shield className="h-6 w-6" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <DialogTitle>{editingRole ? "Edit" : "Create"} Role</DialogTitle>
+                                        <DialogTitle>{editingRole ? "Edit Role" : "Create Role"}</DialogTitle>
                                         <DialogDescription>
                                             Define the role name and select permissions
                                         </DialogDescription>
@@ -369,6 +369,7 @@ export default function RoleManagementPage() {
                                             )
                                         })}
                                     </div>
+                                </div>
                                 </div>
                             </DialogBody>
                             <DialogFooter className="gap-3">
