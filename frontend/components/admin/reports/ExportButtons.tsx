@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { downloadCsv } from './exporters';
-import { pdf } from '@react-pdf/renderer';
+import { pdf, type DocumentProps } from '@react-pdf/renderer';
 import { downloadBlob } from './exporters';
 import { ReportPdfDocument, ReportPdfKpi } from './ReportPdfDocument';
 
@@ -39,6 +39,8 @@ export function ExportButtons({
 }
 
 async function pdfRenderer(doc: React.ReactElement) {
-  const instance = pdf(doc);
+  // `pdf()`'s types expect a <Document /> element, but common usage passes a component that renders <Document />.
+  // Cast to satisfy TypeScript while preserving runtime behavior.
+  const instance = pdf(doc as unknown as React.ReactElement<DocumentProps>);
   return instance.toBlob();
 }
