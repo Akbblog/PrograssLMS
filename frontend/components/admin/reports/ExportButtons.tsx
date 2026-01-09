@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from '@/app/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { downloadCsv } from './exporters';
 import { pdf } from '@react-pdf/renderer';
 import { downloadBlob } from './exporters';

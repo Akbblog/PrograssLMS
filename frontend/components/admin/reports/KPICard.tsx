@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function KPICard({ title, value, subtitle }: { title: string; value: React.ReactNode; subtitle?: string }) {
   return (
