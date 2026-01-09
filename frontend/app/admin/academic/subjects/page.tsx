@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogBody } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, BookOpen, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -155,48 +155,65 @@ export default function AdminSubjectsPage() {
             </Card>
 
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-[520px]">
                     <DialogHeader>
                         <DialogTitle>Create New Subject</DialogTitle>
                         <DialogDescription>
                             Add a new subject to your curriculum. You can optionally assign it to a program.
                         </DialogDescription>
                     </DialogHeader>
-                    <form onSubmit={handleCreateSubject} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Subject Name</Label>
-                            <Input
-                                required
-                                placeholder="e.g. Mathematics"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Program <span className="text-muted-foreground text-xs">(Optional)</span></Label>
-                            <Select
-                                value={formData.program}
-                                onValueChange={(val) => setFormData({ ...formData, program: val })}
+                    <form onSubmit={handleCreateSubject}>
+                        <DialogBody>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">
+                                        Subject Name <span className="text-destructive ml-1">*</span>
+                                    </Label>
+                                    <Input
+                                        required
+                                        placeholder="e.g. Mathematics"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">
+                                        Program <span className="text-muted-foreground text-xs font-normal">(Optional)</span>
+                                    </Label>
+                                    <Select
+                                        value={formData.program}
+                                        onValueChange={(val) => setFormData({ ...formData, program: val })}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Program (Optional)" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {programs.map((p: any) => (
+                                                <SelectItem key={p._id} value={p._id}>{p.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-medium text-foreground">Description</Label>
+                                    <Input
+                                        placeholder="Optional description"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setCreateDialogOpen(false)}
                             >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select Program (Optional)" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {programs.map((p: any) => (
-                                        <SelectItem key={p._id} value={p._id}>{p.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Input
-                                placeholder="Optional description"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            />
-                        </div>
-                        <Button type="submit" className="w-full">Create Subject</Button>
+                                Cancel
+                            </Button>
+                            <Button type="submit" className="min-w-[120px]">Create Subject</Button>
+                        </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
