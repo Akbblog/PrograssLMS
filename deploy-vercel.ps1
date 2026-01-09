@@ -7,7 +7,8 @@ param(
     [switch]$Prod,
     [string]$Token,
     [string]$ProjectName,
-    [switch]$RemoveOld
+    [switch]$RemoveOld,
+    [switch]$SkipChecks
 )
 
 function Run-Command([string]$cmd){
@@ -46,6 +47,10 @@ if ($ProjectName) {
     # Link the frontend directory to the project name (non-interactive)
     $linkCmd = "npx vercel link --name $ProjectName --cwd frontend $confirmFlag $tokenFlag"
     Run-Command $linkCmd
+}
+
+if (-not $SkipChecks.IsPresent) {
+    Run-Command "npm --prefix frontend run verify"
 }
 
 $cmd = "npx vercel $cwdFlag $prodFlag $confirmFlag $tokenFlag"

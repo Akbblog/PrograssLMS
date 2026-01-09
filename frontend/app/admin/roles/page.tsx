@@ -281,12 +281,12 @@ export default function RoleManagementPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label className="text-sm font-medium text-foreground">Role Name <span className="text-destructive ml-1">*</span></Label>
-                                        <Input
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            placeholder="e.g., Senior Teacher"
-                                        />
-                                    </div>
+                                            <Input
+                                                value={formData.name}
+                                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                                placeholder="e.g., Senior Teacher"
+                                            />
+                                        </div>
                                     <div className="space-y-2">
                                         <Label className="text-sm font-medium text-foreground">Color</Label>
                                         <div className="flex gap-2">
@@ -294,8 +294,11 @@ export default function RoleManagementPage() {
                                                 <button
                                                     key={color.value}
                                                     type="button"
-                                                    className={`w-8 h-8 rounded-full ${formData.color === color.value ? 'ring-2 ring-offset-2 ring-indigo-500' : ''
-                                                        }`}
+                                                    className={`w-8 h-8 rounded-full ${
+                                                        formData.color === color.value
+                                                            ? "ring-2 ring-offset-2 ring-indigo-500"
+                                                            : ""
+                                                    }`}
                                                     style={{ backgroundColor: color.value }}
                                                     onClick={() => setFormData({ ...formData, color: color.value })}
                                                     title={color.label}
