@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogBody } from "@/components/ui/dialog";
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import GraduationCap from "@/components/icons/GraduationCap";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ export default function AdminClassesPage() {
     const handleCreateClass = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-    import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogBody } from "@/components/ui/dialog";
+            await createClass(formData);
             toast.success("Class created successfully");
             setCreateDialogOpen(false);
             setFormData({ name: "", description: "" });
@@ -129,70 +129,50 @@ export default function AdminClassesPage() {
             {error && <div className="text-sm text-amber-600">{error}</div>}
 
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogContent>
+                <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Create New Class</DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={handleCreateClass} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label>Class Name</Label>
-                            <Input
-                                required
-                                placeholder="e.g. Grade 10"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Description</Label>
-                            <Input
-                                placeholder="Optional description"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            />
-                        </div>
-                        <Button type="submit" className="w-full">Create Class</Button>
+                    <form onSubmit={handleCreateClass}>
+                        <DialogBody>
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="className" className="text-sm font-medium text-foreground">Class Name</Label>
+                                    <Input
+                                        id="className"
+                                        required
+                                        placeholder="e.g. Grade 10"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
+                                    <Input
+                                        id="description"
+                                        placeholder="Optional description"
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </DialogBody>
+                        <DialogFooter className="gap-3">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setCreateDialogOpen(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button type="submit" className="min-w-[120px]" disabled={creating}>
+                                {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Create Class
+                            </Button>
+                        </DialogFooter>
                     </form>
                 </DialogContent>
             </Dialog>
         </AdminPageLayout>
     );
 }
-
-                        <form onSubmit={handleCreateClass}>
-                            <DialogBody>
-                                <div className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="className" className="text-sm font-medium text-foreground">Class Name</Label>
-                                        <Input
-                                            id="className"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            placeholder="Enter class name"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description" className="text-sm font-medium text-foreground">Description</Label>
-                                        <Input
-                                            id="description"
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            placeholder="Optional description"
-                                        />
-                                    </div>
-                                </div>
-                            </DialogBody>
-                            <DialogFooter className="gap-3">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => setCreateDialogOpen(false)}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button type="submit" className="min-w-[120px]">
-                                    Create Class
-                                </Button>
-                            </DialogFooter>

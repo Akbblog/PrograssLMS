@@ -89,6 +89,8 @@ function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 
+}
+
 function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
