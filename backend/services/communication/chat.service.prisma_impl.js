@@ -491,9 +491,16 @@ async function deleteConversationService(conversationId, userId, res) {
   }
 }
 
-async function markMessagesReadService(_conversationId, _userId, res) {
-  // Not implemented yet (requires per-user read receipts). Keep API stable.
-  return responseStatus(res, 200, "success", { message: "Marked as read" });
+async function markMessagesReadService(conversationId, userId, userModel) {
+  // Prisma implementation currently doesn't maintain per-message read receipts in SQL schema.
+  // Keep API stable: return a success object and let the controller send the HTTP response.
+  try {
+    // TODO: implement per-user read receipts when schema supports it.
+    return { success: true };
+  } catch (err) {
+    console.error("[Prisma chat] markMessagesReadService error:", err);
+    throw err;
+  }
 }
 
 async function searchMessagesService(_query, _userId, _userModel, _schoolId) {
