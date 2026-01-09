@@ -15,16 +15,11 @@ interface ProtectedRouteProps {
  */
 export function ProtectedRoute({ children, requiredRoles = [] }: ProtectedRouteProps) {
     const router = useRouter()
-    const { isAuthenticated, user, token } = useAuthStore()
-    const [isHydrated, setIsHydrated] = useState(false)
-
-    // Wait for zustand to hydrate from localStorage
-    useEffect(() => {
-        setIsHydrated(true)
-    }, [])
+    const { isAuthenticated, user, token, _hasHydrated } = useAuthStore()
+    const isHydrated = _hasHydrated
 
     useEffect(() => {
-        // Don't check auth until hydration is complete
+        // Don't check auth until persisted store hydration is complete
         if (!isHydrated) return
 
         // Check if user is authenticated

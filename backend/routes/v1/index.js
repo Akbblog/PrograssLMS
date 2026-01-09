@@ -277,6 +277,15 @@ try {
     routeErrors.push({ path: './admin/cards.router', error: e.message });
 }
 
+// ============ ADMIN REPORTS ROUTES ============
+try {
+    router.use('/', require('./admin/reports.router'));
+    console.log('[ROUTES] ✅ Mounted: /admin/reports (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load admin/reports.router:', e);
+    routeErrors.push({ path: './admin/reports.router', error: e.message, stack: e.stack });
+}
+
 try {
     router.use('/', require('./staff/teachers.router'));
     console.log('[ROUTES] ✅ Mounted: /teachers (Explicit)');

@@ -419,6 +419,22 @@ export const libraryAPI = {
   getStats: () => api.get('/library/stats'),
 };
 
+export const reportsAPI = {
+  getDashboard: (params?: { startDate?: string; endDate?: string }) =>
+    api.get(`/admin/reports/dashboard`, { params }).then((r) => r.data),
+  getAttendance: (params?: { startDate?: string; endDate?: string; classLevel?: string }) =>
+    api.get(`/admin/reports/attendance`, { params }).then((r) => r.data),
+  getAcademic: (params?: { academicYearId?: string; academicTermId?: string }) =>
+    api.get(`/admin/reports/academic`, { params }).then((r) => r.data),
+  getFinance: (params?: { startDate?: string; endDate?: string }) =>
+    api.get(`/admin/reports/finance`, { params }).then((r) => r.data),
+  getHR: (params?: { month?: number | string; year?: number | string }) =>
+    api.get(`/admin/reports/hr`, { params }).then((r) => r.data),
+  getTransport: () => api.get(`/admin/reports/transport`).then((r) => r.data),
+  getLibrary: (params?: { startDate?: string; endDate?: string }) =>
+    api.get(`/admin/reports/library`, { params }).then((r) => r.data),
+};
+
 // Transport API
 export const transportAPI = {
   // Vehicles
