@@ -136,6 +136,12 @@ export const superAdminAPI = {
   getAnalytics: () => api.get('/superadmin/analytics'),
 };
 
+// Admin-only school settings (own school)
+export const adminSchoolAPI = {
+  getSchool: (id: string) => api.get(`/admin/schools/${id}`),
+  updateSchool: (id: string, data: any) => api.put(`/admin/schools/${id}`, data),
+};
+
 // Admin endpoints
 export const adminAPI = {
   getStudents: (params?: any) => api.get('/students', { params }),

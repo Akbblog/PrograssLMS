@@ -187,7 +187,8 @@ export default function Sidebar({ className }: SidebarProps) {
             // Prefetch school settings for settings page (if user has a schoolId)
             const user = useAuthStore.getState().user
             if (user?.schoolId) {
-                qc.prefetchQuery({ queryKey: ['school', user.schoolId], queryFn: () => superAdminAPI.getSchool(user.schoolId as string) })
+                // Admin users are not allowed to call superadmin school endpoints
+                qc.prefetchQuery({ queryKey: ['school', user.schoolId], queryFn: () => adminSchoolAPI.getSchool(user.schoolId as string) })
             }
         } else if (href.startsWith('/admin/transport')) {
             qc.prefetchQuery({ queryKey: ['routes', { page: 1 }], queryFn: () => transportAPI.getRoutes({ page: 1 }) });

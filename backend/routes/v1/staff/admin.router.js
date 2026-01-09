@@ -13,6 +13,8 @@ const {
   getAdminProfileController,
   getDashboardStatsController,
   adminDeleteTeacherController,
+  getAdminSchoolController,
+  updateAdminSchoolController,
 } = require("../../../controllers/staff/admin.controller");
 const adminRouter = express.Router();
 // middleware
@@ -43,6 +45,10 @@ adminRouter.route("/admins").get(isLoggedIn, isAdmin, hasPermission("manageUsers
 adminRouter.route("/admin/profile").get(isLoggedIn, getAdminProfileController);
 // get dashboard stats
 adminRouter.route("/admin/stats").get(isLoggedIn, isAdmin, getDashboardStatsController);
+
+// admin school settings (own school only)
+adminRouter.route('/admin/schools/:id').get(isLoggedIn, isAdmin, getAdminSchoolController);
+adminRouter.route('/admin/schools/:id').put(isLoggedIn, isAdmin, updateAdminSchoolController);
 
 // Export CSV endpoints for students/teachers
 adminRouter.route('/admin/export/students').get(isLoggedIn, isAdmin, hasPermission('manageStudents'), require('../../../controllers/staff/admin.controller').exportStudentsController);

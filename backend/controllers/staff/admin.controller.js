@@ -350,6 +350,85 @@ exports.getDashboardStatsController = async (req, res) => {
 };
 
 /**
+ * @desc Get current admin's school (safe subset)
+ * @route GET /api/v1/admin/schools/:id
+ * @access Private(admin)
+ **/
+exports.getAdminSchoolController = async (req, res) => {
+  try {
+    const requestedId = req.params.id;
+    const tokenSchoolId = req.schoolId || req.user?.schoolId || req.userAuth?.schoolId || null;
+
+    if (!tokenSchoolId) return responseStatus(res, 400, 'failed', 'Missing schoolId');
+    if (String(requestedId) !== String(tokenSchoolId)) return responseStatus(res, 403, 'failed', 'Access denied');
+
+    const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+    if (usePrisma) {
+      const { getPrisma } = require('../../lib/prismaClient');
+      const prisma = getPrisma();
+      if (!prisma || !prisma.school) {
+        return responseStatus(res, 200, 'success', null);
+      }
+
+      const school = await prisma.school.findUnique({
+        where: { id: String(requestedId) },
+      });
+
+      return responseStatus(res, 200, 'success', school);
+    }
+
+    const School = require('../../models/School.model');
+    const school = await School.findById(requestedId).lean();
+    return responseStatus(res, 200, 'success', school);
+  } catch (error) {
+    return responseStatus(res, 500, 'failed', error.message);
+  }
+};
+
+/**
+ * @desc Update current admin's school (limited fields)
+ * @route PUT /api/v1/admin/schools/:id
+ * @access Private(admin)
+ **/
+exports.updateAdminSchoolController = async (req, res) => {
+  try {
+    const requestedId = req.params.id;
+    const tokenSchoolId = req.schoolId || req.user?.schoolId || req.userAuth?.schoolId || null;
+
+    if (!tokenSchoolId) return responseStatus(res, 400, 'failed', 'Missing schoolId');
+    if (String(requestedId) !== String(tokenSchoolId)) return responseStatus(res, 403, 'failed', 'Access denied');
+
+    const allowed = ['name', 'phone', 'address', 'primaryAdmin', 'primaryColor', 'secondaryColor', 'features'];
+    const updates = {};
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) updates[key] = req.body[key];
+    }
+
+    const usePrisma = process.env.USE_PRISMA === 'true' || process.env.USE_PRISMA === '1';
+    if (usePrisma) {
+      const { getPrisma } = require('../../lib/prismaClient');
+      const prisma = getPrisma();
+      if (!prisma || !prisma.school) {
+        return responseStatus(res, 200, 'success', null);
+      }
+
+      const school = await prisma.school.update({
+        where: { id: String(requestedId) },
+        data: updates,
+      });
+
+      return responseStatus(res, 200, 'success', school);
+    }
+
+    const School = require('../../models/School.model');
+    const school = await School.findByIdAndUpdate(requestedId, updates, { new: true, runValidators: true }).lean();
+    return responseStatus(res, 200, 'success', school);
+  } catch (error) {
+    return responseStatus(res, 500, 'failed', error.message);
+  }
+};
+
+/**
  * @desc Export Students CSV
  * @route GET /api/v1/admin/export/students
  * @access Private (admin)

@@ -9,7 +9,9 @@ export function ChartCard({ title, children }: { title: string; children: React.
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="h-[320px]">{children}</CardContent>
+      <CardContent className="h-[320px] min-h-[320px] w-full min-w-0">
+        <div className="h-full w-full min-w-0">{children}</div>
+      </CardContent>
     </Card>
   );
 }
