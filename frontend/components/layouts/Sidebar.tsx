@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { useQueryClient } from '@tanstack/react-query'
-import { adminAPI, academicAPI, superAdminAPI, examAPI, hrAPI, libraryAPI, transportAPI } from '@/lib/api/endpoints'
+import { adminAPI, academicAPI, superAdminAPI, examAPI, hrAPI, libraryAPI, transportAPI, adminSchoolAPI } from '@/lib/api/endpoints'
 import { useAuthStore } from "@/store/authStore"
 import { useSidebarStore } from "@/store/sidebarStore"
 import { Button } from "@/components/ui/button"
