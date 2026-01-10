@@ -63,6 +63,7 @@ interface StaffMember {
     designation: string;
     status: string;
   };
+  _source?: string;
   status: string;
 }
 
@@ -227,7 +228,12 @@ export default function StaffList({ data, onEdit, onDelete, onView, onAdd }: Sta
                         </Avatar>
                       </TableCell>
                       <TableCell className="font-medium">{staff.employeeId}</TableCell>
-                      <TableCell>{staff.personalInfo?.firstName} {staff.personalInfo?.lastName}</TableCell>
+                      <TableCell className="flex items-center gap-2">
+                        <span>{staff.personalInfo?.firstName} {staff.personalInfo?.lastName}</span>
+                        {staff._source === 'teacher' && (
+                          <Badge variant="secondary" className="text-xs px-2 py-1 rounded-full">Teacher</Badge>
+                        )}
+                      </TableCell>
                       <TableCell className="capitalize">{staff.employmentInfo?.department}</TableCell>
                       <TableCell>{staff.employmentInfo?.designation}</TableCell>
                       <TableCell>
@@ -287,7 +293,12 @@ export default function StaffList({ data, onEdit, onDelete, onView, onAdd }: Sta
                                   <AvatarImage src={staff.personalInfo?.photo} />
                                   <AvatarFallback className="text-xl">{staff.personalInfo?.firstName?.[0]}{staff.personalInfo?.lastName?.[0]}</AvatarFallback>
                               </Avatar>
-                              <h3 className="font-semibold text-lg">{staff.personalInfo?.firstName} {staff.personalInfo?.lastName}</h3>
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-semibold text-lg">{staff.personalInfo?.firstName} {staff.personalInfo?.lastName}</h3>
+                                {staff._source === 'teacher' && (
+                                  <Badge variant="secondary" className="text-xs px-2 py-1 rounded-full">Teacher</Badge>
+                                )}
+                              </div>
                               <p className="text-sm text-muted-foreground">{staff.employmentInfo?.designation}</p>
                               <Badge className={`mt-2 rounded-full shadow-none ${getStatusColor(staff.status)}`}>
                                   {staff.status?.replace('_', ' ')}

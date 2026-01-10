@@ -7,9 +7,54 @@ exports.listStaff = async (req, res) => {
     if (usePrisma) {
       return res.status(200).json({ status: 'success', data: [] });
     }
+
     const schoolId = req.user?.schoolId || req.schoolId || req.userAuth?.schoolId || null;
-    const list = await StaffProfile.find({ schoolId }).populate('user');
-    res.status(200).json({ status: 'success', data: list });
+
+    // Fetch existing HR staff profiles
+    const staffProfiles = await StaffProfile.find({ schoolId }).populate('user');
+
+    // Also include teachers as staff members so HR view shows teachers by default
+    const Teacher = require('../../models/Staff/teachers.model');
+    const teachers = await Teacher.find({ schoolId }).lean();
+
+    const mappedTeachers = teachers.map(t => ({
+      _id: t._id,
+      employeeId: t.teacherId || t._id,
+      personalInfo: {
+        firstName: t.name ? t.name.split(' ')[0] : '',
+        lastName: t.name ? t.name.split(' ').slice(1).join(' ') : '',
+        photo: t.avatar || null,
+      },
+      contactInfo: {
+        email: t.email,
+        phone: t.phone || '',
+      },
+      employmentInfo: {
+        department: 'teaching',
+        designation: t.program || 'Teacher',
+      },
+      status: t.status || t.isWithdrawn ? 'withdrawn' : (t.isSuspended ? 'suspended' : 'active'),
+      // keep original teacher document for reference
+      _source: 'teacher',
+      raw: t,
+    }));
+
+    // Merge staff profiles and mapped teachers, avoiding duplicates (by email or id)
+    const combined = [];
+    const seen = new Set();
+
+    const pushIfNew = (item) => {
+      const key = String(item._id) || item.contactInfo?.email || '';
+      if (!seen.has(key)) {
+        seen.add(key);
+        combined.push(item);
+      }
+    };
+
+    staffProfiles.forEach(sp => pushIfNew(sp));
+    mappedTeachers.forEach(mt => pushIfNew(mt));
+
+    res.status(200).json({ status: 'success', data: combined });
   } catch (err) { res.status(400).json({ status: 'fail', message: err.message }); }
 };
 
