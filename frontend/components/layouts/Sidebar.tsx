@@ -47,7 +47,6 @@ import {
     X,
     Bus
 } from "lucide-react"
-import GraduationCap from "@/components/icons/GraduationCap"
 
 const sidebarItems = [
     { title: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -68,7 +67,7 @@ const sidebarItems = [
         ]
     },
     { title: "Teachers", href: "/admin/teachers", icon: Users },
-    { title: "Students", href: "/admin/students", icon: GraduationCap },
+    { title: "Students", href: "/admin/students", icon: Users },
     {
         title: "Attendance",
         href: "/admin/attendance",

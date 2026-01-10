@@ -26,6 +26,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useChatStore } from "@/store/chatStore"
+import { useAuthStore } from '@/store/authStore'
 
 interface Attachment {
     type: 'image' | 'file' | 'audio'
@@ -78,13 +79,21 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
         return null
     }
 
-    // Mock sender data - this would come from API
-    const sender = {
-        name: "John Doe",
-        avatar: null
-    }
+    const currentUser = useAuthStore((s) => s.user)
+    // Try to resolve sender information from message or conversation participants
+    const conversations = useChatStore((s) => s.conversations)
+    const conv = conversations?.find((c: any) => (c.id || c._id) === message.conversationId)
 
-    const isOutgoing = message.senderType === 'admin' // Assuming current user is admin
+    const participantInfo = conv?.participants?.find((p: any) => {
+        const uid = p?.user?._id || p?.user?.id || p?.user
+        return uid && String(uid) === String(message.senderId)
+    })
+
+    const sender = message.sender && typeof message.sender === 'object'
+        ? (message.sender as any)
+        : participantInfo?.user || { name: message.senderId }
+
+    const isOutgoing = currentUser && (String(currentUser._id || currentUser.id) === String(message.senderId))
     const isRead = message.status?.readBy?.length > 0
 
     const formatTime = (dateString: string) => {

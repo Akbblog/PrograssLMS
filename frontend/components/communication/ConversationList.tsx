@@ -122,10 +122,29 @@ export default function ConversationList({
     }
 
     const getConversationDisplayName = (conv: Conversation) => {
-        if (conv.name) return conv.name
-        // For direct messages, show other participant's name
-        // This would need participant data
-        return "Direct Message"
+        if (conv.name && conv.name.trim().length) return conv.name
+
+        // If participants include hydrated user objects, prefer the other participant for direct chats
+        try {
+            if (conv.type === 'direct' && Array.isArray(conv.participants)) {
+                const other = conv.participants.find((p: any) => {
+                    const uid = p?.user?._id || p?.user?.id || p?.user
+                    // If uid equals conv.id (unlikely) skip; we don't have currentUser here so pick first non-null
+                    return uid
+                })
+                if (other) return other.user?.name || other.user?.email || 'Direct Message'
+            }
+        } catch (e) {
+            // ignore
+        }
+
+        // Group fallback: show participant names or member count
+        const names = (conv.participants || [])
+            .map((p: any) => p?.user?.name || p?.user?.email || null)
+            .filter(Boolean)
+        if (names.length > 0) return names.slice(0, 2).join(', ') + (names.length > 2 ? ` +${names.length - 2}` : '')
+
+        return 'Conversation'
     }
 
     const getConversationAvatar = (conv: Conversation) => {
