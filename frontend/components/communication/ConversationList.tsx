@@ -32,6 +32,7 @@ interface Participant {
     role: 'admin' | 'member'
     joinedAt: string
     lastReadAt: string | null
+    user?: any
 }
 
 interface LastMessage {
