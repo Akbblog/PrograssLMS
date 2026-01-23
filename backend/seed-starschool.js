@@ -300,6 +300,120 @@ async function seed() {
     }
     console.log(`✅ Created ${feeCount} fee payments\n`);
 
+    // Exams & Results (safe)
+    console.log('🏆 Creating exams and results (if models exist)...');
+    try {
+      if (prisma.exam && typeof prisma.exam.create === 'function') {
+        const createdExams = [];
+        for (let i = 1; i <= 3; i++) {
+          const ex = await prisma.exam.create({ data: {
+            title: `Term ${i} Exam 2025`,
+            examDate: new Date(Date.now() + i * 14 * 24 * 60 * 60 * 1000),
+            academicYear: '2025-2026',
+            academicTerm: `Term ${i}`,
+            schoolId: SCHOOL_ID
+          } });
+          createdExams.push(ex);
+        }
+
+        let resultCount = 0;
+        if (prisma.result && typeof prisma.result.create === 'function') {
+          for (const enr of await prisma.enrollment.findMany({ where: { schoolId: SCHOOL_ID } })) {
+            const score = Math.floor(Math.random() * 100);
+            await prisma.result.create({ data: {
+              studentId: enr.studentId,
+              subjectId: enr.subjectId,
+              examId: createdExams[Math.floor(Math.random() * createdExams.length)].id,
+              marksObtained: score,
+              totalMarks: 100,
+              grade: score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D',
+              academicYear: enr.academicYear,
+              schoolId: SCHOOL_ID
+            } });
+            resultCount++;
+          }
+        }
+        console.log(`✅ Created ${createdExams.length} exams and ${resultCount} results (if models exist)`);
+      } else {
+        console.log('  skip: exam model not found in prisma schema');
+      }
+    } catch (err) {
+      console.warn('  could not create exams/results:', err.message || err);
+    }
+
+    // Library (books) - safe
+    console.log('📚 Creating library records (if model exists)...');
+    try {
+      if (prisma.libraryBook && typeof prisma.libraryBook.create === 'function') {
+        const books = [
+          { title: 'Mathematics Basics', isbn: 'ISBN-001' },
+          { title: 'English Literature', isbn: 'ISBN-002' },
+          { title: 'Introduction to Science', isbn: 'ISBN-003' }
+        ];
+        let bookCount = 0;
+        for (const b of books) {
+          await prisma.libraryBook.create({ data: { title: b.title, isbn: b.isbn, schoolId: SCHOOL_ID } });
+          bookCount++;
+        }
+        console.log(`✅ Created ${bookCount} library books`);
+      } else {
+        console.log('  skip: libraryBook model not found');
+      }
+    } catch (err) {
+      console.warn('  could not create library records:', err.message || err);
+    }
+
+    // Transport routes & assignments - safe
+    console.log('🚍 Creating transport records (if model exists)...');
+    try {
+      if (prisma.transportRoute && typeof prisma.transportRoute.create === 'function') {
+        const route = await prisma.transportRoute.create({ data: {
+          name: 'Route A',
+          vehicleNumber: 'BUS-01',
+          capacity: 30,
+          schoolId: SCHOOL_ID
+        } });
+        // assign first few students to route if assignment model exists
+        if (prisma.transportAssignment && typeof prisma.transportAssignment.create === 'function') {
+          let assignCount = 0;
+          for (const s of createdStudents.slice(0, 10)) {
+            await prisma.transportAssignment.create({ data: { studentId: s.id, routeId: route.id, schoolId: SCHOOL_ID } });
+            assignCount++;
+          }
+          console.log(`✅ Transport route created and ${assignCount} assignments added`);
+        } else {
+          console.log('  route created but transportAssignment model not found');
+        }
+      } else {
+        console.log('  skip: transportRoute model not found');
+      }
+    } catch (err) {
+      console.warn('  could not create transport records:', err.message || err);
+    }
+
+    // Documents (student files) - safe
+    console.log('📁 Creating document records (if model exists)...');
+    try {
+      if (prisma.document && typeof prisma.document.create === 'function') {
+        let docCount = 0;
+        for (const s of createdStudents.slice(0, 5)) {
+          await prisma.document.create({ data: {
+            title: `Admission Form - ${s.name}`,
+            type: 'admission',
+            uploadedBy: admin.id,
+            studentId: s.id,
+            schoolId: SCHOOL_ID
+          } });
+          docCount++;
+        }
+        console.log(`✅ Created ${docCount} documents`);
+      } else {
+        console.log('  skip: document model not found');
+      }
+    } catch (err) {
+      console.warn('  could not create documents:', err.message || err);
+    }
+
     // Summary
     console.log('\n' + '='.repeat(60));
     console.log('🎉 STAR SCHOOL Seed Complete!');
