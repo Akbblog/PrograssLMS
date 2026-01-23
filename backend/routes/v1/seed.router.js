@@ -96,174 +96,114 @@ async function hashPassword(password) {
 router.post('/seed', verifySeedSecret, async (req, res) => {
   try {
     const prisma = getPrisma();
-    if (!prisma) {
-      return res.status(500).json({
-        success: false,
-        message: 'Database connection failed'
-      });
+    if (!prisma) return res.status(500).json({ success: false, message: 'Database connection failed' });
+
+    const STAR_ID = 'school-star-001';
+
+    // Safe delete helper to avoid failing on missing models
+    async function safeDelete(accessor, name) {
+      try {
+        if (accessor && typeof accessor.deleteMany === 'function') {
+          await accessor.deleteMany();
+        }
+      } catch (err) {
+        console.warn(`Could not clear ${name}:`, err.message || err);
+      }
     }
 
-    console.log('🕌 Starting Vercel Seed...');
+    // Clear relevant data
+    await safeDelete(prisma.assignmentSubmission, 'assignmentSubmission');
+    await safeDelete(prisma.assignment, 'assignment');
+    await safeDelete(prisma.enrollment, 'enrollment');
+    await safeDelete(prisma.attendance, 'attendance');
+    await safeDelete(prisma.feePayment, 'feePayment');
+    await safeDelete(prisma.feeStructure, 'feeStructure');
+    await safeDelete(prisma.subject, 'subject');
+    await safeDelete(prisma.classLevel, 'classLevel');
+    await safeDelete(prisma.student, 'student');
+    await safeDelete(prisma.teacher, 'teacher');
+    await safeDelete(prisma.admin, 'admin');
+    await safeDelete(prisma.school, 'school');
 
-    // Clear existing data
-    await prisma.assignmentSubmission.deleteMany({});
-    await prisma.assignment.deleteMany({});
-    await prisma.enrollment.deleteMany({});
-    await prisma.attendance.deleteMany({});
-    await prisma.feePayment.deleteMany({});
-    await prisma.feeStructure.deleteMany({});
-    await prisma.subject.deleteMany({});
-    await prisma.classLevel.deleteMany({});
-    await prisma.student.deleteMany({});
-    await prisma.teacher.deleteMany({});
-    await prisma.admin.deleteMany({});
-    await prisma.school.deleteMany({});
-
-    // Create School
+    // STAR SCHOOL data
     const school = await prisma.school.create({
       data: {
-        id: SCHOOL_ID,
-        name: 'Al-Noor Islamic Academy',
-        email: 'admin@alnoor-academy.edu',
-        phone: '+1-800-ALNOOR-1',
-        address: '123 Islamic Center Drive, Islamic District, IL 60601',
-        features: JSON.stringify({
-          quranStudies: true,
-          islamicEthics: true,
-          arabicLanguage: true,
-          modernCurriculum: true,
-          sportsActivities: true,
-          afterSchoolPrograms: true
-        })
+        id: STAR_ID,
+        name: 'STAR SCHOOL — اسٹار اسکول',
+        email: 'admin@starschool.com',
+        phone: '+92-300-0000000',
+        address: 'City Center, Near Main Road, Karachi, Pakistan',
+        features: JSON.stringify({ urduSupport: true, sports: true, library: true, transport: true })
       }
     });
 
-    // Create Admin
-    const adminPassword = await hashPassword('admin123');
-    const admin = await prisma.admin.create({
-      data: {
-        name: 'Dr. Muhammad Rashid',
-        email: 'admin@alnoor-academy.edu',
-        password: adminPassword,
-        phone: '+1-800-ADMIN-01',
-        role: 'admin',
-        schoolId: SCHOOL_ID
-      }
-    });
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    const adminPassword = await bcrypt.hash('admin123', salt);
+    const admin = await prisma.admin.create({ data: { name: 'Star School Admin', email: 'admin@starschool.com', password: adminPassword, phone: '+92-300-1111111', role: 'admin', schoolId: STAR_ID } });
 
-    // Create Class Levels
+    // create superadmin
+    const superHash = await bcrypt.hash('Superpass', salt);
+    await prisma.admin.create({ data: { name: 'Super Admin', email: 'superadmin@progresslms.com', password: superHash, role: 'super_admin' } });
+
+    // class levels
+    const classLevels = [];
+    for (let g = 1; g <= 5; g++) { classLevels.push({ name: `Grade ${g}`, section: 'A' }); classLevels.push({ name: `Grade ${g}`, section: 'B' }); }
     const createdClassLevels = [];
-    for (const classData of classLevels) {
-      const classLevel = await prisma.classLevel.create({
-        data: {
-          name: classData.name,
-          section: classData.section,
-          schoolId: SCHOOL_ID
-        }
-      });
-      createdClassLevels.push(classLevel);
-    }
+    for (const cl of classLevels) createdClassLevels.push(await prisma.classLevel.create({ data: { name: cl.name, section: cl.section, schoolId: STAR_ID } }));
 
-    // Create Subjects
+    // subjects
+    const subjects = [
+      { name: 'Mathematics', code: 'MATH101' },
+      { name: 'English', code: 'ENG101' },
+      { name: 'Science', code: 'SCI101' },
+      { name: 'Urdu', code: 'URD101' },
+      { name: 'Social Studies', code: 'SOC101' }
+    ];
     const createdSubjects = [];
-    for (const subjectData of subjects) {
-      const subject = await prisma.subject.create({
-        data: {
-          name: subjectData.name,
-          code: subjectData.code,
-          schoolId: SCHOOL_ID
-        }
-      });
-      createdSubjects.push(subject);
-    }
+    for (const s of subjects) createdSubjects.push(await prisma.subject.create({ data: { name: s.name, code: s.code, schoolId: STAR_ID } }));
 
-    // Create Teachers
-    const teacherPassword = await hashPassword('teacher123');
+    // teachers
+    const teachers = [
+      { name: 'Ali Khan', email: 'ali.khan@starschool.com' },
+      { name: 'Sara Ahmed', email: 'sara.ahmed@starschool.com' },
+      { name: 'Usman Riaz', email: 'usman.riaz@starschool.com' },
+      { name: 'Fatima Noor', email: 'fatima.noor@starschool.com' },
+      { name: 'Owais Malik', email: 'owais.malik@starschool.com' }
+    ];
+    const teacherHash = await bcrypt.hash('teacher123', salt);
     const createdTeachers = [];
-    for (const teacherData of teachers) {
-      const teacher = await prisma.teacher.create({
-        data: {
-          name: teacherData.name,
-          email: teacherData.email,
-          password: teacherPassword,
-          firstName: teacherData.name.split(' ')[0],
-          lastName: teacherData.name.split(' ').slice(1).join(' '),
-          phone: `+1-555-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`,
-          role: 'teacher',
-          schoolId: SCHOOL_ID
-        }
-      });
-      createdTeachers.push(teacher);
-    }
+    for (const t of teachers) createdTeachers.push(await prisma.teacher.create({ data: { name: t.name, email: t.email, password: teacherHash, firstName: t.name.split(' ')[0], lastName: t.name.split(' ').slice(1).join(' '), phone: '+92-300-0000000', role: 'teacher', schoolId: STAR_ID } }));
 
-    // Create Students
-    const studentPassword = await hashPassword('student123');
+    // students
+    const students = [];
+    for (let g = 1; g <= 5; g++) for (let i = 1; i <= 5; i++) { const idx = (g - 1) * 5 + i; students.push({ name: `Student ${idx} Star`, email: `student${idx}@starschool.com`, grade: `Grade ${g}`, section: i % 2 === 0 ? 'B' : 'A' }); }
+    const studentHash = await bcrypt.hash('student123', salt);
     const createdStudents = [];
     for (let i = 0; i < students.length; i++) {
-      const studentData = students[i];
-      const student = await prisma.student.create({
-        data: {
-          name: studentData.name,
-          email: studentData.email,
-          password: studentPassword,
-          studentId: `STU-${String(i + 1).padStart(3, '0')}`,
-          phone: `+1-555-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`,
-          role: 'student',
-          schoolId: SCHOOL_ID
-        }
-      });
-      createdStudents.push(student);
+      const sd = students[i];
+      createdStudents.push(await prisma.student.create({ data: { name: sd.name, email: sd.email, password: studentHash, studentId: `STU-${String(i + 1).padStart(3,'0')}`, phone: '+92-300-0000000', role: 'student', schoolId: STAR_ID } }));
     }
 
-    // Create Enrollments
+    // enrollments
     let enrollmentCount = 0;
-    for (const student of createdStudents) {
-      const matchingClass = createdClassLevels.find(cl => {
-        const studentData = students.find(s => s.email === student.email);
-        return cl.name === studentData?.grade && cl.section === studentData?.section;
-      });
-
-      if (matchingClass) {
-        const enrollmentSubjects = createdSubjects.slice(0, Math.floor(Math.random() * 2) + 3);
-        for (const subject of enrollmentSubjects) {
-          await prisma.enrollment.create({
-            data: {
-              studentId: student.id,
-              subjectId: subject.id,
-              classLevel: matchingClass.id,
-              academicYear: '2025-2026',
-              academicTerm: 'Term 1',
-              status: 'active',
-              progress: Math.floor(Math.random() * 100),
-              schoolId: SCHOOL_ID
-            }
-          });
-          enrollmentCount++;
-        }
+    for (const s of createdStudents) {
+      const meta = students.find(x => x.email === s.email);
+      const matchingClass = createdClassLevels.find(cl => cl.name === meta.grade && cl.section === meta.section);
+      if (!matchingClass) continue;
+      const enrollSubjects = createdSubjects.slice(0,3);
+      for (const subj of enrollSubjects) {
+        await prisma.enrollment.create({ data: { studentId: s.id, subjectId: subj.id, classLevel: matchingClass.id, academicYear: '2025-2026', academicTerm: 'Term 1', status: 'active', progress: Math.floor(Math.random()*100), schoolId: STAR_ID } });
+        enrollmentCount++;
       }
     }
 
-    console.log('✅ Seed Complete');
+    // assignments, attendance, fees can be left minimal or added similarly if desired
 
-    return res.status(200).json({
-      success: true,
-      message: 'Database seeded successfully',
-      data: {
-        school: school.name,
-        admin: admin.name,
-        teachers: createdTeachers.length,
-        students: createdStudents.length,
-        subjects: createdSubjects.length,
-        classLevels: createdClassLevels.length,
-        enrollments: enrollmentCount
-      }
-    });
+    return res.status(200).json({ success: true, message: 'STAR SCHOOL seeded successfully', data: { school: school.name, admin: admin.email, teachers: createdTeachers.length, students: createdStudents.length, subjects: createdSubjects.length, classLevels: createdClassLevels.length, enrollments: enrollmentCount } });
   } catch (error) {
-    console.error('Seed error:', error);
-    return res.status(500).json({
-      success: false,
-      message: `Seed failed: ${error.message}`
-    });
+    console.error('Seed error:', error.message || error);
+    return res.status(500).json({ success: false, message: `Seed failed: ${error.message || error}` });
   }
 });
 
