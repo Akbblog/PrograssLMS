@@ -26,10 +26,11 @@
   await doPost('/seed', {}, { Authorization: `Bearer ${SEED_SECRET}` });
 
   console.log('\nTesting logins...');
-  await doPost('/superadmin/login', { email: 'superadmin@progresslms.com', password: 'Superpass' });
-  await doPost('/admin/login', { email: 'admin@alnoor-academy.edu', password: 'admin123' });
-  await doPost('/teachers/login', { email: 'ali.khan@starschool.com', password: 'teacher123' });
-  await doPost('/students/login', { email: 'student1@starschool.com', password: 'student123' });
+  // Use explicit public auth endpoints to avoid middleware conflicts on deployed routing
+  await doPost('/public/superadmin/login', { email: 'superadmin@progresslms.com', password: 'Superpass' });
+  await doPost('/public/admin/login', { email: 'admin@starschool.com', password: 'admin123' });
+  await doPost('/public/teachers/login', { email: 'ali.khan@starschool.com', password: 'teacher123' });
+  await doPost('/public/students/login', { email: 'student1@starschool.com', password: 'student123' });
 
   console.log('\nDone.');
 })();
