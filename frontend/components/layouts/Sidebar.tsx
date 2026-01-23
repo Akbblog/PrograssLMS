@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { adminAPI, academicAPI, superAdminAPI, examAPI, hrAPI, libraryAPI, transportAPI, adminSchoolAPI } from '@/lib/api/endpoints'
 import { useAuthStore } from "@/store/authStore"
 import { useSidebarStore } from "@/store/sidebarStore"
+import GraduationCap from "@/components/icons/GraduationCap"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
