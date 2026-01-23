@@ -43,10 +43,20 @@ interface MessageReaction {
     createdAt: string
 }
 
+interface Sender {
+    _id?: string
+    id?: string
+    name?: string
+    avatar?: string
+    [key: string]: any
+}
+
 interface Message {
     id: string
     conversationId: string
     senderId: string
+    // Some backend responses include a populated "sender" object — keep this optional
+    sender?: Sender | any
     senderType: 'admin' | 'teacher' | 'student' | 'parent'
     type: 'text' | 'image' | 'file' | 'audio' | 'system'
     content: string

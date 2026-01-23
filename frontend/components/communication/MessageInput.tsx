@@ -26,6 +26,8 @@ interface Message {
     id: string
     conversationId: string
     senderId: string
+    // Optional populated sender object
+    sender?: any
     senderType: 'admin' | 'teacher' | 'student' | 'parent'
     type: 'text' | 'image' | 'file' | 'audio' | 'system'
     content: string
