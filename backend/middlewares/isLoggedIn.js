@@ -1,6 +1,20 @@
 const verifyToken = require("../utils/verifyToken");
 
 const isLoggedIn = (req, res, next) => {
+  // Allow public endpoints to pass through without JWT token
+  // Some routers mistakenly mount this middleware globally; whitelist common public paths here
+  try {
+    const path = (req.originalUrl || req.url || '').toLowerCase();
+    if (
+      path.includes('/login') ||
+      path.includes('/register') ||
+      path.includes('/seed') ||
+      path.includes('/health')
+    ) {
+      return next();
+    }
+  } catch (e) {}
+
   // get token from header
   const headerObj = req.headers;
   const authorization = headerObj.authorization || headerObj.Authorization;
