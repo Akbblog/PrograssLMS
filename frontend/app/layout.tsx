@@ -34,10 +34,12 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <QueryClientProvider client={queryClient}>
-          {children}
-          <Toaster position="top-right" richColors />
-          {/* Global search activator for keyboard shortcut only */}
-          <GlobalSearchActivator />
+          <AuthProvider>
+            {children}
+            <Toaster position="top-right" richColors />
+            {/* Global search activator for keyboard shortcut only */}
+            <GlobalSearchActivator />
+          </AuthProvider>
         </QueryClientProvider>
       </body>
     </html>
