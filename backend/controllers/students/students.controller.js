@@ -250,6 +250,16 @@ exports.listStudentsController = async (req, res) => {
 exports.getStudentByIdController = async (req, res) => {
   try {
     const studentId = req.params.id;
+    // Allow students to fetch their own profile via this route.
+    const requesterRole = req.userRole;
+    const requesterId = req.userAuth && req.userAuth.id;
+    if (requesterRole === 'student' && requesterId === studentId) {
+      // Delegate to the student profile service for self requests
+      await getStudentsProfileService(requesterId, res);
+      return;
+    }
+
+    // Otherwise require admin behavior
     await getStudentByAdminService(studentId, res);
   } catch (error) {
     responseStatus(res, 400, 'failed', error.message);

@@ -30,8 +30,9 @@ const gradeSchema = new mongoose.Schema(
             required: true,
         },
         schoolId: {
-            type: ObjectId,
-            ref: "School",
+            // Some deployments use string IDs for schools (Prisma UUID/string). Allow
+            // string school IDs to avoid ObjectId cast errors when mixed drivers are used.
+            type: String,
             required: true,
             index: true,
         },

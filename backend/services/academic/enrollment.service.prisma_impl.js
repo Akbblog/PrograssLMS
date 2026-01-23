@@ -23,7 +23,25 @@ exports.getStudentEnrollments = async (req, res) => {
     const { studentId } = req.params;
     const schoolId = req.userAuth.schoolId;
 
-    const enrollments = await prisma.enrollment.findMany({ where: { studentId, schoolId, status: 'active' }, include: { subject: true, classLevelObj: true, academicYear: true, academicTerm: true } });
+    // Prisma schema stores scalar IDs on Enrollment (no relation fields defined),
+    // so avoid using `include` with non-relation fields. Return the enrollment records
+    // directly and let the caller/consumer resolve related metadata if needed.
+    const enrollments = await prisma.enrollment.findMany({
+      where: { studentId, schoolId, status: 'active' },
+      select: {
+        id: true,
+        studentId: true,
+        subjectId: true,
+        classLevel: true,
+        academicYear: true,
+        academicTerm: true,
+        status: true,
+        progress: true,
+        schoolId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
 
     return res.status(200).json({ status: 'success', data: enrollments });
   } catch (err) {
