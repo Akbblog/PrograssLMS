@@ -17,6 +17,15 @@ try {
     routeErrors.push({ path: './seed.router', error: e.message });
 }
 
+// Public auth routes (explicitly mounted early to avoid middleware conflicts)
+try {
+    router.use('/', require('./publicAuth.router'));
+    console.log('[ROUTES] ✅ Mounted: /public auth (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load publicAuth.router:', e);
+    routeErrors.push({ path: './publicAuth.router', error: e.message });
+}
+
 // NOTE: Avoid dynamic `require(pathVar)` in serverless.
 // Vercel’s bundler may not include those files, causing runtime 503s.
 
