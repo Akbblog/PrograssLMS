@@ -9,20 +9,22 @@ const { teacherLoginService } = require("../../services/staff/teachers.service.p
 const { studentLoginService } = require("../../services/students/students.service.prisma_impl");
 
 // Keep these routes intentionally minimal and public
-router.post('/public/superadmin/login', async (req, res) => {
-  try { await superAdminLoginService(req.body, res); } catch (e) { res.status(500).json({ success:false, message: e.message }); }
-});
+// Public endpoints (both /public/* and the original paths) so frontend can use existing URLs
+const handlers = [
+  { path: '/public/superadmin/login', orig: '/superadmin/login', fn: superAdminLoginService },
+  { path: '/public/admin/login', orig: '/admin/login', fn: loginAdminService },
+  { path: '/public/teachers/login', orig: '/teachers/login', fn: teacherLoginService },
+  { path: '/public/students/login', orig: '/students/login', fn: studentLoginService },
+];
 
-router.post('/public/admin/login', async (req, res) => {
-  try { await loginAdminService(req.body, res); } catch (e) { res.status(500).json({ success:false, message: e.message }); }
-});
-
-router.post('/public/teachers/login', async (req, res) => {
-  try { await teacherLoginService(req.body, res); } catch (e) { res.status(500).json({ success:false, message: e.message }); }
-});
-
-router.post('/public/students/login', async (req, res) => {
-  try { await studentLoginService(req.body, res); } catch (e) { res.status(500).json({ success:false, message: e.message }); }
-});
+for (const h of handlers) {
+  router.post(h.path, async (req, res) => {
+    try { await h.fn(req.body, res); } catch (e) { res.status(500).json({ success:false, message: e.message }); }
+  });
+  // also register the original path so existing frontend calls continue to work
+  router.post(h.orig, async (req, res) => {
+    try { await h.fn(req.body, res); } catch (e) { res.status(500).json({ success:false, message: e.message }); }
+  });
+}
 
 module.exports = router;
