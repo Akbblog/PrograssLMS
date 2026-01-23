@@ -17,7 +17,17 @@ class FinanceService {
     let totalAmount = 0;
     const applicableCategories = [];
 
-    for (const category of activeFeeStructure.feeCategories || []) {
+    // feeCategories stored as JSON string in Prisma schema; parse if needed
+    let feeCategories = activeFeeStructure.feeCategories || [];
+    if (typeof feeCategories === 'string') {
+      try {
+        feeCategories = JSON.parse(feeCategories);
+      } catch (e) {
+        feeCategories = [];
+      }
+    }
+
+    for (const category of feeCategories || []) {
       // very simple applicability check
       if (category.applicableTo?.allClasses) {
         let categoryAmount = category.amount || 0;

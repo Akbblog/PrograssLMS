@@ -98,7 +98,23 @@ exports.getFeeStructures = async (req, res) => {
                 orderBy: { createdAt: "desc" },
             });
 
-            return res.status(200).json({ status: "success", data: feeStructures });
+            // Parse JSON fields stored as text in Prisma schema so frontend receives arrays/objects
+            const normalized = feeStructures.map(fs => {
+                const parsed = { ...fs };
+                try {
+                    parsed.feeCategories = fs.feeCategories ? JSON.parse(fs.feeCategories) : [];
+                } catch (e) {
+                    parsed.feeCategories = [];
+                }
+                try {
+                    parsed.paymentPlans = fs.paymentPlans ? JSON.parse(fs.paymentPlans) : [];
+                } catch (e) {
+                    parsed.paymentPlans = [];
+                }
+                return parsed;
+            });
+
+            return res.status(200).json({ status: "success", data: normalized });
         }
 
         const schoolId = req.userAuth.schoolId;

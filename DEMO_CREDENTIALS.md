@@ -30,7 +30,7 @@ curl -X POST https://progresslms-backend.vercel.app/api/seed \
 
 | Property | Value |
 |----------|-------|
-| **Email** | `SA@progresslms.com` |
+| **Email** | `superadmin@progresslms.com` |
 | **Password** | `Superpass` |
 | **Role** | System Administrator |
 | **Access** | All schools, all users, system settings |
@@ -49,6 +49,59 @@ curl -X POST https://progresslms-backend.vercel.app/api/seed \
 | **Role** | School Administrator |
 
 ---
+
+## 🏫 School: STAR SCHOOL (Seeded)
+
+### Admin Login
+
+| Property | Value |
+|----------|-------|
+| **Name** | Star School Admin |
+| **Email** | `admin@starschool.com` |
+| **Password** | `admin123` |
+| **Role** | School Administrator |
+
+### Superadmin
+
+| Property | Value |
+|----------|-------|
+| **Email** | `superadmin@progresslms.com` |
+| **Password** | `Superpass` |
+
+### Teachers (5 Total)
+
+All teachers use password: `teacher123`
+
+| Name | Email | Subject |
+|------|-------|---------|
+| Ali Khan | `ali.khan@starschool.com` | Mathematics |
+| Sara Ahmed | `sara.ahmed@starschool.com` | English |
+| Usman Riaz | `usman.riaz@starschool.com` | Science |
+| Fatima Noor | `fatima.noor@starschool.com` | Urdu |
+| Owais Malik | `owais.malik@starschool.com` | Social Studies |
+
+### Students (25 Total)
+
+All students use password: `student123`.
+
+Emails follow the pattern `student{n}@starschool.com` (n = 1..25). Example:
+- `student1@starschool.com`
+- `student2@starschool.com`
+- ...
+- `student25@starschool.com`
+
+### Seed notes
+
+- Seed script: `backend/seed-starschool.js` (already executed)
+- To re-run the seed locally:
+
+```bash
+cd backend
+node seed-starschool.js
+```
+
+Ensure `backend/.env` has the correct `DATABASE_URL` before seeding.
+
 
 ## 👨‍🏫 Teachers (10 Total)
 
