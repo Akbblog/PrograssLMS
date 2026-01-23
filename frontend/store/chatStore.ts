@@ -4,6 +4,8 @@ import { unwrapArray } from '@/lib/utils'
 
 interface Participant {
     userId: string
+    // Some API responses include a populated `user` object instead of a simple id
+    user?: string | { _id?: string; id?: string; name?: string; avatar?: string; [key: string]: any }
     userType: 'admin' | 'teacher' | 'student' | 'parent'
     role: 'admin' | 'member'
     joinedAt: string
@@ -52,6 +54,8 @@ interface Message {
     id: string
     conversationId: string
     senderId: string
+    // Optional populated sender object (from some backend responses)
+    sender?: any
     senderType: 'admin' | 'teacher' | 'student' | 'parent'
     type: 'text' | 'image' | 'file' | 'audio' | 'system'
     content: string
