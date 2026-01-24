@@ -295,6 +295,9 @@ export const performanceAPI = {
 // Teacher endpoints
 export const teacherAPI = {
   getDashboard: () => api.get('/teacher/dashboard'),
+  // Add downloadTeacherCard endpoint
+  downloadTeacherCard: (teacherId: string) =>
+    api.get(`/teachers/${teacherId}/card`, { responseType: 'blob' as any }),
 };
 
 // Behavior & Risk Alert endpoints

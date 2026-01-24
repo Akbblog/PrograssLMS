@@ -8,6 +8,12 @@ interface User {
     email: string
     role: string
     schoolId?: string
+    // Additional optional fields used across the app
+    studentId?: string;
+    employeeId?: string;
+    currentClassLevel?: any;
+    // Allow any other dynamic fields
+    [key: string]: any;
     features?: {
         onlineExams?: boolean
         attendance?: boolean

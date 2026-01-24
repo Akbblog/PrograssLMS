@@ -141,10 +141,10 @@ export default function TeacherStudentsPage() {
                                 <div className="text-2xl font-bold">
                                     {students.length > 0
                                         ? Math.round(
-                                            Object.values(studentStats)
-                                                .filter((s: any) => s.attendanceRate !== "N/A")
-                                                .reduce((sum: number, s: any) => sum + parseFloat(s.attendanceRate), 0) /
-                                            Object.values(studentStats).filter((s: any) => s.attendanceRate !== "N/A").length
+                                            (Object.values(studentStats) as any[])
+                                                .filter((s) => s.attendanceRate !== "N/A")
+                                                .reduce((sum: number, s) => sum + parseFloat(s.attendanceRate), 0) /
+                                            (Object.values(studentStats) as any[]).filter((s) => s.attendanceRate !== "N/A").length
                                         ) || "N/A"
                                         : "N/A"}%
                                 </div>
@@ -160,10 +160,10 @@ export default function TeacherStudentsPage() {
                                 <div className="text-2xl font-bold">
                                     {students.length > 0
                                         ? (
-                                            Object.values(studentStats)
-                                                .filter((s: any) => s.averageGrade !== "N/A")
-                                                .reduce((sum: number, s: any) => sum + parseFloat(s.averageGrade), 0) /
-                                            Object.values(studentStats).filter((s: any) => s.averageGrade !== "N/A").length
+                                            (Object.values(studentStats) as any[])
+                                                .filter((s) => s.averageGrade !== "N/A")
+                                                .reduce((sum: number, s) => sum + parseFloat(s.averageGrade), 0) /
+                                            (Object.values(studentStats) as any[]).filter((s) => s.averageGrade !== "N/A").length
                                         ).toFixed(1) || "N/A"
                                         : "N/A"}%
                                 </div>

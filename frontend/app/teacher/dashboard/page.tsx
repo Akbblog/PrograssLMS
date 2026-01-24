@@ -29,6 +29,7 @@ import {
     Briefcase
 } from "lucide-react"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { teacherAPI } from '@/lib/api/endpoints'
 
 export default function TeacherDashboard() {
