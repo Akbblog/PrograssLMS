@@ -62,10 +62,7 @@ export default function StudentProfilePage() {
     const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
 
     useEffect(() => {
-        // If the router hasn't provided an ID yet, just wait.
-        if (!studentId) return;
-        // Guard against a literal "undefined" string coming from the URL.
-        if (studentId === 'undefined') {
+        if (!studentId) {
             toast.error("Invalid student ID");
             router.push("/admin/students");
             return;
@@ -76,17 +73,27 @@ export default function StudentProfilePage() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [studentRes, enrollmentsRes, gradesRes, attendanceRes] = await Promise.allSettled([
-                adminAPI.getStudent(studentId),
+            // First, fetch the student record. The endpoint expects the Mongo _id, but the URL provides the custom studentId.
+            // We'll retrieve the full list and locate the matching record.
+            const [studentsRes, enrollmentsRes, gradesRes, attendanceRes] = await Promise.allSettled([
+                adminAPI.getStudents(),
                 enrollmentAPI.getStudentEnrollments(studentId),
                 gradeAPI.getStudentGrades(studentId),
                 attendanceAPI.getStudentAttendance(studentId)
             ]);
 
-            if (studentRes.status === 'fulfilled') {
-                setStudent((studentRes.value as any).data);
+            if (studentsRes.status === 'fulfilled') {
+                const students = unwrapArray((studentsRes.value as any)?.data, "students");
+                const found = students.find((s: any) => s.studentId === studentId || s._id === studentId);
+                if (found) {
+                    setStudent(found);
+                } else {
+                    toast.error("Student not found");
+                    router.push("/admin/students");
+                    return;
+                }
             } else {
-                toast.error("Student not found");
+                toast.error("Failed to load students list");
                 router.push("/admin/students");
                 return;
             }
