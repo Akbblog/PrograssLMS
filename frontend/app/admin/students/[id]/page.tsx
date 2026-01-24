@@ -51,7 +51,8 @@ import { cn } from "@/lib/utils";
 export default function StudentProfilePage() {
     const router = useRouter();
     const params = useParams();
-    const studentId = params.id as string;
+    // Extract the dynamic route parameter. Guard against missing/undefined values.
+    const studentId = (params.id as string) ?? '';
 
     const [student, setStudent] = useState<any>(null);
     const [enrollments, setEnrollments] = useState([]);
@@ -61,7 +62,12 @@ export default function StudentProfilePage() {
     const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
 
     useEffect(() => {
-        if (studentId) fetchData();
+        if (!studentId) {
+            toast.error("Invalid student ID");
+            router.push("/admin/students");
+            return;
+        }
+        fetchData();
     }, [studentId]);
 
     const fetchData = async () => {

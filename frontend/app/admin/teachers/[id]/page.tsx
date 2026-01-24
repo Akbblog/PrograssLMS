@@ -46,14 +46,20 @@ import { unwrapArray } from "@/lib/utils";
 export default function TeacherProfilePage() {
     const router = useRouter();
     const params = useParams();
-    const teacherId = params.id as string;
+    // Extract the dynamic route parameter. Guard against missing/undefined values.
+    const teacherId = (params.id as string) ?? '';
 
     const [teacher, setTeacher] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
 
     useEffect(() => {
-        if (teacherId) fetchTeacher();
+        if (!teacherId) {
+            toast.error("Invalid teacher ID");
+            router.push("/admin/teachers");
+            return;
+        }
+        fetchTeacher();
     }, [teacherId]);
 
     const fetchTeacher = async () => {
