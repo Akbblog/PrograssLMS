@@ -22,7 +22,7 @@ import {
     Sparkles,
     Calendar,
     Download,
-    IDCard,
+    IdCard,
     User,
     Mail,
     Hash,

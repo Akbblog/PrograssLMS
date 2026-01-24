@@ -29,7 +29,7 @@ import {
     Star,
     Sparkles,
     Download,
-    IDCard,
+    IdCard,
     User,
     Mail,
     Hash
@@ -240,7 +240,7 @@ export default function StudentDashboard() {
             <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden animate-fadeInUp" style={{ animationDelay: '50ms' }}>
                 <CardHeader className="pb-3 border-b border-slate-50">
                     <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
-                        <IDCard className="h-4 w-4" /> My Student ID Card
+                        <IdCard className="h-4 w-4" /> My Student ID Card
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -579,8 +579,11 @@ export default function StudentDashboard() {
                         </Button>
                     </LuminaCardContent>
                 </LuminaCard>
+            </div>
+        </div>
 
-                <LuminaCard variant="glass" gradientColor="amber" className="border-amber-100 shadow-2xl shadow-amber-200/40 group relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <LuminaCard variant="glass" gradientColor="amber" className="border-amber-100 shadow-2xl shadow-amber-200/40 group relative">
                     <div className="absolute top-0 right-0 p-4 bg-rose-50 text-rose-600 rounded-bl-3xl translate-x-2 -translate-y-2 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform">
                         <Wallet className="w-6 h-6" />
                     </div>

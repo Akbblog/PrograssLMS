@@ -37,7 +37,7 @@
   }
   
   /* Remove borders for cleaner look */
-  .border, .border-* {
+  .border {
     border: none !important;
   }
   

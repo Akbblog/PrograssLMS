@@ -37,7 +37,8 @@ import {
     DollarSign,
     Building,
     Download,
-    IDCard
+    IdCard,
+    Eye
 } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";

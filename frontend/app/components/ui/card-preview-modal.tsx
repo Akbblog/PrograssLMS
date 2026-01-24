@@ -13,6 +13,24 @@ interface CardPreviewModalProps {
     type: 'student' | 'teacher';
     data: any;
     qrDataUrl?: string;
+    attendanceData?: {
+      percentage: number;
+      presentDays: number;
+      totalDays: number;
+    };
+    academicData?: {
+      gpa: string;
+      class: string;
+      session: string;
+    };
+    employmentInfo?: {
+      designation: string;
+      department: string;
+      subject: string;
+      joiningDate: string;
+      experience: string;
+      employmentType: string;
+    };
   };
   onDownload?: () => void;
 }
@@ -208,3 +226,4 @@ export function CardPreviewModal({ trigger, cardData, onDownload }: CardPreviewM
     </Dialog>
   );
 }
+
