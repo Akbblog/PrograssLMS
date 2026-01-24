@@ -210,7 +210,7 @@ export default function TeacherProfilePage() {
             <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
                 <CardHeader className="pb-3 border-b border-slate-50">
                     <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
-                        <IDCard className="h-4 w-4" /> Teacher ID Card
+                        <IdCard className="h-4 w-4" /> Teacher ID Card
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -237,7 +237,7 @@ export default function TeacherProfilePage() {
                         </div>
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-32 h-40 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-dashed border-purple-200 rounded-lg flex items-center justify-center">
-                                <IDCard className="h-12 w-12 text-purple-400" />
+                                <IdCard className="h-12 w-12 text-purple-400" />
                             </div>
                             <Button size="sm" onClick={handleDownloadCard} className="bg-purple-600 hover:bg-purple-700">
                                 <Download className="h-4 w-4 mr-2" /> Download ID Card

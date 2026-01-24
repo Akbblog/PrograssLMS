@@ -253,7 +253,7 @@ export default function StudentProfilePage() {
             <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
                 <CardHeader className="pb-3 border-b border-slate-50">
                     <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
-                        <IDCard className="h-4 w-4" /> Student ID Card
+                        <IdCard className="h-4 w-4" /> Student ID Card
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -280,7 +280,7 @@ export default function StudentProfilePage() {
                         </div>
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-32 h-40 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-dashed border-indigo-200 rounded-lg flex items-center justify-center">
-                                <IDCard className="h-12 w-12 text-indigo-400" />
+                                <IdCard className="h-12 w-12 text-indigo-400" />
                             </div>
                             <Button size="sm" onClick={handleDownloadCard} className="bg-indigo-600 hover:bg-indigo-700">
                                 <Download className="h-4 w-4 mr-2" /> Download ID Card

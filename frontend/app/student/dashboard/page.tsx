@@ -279,7 +279,7 @@ export default function StudentDashboard() {
                         </div>
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-32 h-40 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-dashed border-indigo-200 rounded-lg flex items-center justify-center">
-                                <IDCard className="h-12 w-12 text-indigo-400" />
+                                <IdCard className="h-12 w-12 text-indigo-400" />
                             </div>
                             <Button size="sm" onClick={handleDownloadStudentCard} className="bg-indigo-600 hover:bg-indigo-700">
                                 <Download className="h-4 w-4 mr-2" /> Download ID Card
