@@ -12,6 +12,10 @@ const apiOrigin = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // Enable source‑maps for production builds so the browser can map
+  // minified bundles (e.g., bb196d63a54c0545.js) back to the original
+  // TypeScript/TSX files. This adds a `*.js.map` file next to each bundle.
+  productionBrowserSourceMaps: true,
   reactCompiler: true,
   // Turbopack settings. Keep root configured; disable at build time via
   // env `NEXT_DISABLE_TURBOPACK=1` when needed on Windows.

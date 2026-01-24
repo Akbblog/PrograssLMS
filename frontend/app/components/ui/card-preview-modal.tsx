@@ -226,4 +226,4 @@ export function CardPreviewModal({ trigger, cardData, onDownload }: CardPreviewM
     </Dialog>
   );
 }
-
+// Default school branding
