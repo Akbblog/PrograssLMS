@@ -55,7 +55,106 @@ exports.generateStudentCardController = async (req, res) => {
     if (!student) return responseStatus(res, 404, 'failed', 'Student not found');
 
     const { dataUrl } = await qrGenerator.generateQRCodeImage({ id: student.id || student._id, type: 'student' });
-    const pdfBuffer = await documentGenerator.generateStudentCard({ student, qrDataUrl: dataUrl });
+    
+    // Fetch enhanced data for card
+    let attendanceData = null;
+    let academicData = null;
+    
+    if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      
+      // Get attendance data
+      const attendanceRecords = await prisma.attendance.findMany({
+        where: { studentId: studentId },
+        select: { status: true, date: true }
+      });
+      
+      if (attendanceRecords.length > 0) {
+        const presentCount = attendanceRecords.filter(record => record.status === 'present').length;
+        attendanceData = {
+          percentage: Math.round((presentCount / attendanceRecords.length) * 100),
+          totalDays: attendanceRecords.length,
+          presentDays: presentCount
+        };
+      }
+      
+      // Get academic data
+      const enrollments = await prisma.enrollment.findMany({
+        where: { studentId: studentId },
+        include: {
+          class: true,
+          academicSession: true,
+          results: {
+            include: {
+              subject: true
+            }
+          }
+        }
+      });
+      
+      if (enrollments.length > 0) {
+        const latestEnrollment = enrollments[0];
+        const totalSubjects = latestEnrollment.results.length;
+        const passedSubjects = latestEnrollment.results.filter(result => result.grade !== 'F').length;
+        const gpa = (passedSubjects / totalSubjects * 4).toFixed(2);
+        
+        academicData = {
+          gpa: gpa,
+          class: latestEnrollment.class.name,
+          session: latestEnrollment.academicSession.name,
+          totalSubjects: totalSubjects,
+          passedSubjects: passedSubjects
+        };
+      }
+      
+      await prisma.$disconnect();
+    } else {
+      // Mongoose fallback - implement similar queries for MongoDB
+      // This is a simplified version - you may need to adjust based on your MongoDB schema
+      try {
+        const Attendance = require('../../models/Attendance/attendance.model');
+        const attendanceRecords = await Attendance.find({ studentId: studentId });
+        if (attendanceRecords.length > 0) {
+          const presentCount = attendanceRecords.filter(record => record.status === 'present').length;
+          attendanceData = {
+            percentage: Math.round((presentCount / attendanceRecords.length) * 100),
+            totalDays: attendanceRecords.length,
+            presentDays: presentCount
+          };
+        }
+      } catch (error) {
+        console.log('Could not fetch attendance data:', error.message);
+      }
+      
+      try {
+        const Enrollment = require('../../models/Enrollments/enrollments.model');
+        const enrollments = await Enrollment.find({ studentId: studentId }).populate('class').populate('academicSession').populate('results.subject');
+        if (enrollments.length > 0) {
+          const latestEnrollment = enrollments[0];
+          const totalSubjects = latestEnrollment.results.length;
+          const passedSubjects = latestEnrollment.results.filter(result => result.grade !== 'F').length;
+          const gpa = (passedSubjects / totalSubjects * 4).toFixed(2);
+          
+          academicData = {
+            gpa: gpa,
+            class: latestEnrollment.class.name,
+            session: latestEnrollment.academicSession.name,
+            totalSubjects: totalSubjects,
+            passedSubjects: passedSubjects
+          };
+        }
+      } catch (error) {
+        console.log('Could not fetch academic data:', error.message);
+      }
+    }
+    
+    const pdfBuffer = await documentGenerator.generateStudentCard({ 
+      student, 
+      qrDataUrl: dataUrl,
+      attendanceData,
+      academicData
+    });
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="student-${studentId}-card.pdf"`);

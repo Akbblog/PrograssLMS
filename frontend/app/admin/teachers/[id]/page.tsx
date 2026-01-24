@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { CardPreviewModal } from "@/components/ui/card-preview-modal";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -34,7 +35,9 @@ import {
     Clock,
     Award,
     DollarSign,
-    Building
+    Building,
+    Download,
+    IDCard
 } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
@@ -81,6 +84,24 @@ export default function TeacherProfilePage() {
             toast.error(error.message || "Failed to deactivate");
         }
         setDeactivateDialogOpen(false);
+    };
+
+    const handleDownloadCard = async () => {
+        try {
+            const response = await adminAPI.downloadTeacherCard(teacherId);
+            const blob = response.data;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `teacher-${teacherId}-card.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            toast.success("Teacher ID card downloaded successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to download teacher card");
+        }
     };
 
     const getStatusBadge = () => {
@@ -163,8 +184,62 @@ export default function TeacherProfilePage() {
                                     <Pencil className="h-4 w-4 mr-2" /> Edit
                                 </Link>
                             </Button>
+                            <CardPreviewModal
+                                trigger={
+                                    <Button variant="outline" className="text-indigo-600 hover:bg-indigo-50">
+                                        <Eye className="h-4 w-4 mr-2" /> Preview Card
+                                    </Button>
+                                }
+                                cardData={{
+                                    type: 'teacher',
+                                    data: teacher,
+                                    employmentInfo: teacher.employmentInfo
+                                }}
+                                onDownload={handleDownloadCard}
+                            />
                             <Button variant="outline" className="text-red-600 hover:bg-red-50" onClick={() => setDeactivateDialogOpen(true)}>
                                 <Trash2 className="h-4 w-4 mr-2" /> Deactivate
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Teacher ID Card Preview */}
+            <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
+                <CardHeader className="pb-3 border-b border-slate-50">
+                    <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
+                        <IDCard className="h-4 w-4" /> Teacher ID Card
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-6 items-center">
+                        <div className="flex-1">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Name</p>
+                                    <p className="font-semibold">{teacher.name}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Employee ID</p>
+                                    <p className="font-semibold">{teacher.employeeId}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Subject</p>
+                                    <p className="font-semibold">{typeof teacher.subject === 'object' ? teacher.subject.name : teacher.subject}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Status</p>
+                                    <p className="font-semibold">{getStatusBadge().props.children}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-32 h-40 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-dashed border-purple-200 rounded-lg flex items-center justify-center">
+                                <IDCard className="h-12 w-12 text-purple-400" />
+                            </div>
+                            <Button size="sm" onClick={handleDownloadCard} className="bg-purple-600 hover:bg-purple-700">
+                                <Download className="h-4 w-4 mr-2" /> Download ID Card
                             </Button>
                         </div>
                     </div>

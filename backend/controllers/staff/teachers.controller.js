@@ -50,7 +50,79 @@ exports.generateTeacherCardController = async (req, res) => {
     if (!teacher) return responseStatus(res, 404, 'failed', 'Teacher not found');
 
     const { dataUrl } = await qrGenerator.generateQRCodeImage({ id: teacher.id || teacher._id, type: 'staff' });
-    const pdfBuffer = await documentGenerator.generateStaffCard({ staff: teacher, qrDataUrl: dataUrl });
+    
+    // Fetch enhanced employment data for card
+    let employmentInfo = null;
+    
+    if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+      const { PrismaClient } = require('@prisma/client');
+      const prisma = new PrismaClient();
+      
+      // Get employment information
+      const employment = await prisma.teacherEmployment.findFirst({
+        where: { teacherId: teacherId },
+        include: {
+          department: true,
+          designation: true,
+          subject: true
+        }
+      });
+      
+      if (employment) {
+        const joiningDate = new Date(employment.joiningDate);
+        const currentDate = new Date();
+        const totalMonths = Math.floor((currentDate - joiningDate) / (1000 * 60 * 60 * 24 * 30));
+        const years = Math.floor(totalMonths / 12);
+        const months = totalMonths % 12;
+        
+        employmentInfo = {
+          designation: employment.designation.name,
+          department: employment.department.name,
+          subject: employment.subject ? employment.subject.name : 'N/A',
+          joiningDate: joiningDate.toLocaleDateString(),
+          experience: years > 0 ? `${years}y ${months}m` : `${months}m`,
+          employmentType: employment.employmentType,
+          salary: employment.salary
+        };
+      }
+      
+      await prisma.$disconnect();
+    } else {
+      // Mongoose fallback - implement similar queries for MongoDB
+      try {
+        const TeacherEmployment = require('../../models/Employment/teacherEmployment.model');
+        const employment = await TeacherEmployment.findOne({ teacherId: teacherId })
+          .populate('department')
+          .populate('designation')
+          .populate('subject');
+        
+        if (employment) {
+          const joiningDate = new Date(employment.joiningDate);
+          const currentDate = new Date();
+          const totalMonths = Math.floor((currentDate - joiningDate) / (1000 * 60 * 60 * 24 * 30));
+          const years = Math.floor(totalMonths / 12);
+          const months = totalMonths % 12;
+          
+          employmentInfo = {
+            designation: employment.designation.name,
+            department: employment.department.name,
+            subject: employment.subject ? employment.subject.name : 'N/A',
+            joiningDate: joiningDate.toLocaleDateString(),
+            experience: years > 0 ? `${years}y ${months}m` : `${months}m`,
+            employmentType: employment.employmentType,
+            salary: employment.salary
+          };
+        }
+      } catch (error) {
+        console.log('Could not fetch employment data:', error.message);
+      }
+    }
+    
+    const pdfBuffer = await documentGenerator.generateStaffCard({ 
+      staff: teacher, 
+      qrDataUrl: dataUrl,
+      employmentInfo
+    });
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="staff-${teacherId}-card.pdf"`);

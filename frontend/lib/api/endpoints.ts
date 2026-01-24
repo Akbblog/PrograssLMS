@@ -178,6 +178,10 @@ export const adminAPI = {
   exportTeachers: () => api.get('/admin/export/teachers', { responseType: 'blob' as any }),
   bulkDownloadCards: (data: { ids: string[]; type: string }) =>
     api.post('/admin/cards/bulk-download', data, { responseType: 'blob' as any }),
+  downloadStudentCard: (studentId: string) =>
+    api.get(`/students/${studentId}/card`, { responseType: 'blob' as any }),
+  downloadTeacherCard: (teacherId: string) =>
+    api.get(`/teachers/${teacherId}/card`, { responseType: 'blob' as any }),
 };
 
 // Finance endpoints

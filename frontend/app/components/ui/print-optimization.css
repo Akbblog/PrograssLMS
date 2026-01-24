@@ -1,0 +1,156 @@
+/* Print Optimization Styles */
+@media print {
+  /* Hide all interactive elements */
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Remove background colors and images to save ink */
+  * {
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  /* Ensure text is black for better readability */
+  * {
+    color: #000 !important;
+  }
+  
+  /* Remove margins and padding for better space utilization */
+  @page {
+    margin: 0.5in;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-size: 12pt;
+  }
+  
+  /* Ensure cards take full width */
+  .card-container {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Remove borders for cleaner look */
+  .border, .border-* {
+    border: none !important;
+  }
+  
+  /* Ensure images are properly sized */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Table styles for print */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  /* Page break controls */
+  .page-break {
+    page-break-before: always;
+  }
+  
+  .page-break-after {
+    page-break-after: always;
+  }
+  
+  .avoid-page-break {
+    page-break-inside: avoid;
+  }
+  
+  /* QR Code optimization */
+  .qr-code {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  /* Header and footer */
+  .print-header, .print-footer {
+    text-align: center;
+    font-size: 10pt;
+    color: #666;
+  }
+  
+  /* Ensure proper spacing */
+  .space-y-1 > * + * {
+    margin-top: 0.25rem;
+  }
+  
+  .space-y-2 > * + * {
+    margin-top: 0.5rem;
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Font sizes for readability */
+  .text-xs {
+    font-size: 10pt;
+  }
+  
+  .text-sm {
+    font-size: 11pt;
+  }
+  
+  .text-base {
+    font-size: 12pt;
+  }
+  
+  .text-lg {
+    font-size: 14pt;
+  }
+  
+  .text-xl {
+    font-size: 16pt;
+  }
+  
+  .text-2xl {
+    font-size: 18pt;
+  }
+  
+  /* Ensure proper alignment */
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-left {
+    text-align: left;
+  }
+  
+  .text-right {
+    text-align: right;
+  }
+  
+  /* Remove hover effects */
+  .hover\\:bg-gray-100:hover {
+    background-color: transparent !important;
+  }
+  
+  /* Ensure proper line height */
+  .leading-tight {
+    line-height: 1.25;
+  }
+  
+  .leading-normal {
+    line-height: 1.5;
+  }
+  
+  .leading-relaxed {
+    line-height: 1.625;
+  }
+}

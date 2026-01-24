@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CardPreviewModal } from "@/components/ui/card-preview-modal";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -37,7 +38,9 @@ import {
     ClipboardList,
     FileText,
     ShieldCheck,
-    Contact
+    Contact,
+    Download,
+    IDCard
 } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
@@ -108,6 +111,24 @@ export default function StudentProfilePage() {
         setDeactivateDialogOpen(false);
     };
 
+    const handleDownloadCard = async () => {
+        try {
+            const response = await adminAPI.downloadStudentCard(studentId);
+            const blob = response.data;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `student-${studentId}-card.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            toast.success("Student ID card downloaded successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to download student card");
+        }
+    };
+
     const formatDate = (date: string) => {
         if (!date) return "—";
         return new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -140,6 +161,24 @@ export default function StudentProfilePage() {
                             <Pencil className="h-4 w-4 mr-2 text-indigo-600" /> Edit Student
                         </Link>
                     </Button>
+                    <CardPreviewModal
+                        trigger={
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-indigo-600 border-indigo-100 hover:bg-indigo-50"
+                            >
+                                <Eye className="h-4 w-4 mr-2" /> Preview Card
+                            </Button>
+                        }
+                        cardData={{
+                            type: 'student',
+                            data: student,
+                            attendanceData: student.attendanceData,
+                            academicData: student.academicData
+                        }}
+                        onDownload={handleDownloadCard}
+                    />
                     <Button
                         variant="outline"
                         size="sm"
@@ -204,6 +243,47 @@ export default function StudentProfilePage() {
                                 <p className="text-2xl font-bold text-indigo-600">{grades.length}</p>
                                 <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Tests Taken</p>
                             </div>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Student ID Card Preview */}
+            <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden">
+                <CardHeader className="pb-3 border-b border-slate-50">
+                    <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
+                        <IDCard className="h-4 w-4" /> Student ID Card
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-6 items-center">
+                        <div className="flex-1">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Name</p>
+                                    <p className="font-semibold">{student.name}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Student ID</p>
+                                    <p className="font-semibold">{student.studentId}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Class</p>
+                                    <p className="font-semibold">{student.currentClassLevel?.name || student.currentClassLevel}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-slate-400 uppercase">Status</p>
+                                    <p className="font-semibold">{student.enrollmentStatus?.toUpperCase()}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-32 h-40 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-dashed border-indigo-200 rounded-lg flex items-center justify-center">
+                                <IDCard className="h-12 w-12 text-indigo-400" />
+                            </div>
+                            <Button size="sm" onClick={handleDownloadCard} className="bg-indigo-600 hover:bg-indigo-700">
+                                <Download className="h-4 w-4 mr-2" /> Download ID Card
+                            </Button>
                         </div>
                     </div>
                 </CardContent>

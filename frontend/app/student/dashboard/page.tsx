@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/authStore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner"
+import "@/app/components/ui/print-optimization.css"
 import {
     CheckCircle2,
     BookOpen,
@@ -25,7 +27,12 @@ import {
     Trophy,
     Zap,
     Star,
-    Sparkles
+    Sparkles,
+    Download,
+    IDCard,
+    User,
+    Mail,
+    Hash
 } from "lucide-react"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card"
 import { adminAPI } from "@/lib/api/endpoints"
@@ -137,6 +144,24 @@ export default function StudentDashboard() {
 
     const xpProgress = (gamificationData.xp / gamificationData.xpToNextLevel) * 100
 
+    const handleDownloadStudentCard = async () => {
+        try {
+            const response = await adminAPI.downloadStudentCard(user?.id);
+            const blob = response.data;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `student-${user?.id}-card.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            toast.success("Student ID card downloaded successfully");
+        } catch (error: any) {
+            toast.error(error.message || "Failed to download student card");
+        }
+    };
+
     return (
         <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1600px] mx-auto">
             {/* Welcome Section with Gamification */}
@@ -210,7 +235,59 @@ export default function StudentDashboard() {
                         </div>
                     </LuminaCardContent>
                 </LuminaCard>
-            </div>
+
+            {/* Student ID Card Widget */}
+            <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden animate-fadeInUp" style={{ animationDelay: '50ms' }}>
+                <CardHeader className="pb-3 border-b border-slate-50">
+                    <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
+                        <IDCard className="h-4 w-4" /> My Student ID Card
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-6 items-center">
+                        <div className="flex-1">
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="flex items-center gap-2">
+                                    <User className="h-4 w-4 text-slate-400" />
+                                    <div>
+                                        <p className="text-xs text-slate-400 uppercase">Name</p>
+                                        <p className="font-semibold">{user?.name}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Hash className="h-4 w-4 text-slate-400" />
+                                    <div>
+                                        <p className="text-xs text-slate-400 uppercase">Student ID</p>
+                                        <p className="font-semibold">{user?.studentId}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <GraduationCap className="h-4 w-4 text-slate-400" />
+                                    <div>
+                                        <p className="text-xs text-slate-400 uppercase">Class</p>
+                                        <p className="font-semibold">{user?.currentClassLevel?.name || user?.currentClassLevel}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Mail className="h-4 w-4 text-slate-400" />
+                                    <div>
+                                        <p className="text-xs text-slate-400 uppercase">Email</p>
+                                        <p className="font-semibold">{user?.email}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-32 h-40 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-dashed border-indigo-200 rounded-lg flex items-center justify-center">
+                                <IDCard className="h-12 w-12 text-indigo-400" />
+                            </div>
+                            <Button size="sm" onClick={handleDownloadStudentCard} className="bg-indigo-600 hover:bg-indigo-700">
+                                <Download className="h-4 w-4 mr-2" /> Download ID Card
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             {/* Quick Actions - Mobile */}
             <div className="flex lg:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4">

@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   qr: { width: 90, height: 90 }
 });
 
-module.exports = function StaffCardTemplate({ staff = {}, qrDataUrl = null, school = {} }) {
+module.exports = function StaffCardTemplate({ staff = {}, qrDataUrl = null, school = {}, employmentInfo = null }) {
   return (
     React.createElement(Document, null,
       React.createElement(Page, { size: [288, 432], style: styles.page },
@@ -22,7 +22,23 @@ module.exports = function StaffCardTemplate({ staff = {}, qrDataUrl = null, scho
             React.createElement(Text, { style: styles.small }, `ID: ${staff.id || staff._id || 'N/A'}`),
             React.createElement(Text, { style: styles.small }, `Role: ${staff.role || staff.designation || 'Staff'}`),
             React.createElement(Text, { style: styles.small }, `Email: ${staff.email || 'N/A'}`),
-            React.createElement(Text, { style: styles.small }, school.name || '')
+            React.createElement(Text, { style: styles.small }, school.name || ''),
+            // Employment Information
+            employmentInfo && (
+              React.createElement(Text, { style: styles.small },
+                `Joined: ${employmentInfo.joiningDate ? new Date(employmentInfo.joiningDate).toLocaleDateString() : 'N/A'}`
+              )
+            ),
+            // Department/Subject
+            staff.subject && (
+              React.createElement(Text, { style: styles.small },
+                `Subject: ${typeof staff.subject === 'object' ? staff.subject.name : staff.subject}`
+              )
+            ),
+            // Issue Date
+            React.createElement(Text, { style: { ...styles.small, fontSize: 8 } },
+              `Issued: ${new Date().toLocaleDateString()}`
+            )
           ),
           React.createElement(View, { style: styles.right },
             staff.photoUrl ? React.createElement(Image, { src: staff.photoUrl, style: styles.photo }) : React.createElement(View, { style: { width: 80, height: 100, backgroundColor: '#eee', marginBottom: 6 } }),

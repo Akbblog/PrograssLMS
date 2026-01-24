@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   qr: { width: 90, height: 90 }
 });
 
-module.exports = function StudentCardTemplate({ student = {}, qrDataUrl = null, school = {} }) {
+module.exports = function StudentCardTemplate({ student = {}, qrDataUrl = null, school = {}, attendanceData = null, academicData = null }) {
   return (
     React.createElement(Document, null,
       React.createElement(Page, { size: [288, 432], style: styles.page }, // small ID card size
@@ -22,7 +22,23 @@ module.exports = function StudentCardTemplate({ student = {}, qrDataUrl = null, 
             React.createElement(Text, { style: styles.small }, `ID: ${student.id || student._id || 'N/A'}`),
             React.createElement(Text, { style: styles.small }, `Class: ${student.currentClassLevel || (student.currentClassLevels && student.currentClassLevels[0]) || student.class || 'N/A'}`),
             React.createElement(Text, { style: styles.small }, `DOB: ${student.dateOfBirth ? new Date(student.dateOfBirth).toLocaleDateString() : 'N/A'}`),
-            React.createElement(Text, { style: styles.small }, school.name || '')
+            React.createElement(Text, { style: styles.small }, school.name || ''),
+            // Attendance Information
+            attendanceData && (
+              React.createElement(Text, { style: { ...styles.small, color: attendanceData.percentage >= 90 ? '#059669' : attendanceData.percentage >= 75 ? '#d97706' : '#dc2626' } },
+                `Attendance: ${attendanceData.percentage || '0'}%`
+              )
+            ),
+            // Academic Information
+            academicData && (
+              React.createElement(Text, { style: { ...styles.small, color: academicData.gpa >= 3.5 ? '#059669' : academicData.gpa >= 3.0 ? '#d97706' : '#dc2626' } },
+                `GPA: ${academicData.gpa || '0.00'}`
+              )
+            ),
+            // Issue Date
+            React.createElement(Text, { style: { ...styles.small, fontSize: 8 } },
+              `Issued: ${new Date().toLocaleDateString()}`
+            )
           ),
           React.createElement(View, { style: styles.right },
             student.photoUrl ? React.createElement(Image, { src: student.photoUrl, style: styles.photo }) : React.createElement(View, { style: { width: 80, height: 100, backgroundColor: '#eee', marginBottom: 6 } }),
