@@ -62,8 +62,10 @@ export default function StudentProfilePage() {
     const [deactivateDialogOpen, setDeactivateDialogOpen] = useState(false);
 
     useEffect(() => {
-        // Guard against missing or literal "undefined" IDs from the URL
-        if (!studentId || studentId === 'undefined') {
+        // If the router hasn't provided an ID yet, just wait.
+        if (!studentId) return;
+        // Guard against a literal "undefined" string coming from the URL.
+        if (studentId === 'undefined') {
             toast.error("Invalid student ID");
             router.push("/admin/students");
             return;
