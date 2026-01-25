@@ -362,8 +362,8 @@ export default function AdminTeachersPage() {
                             <div className="p-2" key={teacher._id}>
                                 <TeacherCard
                                     teacher={teacher}
-                                    onView={() => router.push(`/admin/teachers/${teacher._id}`)}
-                                    onEdit={() => router.push(`/admin/teachers/${teacher._id}/edit`)}
+                                    onView={() => router.push(`/admin/teachers/${teacher.id}`)}
+                                    onEdit={() => router.push(`/admin/teachers/${teacher.id}/edit`)}
                                     onDelete={() => handleDelete(teacher)}
                                 />
                             </div>
@@ -373,10 +373,10 @@ export default function AdminTeachersPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                         {filteredTeachers.map((teacher) => (
                             <TeacherCard
-                                key={teacher._id}
+                                key={teacher.id}
                                 teacher={teacher}
-                                onView={() => router.push(`/admin/teachers/${teacher._id}`)}
-                                onEdit={() => router.push(`/admin/teachers/${teacher._id}/edit`)}
+                                onView={() => router.push(`/admin/teachers/${teacher.id}`)}
+                                onEdit={() => router.push(`/admin/teachers/${teacher.id}/edit`)}
                                 onDelete={() => handleDelete(teacher)}
                             />
                         ))}
@@ -397,7 +397,7 @@ export default function AdminTeachersPage() {
                             </thead>
                             <tbody className="divide-y dark:divide-slate-700">
                                 {filteredTeachers.map((teacher) => (
-                                    <tr key={teacher._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                    <tr key={teacher.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                         <td className="px-2 sm:px-4 py-2 sm:py-3">
                                             <div className="flex items-center gap-2">
                                                 <Avatar className="h-7 w-7 sm:h-9 sm:w-9">

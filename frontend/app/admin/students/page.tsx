@@ -361,8 +361,8 @@ export default function AdminStudentsPage() {
                             <div className="p-2" key={student._id}>
                                 <StudentCard
                                     student={student}
-                                    onView={() => router.push(`/admin/students/${student._id}`)}
-                                    onEdit={() => router.push(`/admin/students/${student._id}/edit`)}
+                                    onView={() => router.push(`/admin/students/${student.id}`)}
+                                    onEdit={() => router.push(`/admin/students/${student.id}/edit`)}
                                     onEnroll={() => setEnrollmentDialog(student)}
                                     onDelete={() => handleDelete(student)}
                                 />
@@ -373,10 +373,10 @@ export default function AdminStudentsPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredStudents.map((student) => (
                             <StudentCard
-                                key={student._id}
+                                key={student.id}
                                 student={student}
-                                onView={() => router.push(`/admin/students/${student._id}`)}
-                                onEdit={() => router.push(`/admin/students/${student._id}/edit`)}
+                                onView={() => router.push(`/admin/students/${student.id}`)}
+                                onEdit={() => router.push(`/admin/students/${student.id}/edit`)}
                                 onEnroll={() => setEnrollmentDialog(student)}
                                 onDelete={() => handleDelete(student)}
                             />
