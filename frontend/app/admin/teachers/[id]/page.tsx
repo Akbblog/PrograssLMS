@@ -95,10 +95,13 @@ export default function TeacherProfilePage() {
 
     const handleDeactivate = async () => {
         try {
-            await adminAPI.deleteTeacher(teacherId);
+            const correctId = teacher?.id || teacherId;
+            console.log('Deactivating teacher with ID:', correctId);
+            await adminAPI.deleteTeacher(correctId);
             toast.success("Teacher deactivated");
             router.push("/admin/teachers");
         } catch (error: any) {
+            console.error('Error deactivating teacher:', error);
             toast.error(error.message || "Failed to deactivate");
         }
         setDeactivateDialogOpen(false);
@@ -106,18 +109,21 @@ export default function TeacherProfilePage() {
 
     const handleDownloadCard = async () => {
         try {
-            const response = await adminAPI.downloadTeacherCard(teacherId);
+            const correctId = teacher?.id || teacherId;
+            console.log('Downloading card for teacher ID:', correctId);
+            const response = await adminAPI.downloadTeacherCard(correctId);
             const blob = response.data;
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `teacher-${teacherId}-card.pdf`;
+            a.download = `teacher-${correctId}-card.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
             toast.success("Teacher ID card downloaded successfully");
         } catch (error: any) {
+            console.error('Error downloading teacher card:', error);
             toast.error(error.message || "Failed to download teacher card");
         }
     };

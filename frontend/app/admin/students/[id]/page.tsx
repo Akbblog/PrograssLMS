@@ -134,10 +134,13 @@ export default function StudentProfilePage() {
 
     const handleDeactivate = async () => {
         try {
-            await adminAPI.deleteStudent(studentId);
+            const correctId = student?.id || studentId;
+            console.log('Deactivating student with ID:', correctId);
+            await adminAPI.deleteStudent(correctId);
             toast.success("Student record updated");
             fetchData();
         } catch (error: any) {
+            console.error('Error deactivating student:', error);
             toast.error(error.message || "Failed to update status");
         }
         setDeactivateDialogOpen(false);
@@ -145,18 +148,21 @@ export default function StudentProfilePage() {
 
     const handleDownloadCard = async () => {
         try {
-            const response = await adminAPI.downloadStudentCard(studentId);
+            const correctId = student?.id || studentId;
+            console.log('Downloading card for student ID:', correctId);
+            const response = await adminAPI.downloadStudentCard(correctId);
             const blob = response.data;
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `student-${studentId}-card.pdf`;
+            a.download = `student-${correctId}-card.pdf`;
             document.body.appendChild(a);
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
             toast.success("Student ID card downloaded successfully");
         } catch (error: any) {
+            console.error('Error downloading student card:', error);
             toast.error(error.message || "Failed to download student card");
         }
     };
