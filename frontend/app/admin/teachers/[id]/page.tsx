@@ -67,8 +67,8 @@ export default function TeacherProfilePage() {
             // Try to get individual teacher or from list
             const response = await adminAPI.getTeachers();
             const teachers = unwrapArray((response as any)?.data, "teachers");
-            // The route provides the custom teacherId (e.g., "TEA1234"), not the Mongo _id.
-            const found = teachers.find((t: any) => t.teacherId === teacherId || t._id === teacherId);
+            // The route provides the custom teacherId (e.g., "TEA1234"), not the UUID id.
+            const found = teachers.find((t: any) => t.teacherId === teacherId || t.id === teacherId);
             if (found) {
                 setTeacher(found);
             } else {

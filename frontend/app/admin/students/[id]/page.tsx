@@ -73,51 +73,40 @@ export default function StudentProfilePage() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            // First, fetch the student record. The endpoint expects the Mongo _id, but the URL provides the custom studentId.
-            // We'll retrieve the full list and locate the matching record.
-            const [studentsRes, enrollmentsRes, gradesRes, attendanceRes] = await Promise.allSettled([
-                adminAPI.getStudents(),
-                enrollmentAPI.getStudentEnrollments(studentId),
-                gradeAPI.getStudentGrades(studentId),
-                attendanceAPI.getStudentAttendance(studentId)
-            ]);
-
-            if (studentsRes.status === 'fulfilled') {
-                const students = unwrapArray((studentsRes.value as any)?.data, "students");
-                const found = students.find((s: any) => s.studentId === studentId || s._id === studentId);
-                if (found) {
-                    setStudent(found);
-                    
-                    // Now use the correct MongoDB _id for the other API calls
-                    const mongoId = found._id;
-                    
-                    // Re-fetch enrollment, grades, and attendance with the correct ID
-                    const [enrollmentsRes2, gradesRes2, attendanceRes2] = await Promise.allSettled([
-                        enrollmentAPI.getStudentEnrollments(mongoId),
-                        gradeAPI.getStudentGrades(mongoId),
-                        attendanceAPI.getStudentAttendance(mongoId)
-                    ]);
-
-                    if (enrollmentsRes2.status === 'fulfilled') {
-                        setEnrollments(unwrapArray((enrollmentsRes2.value as any)?.data, "enrollments"));
-                    }
-
-                    if (gradesRes2.status === 'fulfilled') {
-                        setGrades(unwrapArray((gradesRes2.value as any)?.data, "grades"));
-                    }
-
-                    if (attendanceRes2.status === 'fulfilled') {
-                        setAttendance((attendanceRes2.value as any).data);
-                    }
-                } else {
-                    toast.error("Student not found");
-                    router.push("/admin/students");
-                    return;
-                }
-            } else {
-                toast.error("Failed to load students list");
+            
+            // First, fetch the student record to get the UUID id
+            const studentsRes = await adminAPI.getStudents();
+            const students = unwrapArray((studentsRes as any)?.data, "students");
+            const found = students.find((s: any) => s.studentId === studentId || s.id === studentId);
+            
+            if (!found) {
+                toast.error("Student not found");
                 router.push("/admin/students");
                 return;
+            }
+            
+            setStudent(found);
+            
+            // Now use the UUID id for the other API calls
+            const uuidId = found.id;
+            
+            // Fetch enrollment, grades, and attendance with the correct UUID ID
+            const [enrollmentsRes, gradesRes, attendanceRes] = await Promise.allSettled([
+                enrollmentAPI.getStudentEnrollments(uuidId),
+                gradeAPI.getStudentGrades(uuidId),
+                attendanceAPI.getStudentAttendance(uuidId)
+            ]);
+
+            if (enrollmentsRes.status === 'fulfilled') {
+                setEnrollments(unwrapArray((enrollmentsRes.value as any)?.data, "enrollments"));
+            }
+
+            if (gradesRes.status === 'fulfilled') {
+                setGrades(unwrapArray((gradesRes.value as any)?.data, "grades"));
+            }
+
+            if (attendanceRes.status === 'fulfilled') {
+                setAttendance((attendanceRes.value as any).data);
             }
 
         } catch (error: any) {
