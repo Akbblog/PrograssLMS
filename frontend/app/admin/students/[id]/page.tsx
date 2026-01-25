@@ -87,6 +87,28 @@ export default function StudentProfilePage() {
                 const found = students.find((s: any) => s.studentId === studentId || s._id === studentId);
                 if (found) {
                     setStudent(found);
+                    
+                    // Now use the correct MongoDB _id for the other API calls
+                    const mongoId = found._id;
+                    
+                    // Re-fetch enrollment, grades, and attendance with the correct ID
+                    const [enrollmentsRes2, gradesRes2, attendanceRes2] = await Promise.allSettled([
+                        enrollmentAPI.getStudentEnrollments(mongoId),
+                        gradeAPI.getStudentGrades(mongoId),
+                        attendanceAPI.getStudentAttendance(mongoId)
+                    ]);
+
+                    if (enrollmentsRes2.status === 'fulfilled') {
+                        setEnrollments(unwrapArray((enrollmentsRes2.value as any)?.data, "enrollments"));
+                    }
+
+                    if (gradesRes2.status === 'fulfilled') {
+                        setGrades(unwrapArray((gradesRes2.value as any)?.data, "grades"));
+                    }
+
+                    if (attendanceRes2.status === 'fulfilled') {
+                        setAttendance((attendanceRes2.value as any).data);
+                    }
                 } else {
                     toast.error("Student not found");
                     router.push("/admin/students");
@@ -96,18 +118,6 @@ export default function StudentProfilePage() {
                 toast.error("Failed to load students list");
                 router.push("/admin/students");
                 return;
-            }
-
-            if (enrollmentsRes.status === 'fulfilled') {
-                setEnrollments(unwrapArray((enrollmentsRes.value as any)?.data, "enrollments"));
-            }
-
-            if (gradesRes.status === 'fulfilled') {
-                setGrades(unwrapArray((gradesRes.value as any)?.data, "grades"));
-            }
-
-            if (attendanceRes.status === 'fulfilled') {
-                setAttendance((attendanceRes.value as any).data);
             }
 
         } catch (error: any) {
