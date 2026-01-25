@@ -337,6 +337,31 @@ async function seed() {
       } else {
         console.log('  skip: exam model not found in prisma schema');
       }
+      
+      // Create additional results for grades API
+      console.log('📊 Creating additional grade records...');
+      let gradeCount = 0;
+      if (prisma.result && typeof prisma.result.create === 'function') {
+        for (const student of createdStudents.slice(0, 10)) {
+          const score = Math.floor(Math.random() * 100);
+          await prisma.result.create({ data: {
+            studentId: student.id,
+            examName: 'Mathematics Midterm',
+            score: score,
+            grade: score >= 85 ? 'A+' : score >= 80 ? 'A' : score >= 70 ? 'B+' : score >= 60 ? 'B' : score >= 50 ? 'C' : 'D',
+            passMark: 60,
+            status: 'graded',
+            remarks: 'Good performance',
+            classLevel: createdClassLevels[0].id,
+            academicTerm: 'Term 1',
+            academicYear: '2025-2026',
+            isPublished: true,
+            schoolId: SCHOOL_ID
+          } });
+          gradeCount++;
+        }
+        console.log(`✅ Created ${gradeCount} additional grade records`);
+      }
     } catch (err) {
       console.warn('  could not create exams/results:', err.message || err);
     }
