@@ -76,25 +76,35 @@ export default function StudentProfilePage() {
             
             // First, fetch the student record to get the UUID id
             const studentsRes = await adminAPI.getStudents();
+            console.log('Students API response:', studentsRes);
             const students = unwrapArray((studentsRes as any)?.data, "students");
-            const found = students.find((s: any) => s.studentId === studentId || s.id === studentId);
+            console.log('Students list:', students);
+            console.log('Looking for student with ID:', studentId);
+            
+            const found = students.find((s: any) => {
+                console.log('Checking student:', s.studentId, 'vs', studentId, 'or', s.id, 'vs', studentId);
+                return s.studentId === studentId || s.id === studentId || s._id === studentId;
+            });
             
             if (!found) {
+                console.log('Student not found in list');
                 toast.error("Student not found");
                 router.push("/admin/students");
                 return;
             }
             
+            console.log('Found student:', found);
             setStudent(found);
             
-            // Now use the UUID id for the other API calls
-            const uuidId = found.id;
+            // Now use the correct ID for the other API calls
+            const correctId = found.id || found._id;
+            console.log('Using ID for API calls:', correctId);
             
-            // Fetch enrollment, grades, and attendance with the correct UUID ID
+            // Fetch enrollment, grades, and attendance with the correct ID
             const [enrollmentsRes, gradesRes, attendanceRes] = await Promise.allSettled([
-                enrollmentAPI.getStudentEnrollments(uuidId),
-                gradeAPI.getStudentGrades(uuidId),
-                attendanceAPI.getStudentAttendance(uuidId)
+                enrollmentAPI.getStudentEnrollments(correctId),
+                gradeAPI.getStudentGrades(correctId),
+                attendanceAPI.getStudentAttendance(correctId)
             ]);
 
             if (enrollmentsRes.status === 'fulfilled') {
@@ -110,6 +120,7 @@ export default function StudentProfilePage() {
             }
 
         } catch (error: any) {
+            console.error('Error fetching data:', error);
             toast.error("An error occurred while loading profile data");
         } finally {
             setLoading(false);

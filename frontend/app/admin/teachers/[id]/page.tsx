@@ -66,16 +66,26 @@ export default function TeacherProfilePage() {
         try {
             // Try to get individual teacher or from list
             const response = await adminAPI.getTeachers();
+            console.log('Teachers API response:', response);
             const teachers = unwrapArray((response as any)?.data, "teachers");
+            console.log('Teachers list:', teachers);
+            console.log('Looking for teacher with ID:', teacherId);
+            
             // The route provides the custom teacherId (e.g., "TEA1234"), not the UUID id.
-            const found = teachers.find((t: any) => t.teacherId === teacherId || t.id === teacherId);
+            const found = teachers.find((t: any) => {
+                console.log('Checking teacher:', t.teacherId, 'vs', teacherId, 'or', t.id, 'vs', teacherId, 'or', t._id, 'vs', teacherId);
+                return t.teacherId === teacherId || t.id === teacherId || t._id === teacherId;
+            });
             if (found) {
+                console.log('Found teacher:', found);
                 setTeacher(found);
             } else {
+                console.log('Teacher not found in list');
                 toast.error("Teacher not found");
                 router.push("/admin/teachers");
             }
         } catch (error: any) {
+            console.error('Error fetching teacher:', error);
             toast.error("Failed to load teacher");
             router.push("/admin/teachers");
         } finally {
