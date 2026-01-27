@@ -12,8 +12,8 @@ export interface DashboardStatsResponse {
 }
 
 export function useDashboardStats() {
-  return useQuery({
-    queryKey: ['dashboardStats'],
+  return useQuery<DashboardStatsResponse>({
+    queryKey: ['dashboardStats'] as const,
     queryFn: async () => {
       try {
         const response = await adminAPI.getDashboardStats();
