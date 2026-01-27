@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { adminAPI } from '@/lib/api/endpoints';
 
 export interface DashboardStatsResponse {
@@ -11,9 +11,19 @@ export interface DashboardStatsResponse {
   newEnrollments?: number;
 }
 
+const defaultStats: DashboardStatsResponse = {
+  totalStudents: 0,
+  totalTeachers: 0,
+  totalClasses: 0,
+  totalRevenue: 0,
+  pendingFees: 0,
+  attendanceRate: 95,
+  newEnrollments: 0,
+};
+
 export function useDashboardStats() {
-  return useQuery<DashboardStatsResponse>({
-    queryKey: ['dashboardStats'] as const,
+  const options: UseQueryOptions<DashboardStatsResponse, Error> = {
+    queryKey: ['dashboardStats'],
     queryFn: async () => {
       try {
         const response = await adminAPI.getDashboardStats();
@@ -29,24 +39,18 @@ export function useDashboardStats() {
           pendingFees: response.data.pendingFees || 0,
           attendanceRate: response.data.attendanceRate || 95,
           newEnrollments: response.data.newEnrollments || 0,
-        } as DashboardStatsResponse;
+        };
       } catch (error) {
         console.error('Failed to fetch dashboard stats:', error);
         // Return default values on error
-        return {
-          totalStudents: 0,
-          totalTeachers: 0,
-          totalClasses: 0,
-          totalRevenue: 0,
-          pendingFees: 0,
-          attendanceRate: 95,
-          newEnrollments: 0,
-        };
+        return defaultStats;
       }
     },
     staleTime: 1000 * 60, // 60 seconds
     gcTime: 1000 * 60 * 5, // 5 minutes (formerly cacheTime)
     retry: 1,
     refetchOnWindowFocus: false,
-  });
+  };
+
+  return useQuery(options);
 }
