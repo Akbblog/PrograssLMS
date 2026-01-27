@@ -85,10 +85,10 @@ export default function StudentLayout({
                     {/* Logo */}
                     <div className="h-[70px] border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6">
                         <Link href="/student/dashboard" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-warning to-warning-600 rounded-xl flex items-center justify-center shadow-lg shadow-warning/30">
+                            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-200">
                                 <GraduationCap className="h-6 w-6 text-white" />
                             </div>
-                            <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">Progress <span className="text-warning">Sync</span></span>
+                            <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">Progress <span className="text-amber-500">Sync</span></span>
                         </Link>
                         <button
                             onClick={() => setSidebarOpen(false)}

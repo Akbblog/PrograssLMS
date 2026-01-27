@@ -65,12 +65,23 @@ export default function AdminDashboard() {
 
     const loading = statsLoading || studentsLoading;
 
-    const stats = (statsRes && (statsRes as any).data) ? {
-        ...(statsRes as any).data,
-        pendingFees: (statsRes as any).data.pendingFees ?? 12500,
-        attendanceRate: (statsRes as any).data.attendanceRate ?? 94.5,
-        newEnrollments: (statsRes as any).data.newEnrollments ?? 8
-    } : { totalStudents: 0, totalTeachers: 0, totalClasses: 0, totalRevenue: 0, pendingFees: 0, attendanceRate: 0, newEnrollments: 0 };
+    const stats = statsRes ? {
+        totalStudents: (statsRes as any)?.data?.totalStudents ?? 0,
+        totalTeachers: (statsRes as any)?.data?.totalTeachers ?? 0,
+        totalClasses: (statsRes as any)?.data?.totalClasses ?? 0,
+        totalRevenue: (statsRes as any)?.data?.totalRevenue ?? 0,
+        pendingFees: (statsRes as any)?.data?.pendingFees ?? 0,
+        attendanceRate: (statsRes as any)?.data?.attendanceRate ?? 95,
+        newEnrollments: (statsRes as any)?.data?.newEnrollments ?? 0
+    } : { 
+        totalStudents: 0, 
+        totalTeachers: 0, 
+        totalClasses: 0, 
+        totalRevenue: 0, 
+        pendingFees: 0,
+        attendanceRate: 95,
+        newEnrollments: 0 
+    };
 
     const recentStudents: any[] = (() => {
         const s = unwrapArray(studentsRes, 'students');
@@ -166,12 +177,16 @@ export default function AdminDashboard() {
         return colors[index % colors.length] as any;
     };
 
-    if (loading) {
+    // Improved loading state with better UX
+    if (statsLoading) {
         return (
-            <div className="flex items-center justify-center h-full min-h-[400px]">
-                <div className="text-center">
+            <div className="flex items-center justify-center h-full min-h-[500px]">
+                <div className="text-center space-y-4">
                     <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                    <p className="mt-4 text-slate-500">Loading dashboard...</p>
+                    <div>
+                        <p className="text-slate-900 font-medium">Loading dashboard...</p>
+                        <p className="text-slate-500 text-sm mt-1">Fetching your school's latest data</p>
+                    </div>
                 </div>
             </div>
         );

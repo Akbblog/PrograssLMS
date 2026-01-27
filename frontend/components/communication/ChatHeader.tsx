@@ -115,7 +115,7 @@ export default function ChatHeader({ conversationId, onBack }: ChatHeaderProps) 
                     {conversation?.avatar ? (
                         <AvatarImage src={conversation.avatar} alt={conversation.name || 'Conversation'} />
                     ) : (
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                        <AvatarFallback className="bg-blue-500 text-white">
                             {(() => {
                                 // fallback letter: prefer conversation name, otherwise other participant
                                 if (conversation?.name && conversation.name.length) return conversation.name.charAt(0)

@@ -26,7 +26,15 @@ const {
 exports.createConversationController = async (req, res) => {
     try {
         // Determine userModel based on role
-        const userModel = req.userRole === "admin" ? "Admin" : "Teacher";
+        let userModel = "Teacher"; // Default
+        if (req.userRole === "admin") {
+            userModel = "Admin";
+        } else if (req.userRole === "student") {
+            userModel = "Student";
+        } else if (req.userRole === "teacher") {
+            userModel = "Teacher";
+        }
+        
         console.log("Creating conversation:", {
             userId: req.userId,
             userModel,
@@ -47,7 +55,15 @@ exports.createConversationController = async (req, res) => {
  */
 exports.getConversationsController = async (req, res) => {
     try {
-        const userModel = req.userRole === "admin" ? "Admin" : "Teacher";
+        let userModel = "Teacher"; // Default
+        if (req.userRole === "admin") {
+            userModel = "Admin";
+        } else if (req.userRole === "student") {
+            userModel = "Student";
+        } else if (req.userRole === "teacher") {
+            userModel = "Teacher";
+        }
+        
         const result = await getConversationsService(req.userId, userModel, req.schoolId);
         responseStatus(res, 200, "success", result);
     } catch (error) {
@@ -80,7 +96,15 @@ exports.getConversationController = async (req, res) => {
  */
 exports.sendMessageController = async (req, res) => {
     try {
-        const userModel = req.userRole === "admin" ? "Admin" : "Teacher";
+        let userModel = "Teacher"; // Default
+        if (req.userRole === "admin") {
+            userModel = "Admin";
+        } else if (req.userRole === "student") {
+            userModel = "Student";
+        } else if (req.userRole === "teacher") {
+            userModel = "Teacher";
+        }
+        
         await sendMessageService(
             req.body,
             req.params.id,

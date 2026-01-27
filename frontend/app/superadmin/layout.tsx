@@ -91,7 +91,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
                     {/* Logo */}
                     <div className="h-16 border-b border-slate-100 flex items-center justify-between px-4 lg:px-6">
                         <Link href="/superadmin/dashboard" className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100">
+                            <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100">
                                 <GraduationCap className="h-6 w-6 text-white" />
                             </div>
                             <span className="font-bold text-lg text-slate-900 tracking-tight">Progress <span className="text-indigo-600">LMS</span></span>

@@ -35,7 +35,7 @@ export default function StudentSidebar() {
             {/* Logo */}
             <div className="h-16 border-b border-slate-200 flex items-center px-6">
                 <Link href="/student/dashboard" className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
                         <Icon name="lucide:graduation-cap" className="h-6 w-6 text-white" />
                     </div>
                     <span className="font-bold text-lg text-slate-900">Progress LMS</span>
@@ -83,7 +83,7 @@ export default function StudentSidebar() {
             {/* User & Logout */}
             <div className="p-4 border-t border-slate-200">
                 <div className="flex items-center gap-3 mb-4 px-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center text-white font-semibold">
                         {user?.name?.charAt(0) || "S"}
                     </div>
                     <div className="flex-1 min-w-0">

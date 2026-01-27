@@ -99,7 +99,7 @@ export default function SchoolAdminSidebar({ className }: { className?: string }
             {/* Logo */}
             <div className="h-16 border-b border-slate-100 flex items-center px-6 bg-white">
                 <Link href="/admin/dashboard" className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100 transition-transform group-hover:scale-105">
+                    <div className="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100 transition-transform group-hover:scale-105">
                         <GraduationCap className="h-6 w-6 text-white" />
                     </div>
                     <span className="font-black text-lg text-slate-900 tracking-tight">Progress <span className="text-indigo-600">Pro</span></span>
@@ -152,7 +152,7 @@ export default function SchoolAdminSidebar({ className }: { className?: string }
             {/* User & Logout */}
             <div className="p-4 border-t border-slate-100 bg-slate-50/30">
                 <div className="flex items-center gap-3 mb-4 p-2 rounded-2xl bg-white border border-slate-100 shadow-sm">
-                    <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black shadow-sm">
+                    <div className="w-11 h-11 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black shadow-sm">
                         {user?.name?.charAt(0) || "A"}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -170,7 +170,7 @@ export default function SchoolAdminSidebar({ className }: { className?: string }
                 </Button>
 
                 {/* Plan Info */}
-                <div className="rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 p-4 text-white shadow-lg shadow-indigo-100/50 relative overflow-hidden group">
+                <div className="rounded-2xl bg-indigo-600 p-4 text-white shadow-lg shadow-indigo-100/50 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-110 transition-transform">
                         <Sparkles className="w-12 h-12" />
                     </div>

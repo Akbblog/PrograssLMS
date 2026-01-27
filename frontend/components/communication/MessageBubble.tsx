@@ -232,7 +232,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                     {sender.avatar ? (
                         <AvatarImage src={sender.avatar} alt={sender.name} />
                     ) : (
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
+                        <AvatarFallback className="bg-blue-500 text-white text-xs">
                             {sender.name.charAt(0)}
                         </AvatarFallback>
                     )}

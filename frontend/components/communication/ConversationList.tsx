@@ -153,7 +153,7 @@ export default function ConversationList({
             return <AvatarImage src={conv.avatar} alt={conv.name || "Conversation"} />
         }
         return (
-            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+            <AvatarFallback className="bg-blue-500 text-white">
                 {conv.type === "group" ? "#" : getConversationDisplayName(conv).charAt(0)}
             </AvatarFallback>
         )

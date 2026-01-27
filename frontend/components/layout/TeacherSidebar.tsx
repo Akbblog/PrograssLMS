@@ -85,10 +85,10 @@ export default function TeacherSidebar({ className, sidebarOpen, setSidebarOpen 
             {/* Logo */}
             <div className="h-[70px] border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 bg-white dark:bg-slate-800">
                 <Link href="/teacher/dashboard" className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-success to-success-600 rounded-xl flex items-center justify-center shadow-lg shadow-success/30">
+                    <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-200">
                         <Icon name="lucide:graduation-cap" className="h-6 w-6 text-white" />
                     </div>
-                    <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">Progress <span className="text-success">Pro</span></span>
+                    <span className="font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">Progress <span className="text-green-600">Pro</span></span>
                 </Link>
                 {setSidebarOpen && (
                     <button
@@ -135,12 +135,12 @@ export default function TeacherSidebar({ className, sidebarOpen, setSidebarOpen 
             {/* User & Logout */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
                 <div className="flex items-center gap-3 mb-4 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <div className="w-10 h-10 bg-gradient-to-br from-success to-success-600 rounded-lg flex items-center justify-center text-white font-black shadow-sm">
+                    <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-black shadow-sm">
                         {user?.name?.charAt(0) || "T"}
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.name || "Teacher"}</p>
-                        <p className="text-[10px] font-bold text-success uppercase tracking-widest leading-none">Educator Elite</p>
+                        <p className="text-[10px] font-bold text-green-600 uppercase tracking-widest leading-none">Educator Elite</p>
                     </div>
                 </div>
                 <Button
