@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
+import { IDCard } from "@/components/ui/id-card";
 
 export default function TeacherProfilePage() {
     const router = useRouter();
@@ -70,7 +71,7 @@ export default function TeacherProfilePage() {
             const teachers = unwrapArray((response as any)?.data, "teachers");
             console.log('Teachers list:', teachers);
             console.log('Looking for teacher with ID:', teacherId);
-            
+
             // The route provides the custom teacherId (e.g., "TEA1234"), not the UUID id.
             const found = teachers.find((t: any) => {
                 console.log('Checking teacher:', t.teacherId, 'vs', teacherId, 'or', t.id, 'vs', teacherId, 'or', t._id, 'vs', teacherId);
@@ -237,33 +238,34 @@ export default function TeacherProfilePage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row gap-6 items-center">
-                        <div className="flex-1">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Name</p>
-                                    <p className="font-semibold">{teacher.name}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Employee ID</p>
-                                    <p className="font-semibold">{teacher.employeeId}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Subject</p>
-                                    <p className="font-semibold">{typeof teacher.subject === 'object' ? teacher.subject.name : teacher.subject}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Status</p>
-                                    <p className="font-semibold">{getStatusBadge().props.children}</p>
-                                </div>
-                            </div>
+                    <div className="flex flex-col items-center gap-6">
+                        {/* Professional ID Card */}
+                        <div className="transform scale-[0.85] origin-top">
+                            <IDCard
+                                type="teacher"
+                                data={teacher}
+                                showQRCode={true}
+                                showSignature={true}
+                            />
                         </div>
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-32 h-40 bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-dashed border-purple-200 rounded-lg flex items-center justify-center">
-                                <IdCard className="h-12 w-12 text-purple-400" />
-                            </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <CardPreviewModal
+                                trigger={
+                                    <Button variant="outline" size="sm" className="text-purple-600 border-purple-200 hover:bg-purple-50">
+                                        <Eye className="h-4 w-4 mr-2" /> Full Preview
+                                    </Button>
+                                }
+                                cardData={{
+                                    type: 'teacher',
+                                    data: teacher,
+                                    employmentInfo: teacher.employmentInfo
+                                }}
+                                onDownload={handleDownloadCard}
+                            />
                             <Button size="sm" onClick={handleDownloadCard} className="bg-purple-600 hover:bg-purple-700">
-                                <Download className="h-4 w-4 mr-2" /> Download ID Card
+                                <Download className="h-4 w-4 mr-2" /> Download PDF
                             </Button>
                         </div>
                     </div>

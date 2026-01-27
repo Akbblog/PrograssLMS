@@ -47,6 +47,8 @@ import { toast } from "sonner";
 import { unwrapArray } from "@/lib/utils";
 import Icon from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
+import { IDCard } from "@/components/ui/id-card";
+
 
 export default function StudentProfilePage() {
     const router = useRouter();
@@ -78,33 +80,33 @@ export default function StudentProfilePage() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            
+
             // First, fetch the student record to get the UUID id
             const studentsRes = await adminAPI.getStudents();
             console.log('Students API response:', studentsRes);
             const students = unwrapArray((studentsRes as any)?.data, "students");
             console.log('Students list:', students);
             console.log('Looking for student with ID:', studentId);
-            
+
             const found = students.find((s: any) => {
                 console.log('Checking student:', s.studentId, 'vs', studentId, 'or', s.id, 'vs', studentId);
                 return s.studentId === studentId || s.id === studentId || s._id === studentId;
             });
-            
+
             if (!found) {
                 console.log('Student not found in list');
                 toast.error("Student not found");
                 router.push("/admin/students");
                 return;
             }
-            
+
             console.log('Found student:', found);
             setStudent(found);
-            
+
             // Now use the correct ID for the other API calls
             const correctId = found.id || found._id;
             console.log('Using ID for API calls:', correctId);
-            
+
             // Fetch enrollment, grades, and attendance with the correct ID
             const [enrollmentsRes, gradesRes, attendanceRes] = await Promise.allSettled([
                 enrollmentAPI.getStudentEnrollments(correctId),
@@ -294,33 +296,35 @@ export default function StudentProfilePage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row gap-6 items-center">
-                        <div className="flex-1">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Name</p>
-                                    <p className="font-semibold">{student.name}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Student ID</p>
-                                    <p className="font-semibold">{student.studentId}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Class</p>
-                                    <p className="font-semibold">{student.currentClassLevel?.name || student.currentClassLevel}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-400 uppercase">Status</p>
-                                    <p className="font-semibold">{student.enrollmentStatus?.toUpperCase()}</p>
-                                </div>
-                            </div>
+                    <div className="flex flex-col items-center gap-6">
+                        {/* Professional ID Card */}
+                        <div className="transform scale-[0.85] origin-top">
+                            <IDCard
+                                type="student"
+                                data={student}
+                                showQRCode={true}
+                                showSignature={true}
+                            />
                         </div>
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-32 h-40 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-dashed border-indigo-200 rounded-lg flex items-center justify-center">
-                                <IdCard className="h-12 w-12 text-indigo-400" />
-                            </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <CardPreviewModal
+                                trigger={
+                                    <Button variant="outline" size="sm" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+                                        <Eye className="h-4 w-4 mr-2" /> Full Preview
+                                    </Button>
+                                }
+                                cardData={{
+                                    type: 'student',
+                                    data: student,
+                                    attendanceData: student.attendanceData,
+                                    academicData: student.academicData
+                                }}
+                                onDownload={handleDownloadCard}
+                            />
                             <Button size="sm" onClick={handleDownloadCard} className="bg-indigo-600 hover:bg-indigo-700">
-                                <Download className="h-4 w-4 mr-2" /> Download ID Card
+                                <Download className="h-4 w-4 mr-2" /> Download PDF
                             </Button>
                         </div>
                     </div>
