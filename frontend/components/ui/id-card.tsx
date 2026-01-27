@@ -72,25 +72,28 @@ interface IDCardProps {
 // STUDENT ID CARD
 // ========================
 
-function StudentIDCard({ 
+function StudentIDCard({
   data,
   branding,
   showQRCode = true,
   showSignature = true,
-}: { 
-  data: StudentCardData; 
+}: {
+  data: StudentCardData;
   branding: SchoolBranding;
   showQRCode?: boolean;
   showSignature?: boolean;
 }) {
   const studentData = data as StudentCardData;
-  
+
   // Get class name
-  const getClassName = () => {
+  const getClassName = (): string => {
     if (typeof studentData.currentClassLevel === 'object' && studentData.currentClassLevel?.name) {
       return studentData.currentClassLevel.name;
     }
-    return studentData.currentClassLevel || studentData.class || 'N/A';
+    if (typeof studentData.currentClassLevel === 'string') {
+      return studentData.currentClassLevel;
+    }
+    return studentData.class || 'N/A';
   };
 
   // Get father's name
@@ -116,23 +119,23 @@ function StudentIDCard({
   // Calculate expiry date (1 year from now if not provided)
   const getExpiryDate = () => {
     if (studentData.cardExpiry) {
-      return new Date(studentData.cardExpiry).toLocaleDateString('en-US', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+      return new Date(studentData.cardExpiry).toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       });
     }
     const expiry = new Date();
     expiry.setFullYear(expiry.getFullYear() + 1);
-    return expiry.toLocaleDateString('en-US', { 
-      day: 'numeric', 
-      month: 'long', 
-      year: 'numeric' 
+    return expiry.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     });
   };
 
   return (
-    <div className="id-card student-card" style={{ 
+    <div className="id-card student-card" style={{
       width: '500px',
       height: '310px',
       background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%)',
@@ -177,7 +180,7 @@ function StudentIDCard({
             }} />
           ))}
         </div>
-        
+
         {/* School Name */}
         <div style={{ flex: 1 }}>
           <h1 style={{
@@ -191,7 +194,7 @@ function StudentIDCard({
             {branding.name.toUpperCase()}
           </h1>
         </div>
-        
+
         {/* Superscript */}
         <div style={{
           background: '#facc15',
@@ -252,8 +255,8 @@ function StudentIDCard({
             justifyContent: 'center',
           }}>
             {studentData.avatar ? (
-              <img 
-                src={studentData.avatar} 
+              <img
+                src={studentData.avatar}
                 alt={studentData.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
@@ -267,7 +270,7 @@ function StudentIDCard({
               </div>
             )}
           </div>
-          
+
           {/* QR Code below photo */}
           {showQRCode && (
             <div style={{
@@ -277,8 +280,8 @@ function StudentIDCard({
               borderRadius: '4px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             }}>
-              <QRCodeSVG 
-                value={`STUDENT:${studentData.studentId}`} 
+              <QRCodeSVG
+                value={`STUDENT:${studentData.studentId}`}
                 size={50}
                 level="M"
               />
@@ -327,9 +330,9 @@ function StudentIDCard({
         </div>
 
         {/* Right Side - House & Expiry */}
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
           alignItems: 'flex-end',
           justifyContent: 'space-between',
           minWidth: '100px',
@@ -353,15 +356,15 @@ function StudentIDCard({
           <div style={{ textAlign: 'right' }}>
             <div style={{ marginBottom: '5px' }}>
               <div style={{ fontSize: '10px', color: '#64748b' }}>Card Expiry</div>
-              <div style={{ 
-                fontSize: '11px', 
-                fontWeight: '700', 
+              <div style={{
+                fontSize: '11px',
+                fontWeight: '700',
                 color: '#dc2626',
               }}>
                 {getExpiryDate()}
               </div>
             </div>
-            
+
             {showSignature && (
               <div style={{ textAlign: 'center' }}>
                 <div style={{
@@ -410,13 +413,13 @@ function StudentIDCard({
 // TEACHER ID CARD
 // ========================
 
-function TeacherIDCard({ 
+function TeacherIDCard({
   data,
   branding,
   showQRCode = true,
   showSignature = true,
-}: { 
-  data: TeacherCardData; 
+}: {
+  data: TeacherCardData;
   branding: SchoolBranding;
   showQRCode?: boolean;
   showSignature?: boolean;
@@ -435,10 +438,10 @@ function TeacherIDCard({
   const getJoiningDate = () => {
     const date = teacherData.joiningDate || teacherData.dateEmployed;
     if (date) {
-      return new Date(date).toLocaleDateString('en-US', { 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric' 
+      return new Date(date).toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       });
     }
     return 'N/A';
@@ -454,7 +457,7 @@ function TeacherIDCard({
   };
 
   return (
-    <div className="id-card teacher-card" style={{ 
+    <div className="id-card teacher-card" style={{
       width: '500px',
       height: '310px',
       background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%)',
@@ -499,7 +502,7 @@ function TeacherIDCard({
             }} />
           ))}
         </div>
-        
+
         {/* School Name */}
         <div style={{ flex: 1 }}>
           <h1 style={{
@@ -513,7 +516,7 @@ function TeacherIDCard({
             {branding.name.toUpperCase()}
           </h1>
         </div>
-        
+
         {/* Badge */}
         <div style={{
           background: '#facc15',
@@ -547,8 +550,8 @@ function TeacherIDCard({
           </div>
           <div>
             <div style={{ color: '#64748b', marginBottom: '2px' }}>Address:</div>
-            <div style={{ 
-              fontWeight: '600', 
+            <div style={{
+              fontWeight: '600',
               color: '#dc2626',
               maxWidth: '120px',
               fontSize: '10px',
@@ -560,10 +563,10 @@ function TeacherIDCard({
         </div>
 
         {/* Center - Photo and Name */}
-        <div style={{ 
-          flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
         }}>
           {/* Photo */}
@@ -586,8 +589,8 @@ function TeacherIDCard({
               justifyContent: 'center',
             }}>
               {teacherData.avatar ? (
-                <img 
-                  src={teacherData.avatar} 
+                <img
+                  src={teacherData.avatar}
                   alt={teacherData.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
@@ -630,8 +633,8 @@ function TeacherIDCard({
               borderRadius: '6px',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             }}>
-              <QRCodeSVG 
-                value={`TEACHER:${teacherData.teacherId || teacherData.employeeId}`} 
+              <QRCodeSVG
+                value={`TEACHER:${teacherData.teacherId || teacherData.employeeId}`}
                 size={60}
                 level="M"
               />
@@ -689,9 +692,9 @@ function TeacherIDCard({
 // MAIN ID CARD COMPONENT
 // ========================
 
-export function IDCard({ 
-  type, 
-  data, 
+export function IDCard({
+  type,
+  data,
   className,
   showQRCode = true,
   showSignature = true,
@@ -722,15 +725,15 @@ export function IDCard({
   return (
     <div className={cn("id-card-wrapper", className)}>
       {type === 'student' ? (
-        <StudentIDCard 
-          data={data as StudentCardData} 
+        <StudentIDCard
+          data={data as StudentCardData}
           branding={branding}
           showQRCode={showQRCode}
           showSignature={showSignature}
         />
       ) : (
-        <TeacherIDCard 
-          data={data as TeacherCardData} 
+        <TeacherIDCard
+          data={data as TeacherCardData}
           branding={branding}
           showQRCode={showQRCode}
           showSignature={showSignature}
@@ -744,8 +747,8 @@ export function IDCard({
 // PRINTABLE ID CARD (for PDF/Download)
 // ========================
 
-export function PrintableIDCard({ 
-  type, 
+export function PrintableIDCard({
+  type,
   data,
   showQRCode = true,
   showSignature = true,
@@ -765,23 +768,23 @@ export function PrintableIDCard({
   }, []);
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
       alignItems: 'center',
       padding: '20px',
       background: '#f8fafc',
     }}>
       {type === 'student' ? (
-        <StudentIDCard 
-          data={data as StudentCardData} 
+        <StudentIDCard
+          data={data as StudentCardData}
           branding={branding}
           showQRCode={showQRCode}
           showSignature={showSignature}
         />
       ) : (
-        <TeacherIDCard 
-          data={data as TeacherCardData} 
+        <TeacherIDCard
+          data={data as TeacherCardData}
           branding={branding}
           showQRCode={showQRCode}
           showSignature={showSignature}
