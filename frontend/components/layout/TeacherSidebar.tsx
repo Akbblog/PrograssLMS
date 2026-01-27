@@ -5,8 +5,10 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/store/authStore"
+import { useChatStore } from "@/store/chatStore"
 import { Button } from "@/components/ui/button"
 import Icon from "@/components/ui/icon"
+import { NotificationBadge } from "@/components/ui/notification-badge"
 import { X } from "lucide-react"
 
 const sidebarItems = [
@@ -68,6 +70,9 @@ export default function TeacherSidebar({ className, sidebarOpen, setSidebarOpen 
     const router = useRouter()
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
+    const unreadCounts = useChatStore((state) => state.unreadCounts)
+    
+    const totalUnread = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0)
 
     const handleLogout = () => {
         logout()
@@ -104,6 +109,9 @@ export default function TeacherSidebar({ className, sidebarOpen, setSidebarOpen 
             <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
                 {sidebarItems.map((item) => {
                     const active = isActive(item.href);
+                    const isCommunication = item.href === "/teacher/communication";
+                    const unreadCount = isCommunication ? totalUnread : 0;
+                    
                     return (
                         <Link
                             key={item.href}
@@ -126,6 +134,14 @@ export default function TeacherSidebar({ className, sidebarOpen, setSidebarOpen 
 
                             {active && (
                                 <div className="absolute right-2 w-1.5 h-1.5 bg-white rounded-full shadow-sm"></div>
+                            )}
+                            
+                            {unreadCount > 0 && (
+                                <NotificationBadge 
+                                    count={unreadCount} 
+                                    variant="destructive"
+                                    className="ml-auto"
+                                />
                             )}
                         </Link>
                     )

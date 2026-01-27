@@ -3,8 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { useChatStore } from "@/store/chatStore";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon"
+import { NotificationBadge } from "@/components/ui/notification-badge"
 import { cn } from "@/lib/utils";
 
 export default function StudentSidebar() {
@@ -12,6 +14,9 @@ export default function StudentSidebar() {
     const pathname = usePathname();
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
+    const unreadCounts = useChatStore((state) => state.unreadCounts);
+    
+    const totalUnread = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0);
 
     const handleLogout = () => {
         logout();
@@ -46,6 +51,9 @@ export default function StudentSidebar() {
             <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                    const isCommunication = item.href === "/student/communication";
+                    const unreadCount = isCommunication ? totalUnread : 0;
+                    
                     return (
                         <Link
                             key={item.href}
@@ -74,6 +82,15 @@ export default function StudentSidebar() {
                             {/* Active Indicator */}
                             {isActive && (
                                 <div className="absolute right-2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_8px_white]"></div>
+                            )}
+                            
+                            {/* Unread Badge */}
+                            {unreadCount > 0 && (
+                                <NotificationBadge 
+                                    count={unreadCount} 
+                                    variant="destructive"
+                                    className="ml-auto"
+                                />
                             )}
                         </Link>
                     );

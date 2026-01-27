@@ -8,6 +8,9 @@ import dynamic from 'next/dynamic';
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useStudents } from "@/hooks/useStudents";
 import { unwrapArray } from "@/lib/utils";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { SkeletonDashboardStats, SkeletonTable } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 // Dynamically import heavy chart components to reduce initial bundle
 const AreaChart = dynamic(() => import('recharts').then(m => m.AreaChart), { ssr: false });
@@ -34,7 +37,8 @@ import {
     Bell,
     Sparkles,
     TrendingUp,
-    Bus
+    Bus,
+    AlertCircle
 } from "lucide-react";
 import GraduationCap from "@/components/icons/GraduationCap"
 import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card";
@@ -177,17 +181,16 @@ export default function AdminDashboard() {
         return colors[index % colors.length] as any;
     };
 
-    // Improved loading state with better UX
+    // Improved loading state with skeleton loaders
     if (statsLoading) {
         return (
-            <div className="flex items-center justify-center h-full min-h-[500px]">
-                <div className="text-center space-y-4">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-                    <div>
-                        <p className="text-slate-900 font-medium">Loading dashboard...</p>
-                        <p className="text-slate-500 text-sm mt-1">Fetching your school's latest data</p>
-                    </div>
+            <div className="mobile-padding mobile-padding-y space-y-4 sm:space-y-6 md:space-y-8">
+                <div className="space-y-2">
+                    <div className="h-8 w-1/2 bg-slate-200 rounded animate-pulse"></div>
+                    <div className="h-4 w-1/3 bg-slate-200 rounded animate-pulse"></div>
                 </div>
+                <SkeletonDashboardStats />
+                <SkeletonTable rows={5} />
             </div>
         );
     }
@@ -227,34 +230,39 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stats Grid - Mobile optimized */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fadeInUp" style={{ animationDelay: '100ms' }}>
-                {statCards.map((stat, index) => (
-                    <LuminaCard
-                        key={index}
-                        variant="gradient"
-                        gradientColor={getStatColor(index)}
-                        className="cursor-pointer border-none shadow-card hover:shadow-card-hover"
-                        glow
-                        onClick={() => router.push(stat.href)}
-                    >
-                        <LuminaCardContent className="p-4 sm:p-6">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="text-white/80 text-[10px] sm:text-xs font-bold uppercase tracking-widest">{stat.title}</p>
-                                    <h3 className="text-2xl sm:text-3xl font-black mt-1 tracking-tight">{stat.value}</h3>
-                                    <div className="flex items-center gap-1 mt-2 text-white/90">
-                                        <TrendingUp className="w-3 h-3" />
-                                        <span className="text-[10px] sm:text-xs font-bold">{stat.change}</span>
+            <ErrorBoundary
+                title="Dashboard Stats Error"
+                description="Unable to load dashboard statistics"
+            >
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fadeInUp" style={{ animationDelay: '100ms' }}>
+                    {statCards.map((stat, index) => (
+                        <LuminaCard
+                            key={index}
+                            variant="gradient"
+                            gradientColor={getStatColor(index)}
+                            className="cursor-pointer border-none shadow-card hover:shadow-card-hover"
+                            glow
+                            onClick={() => router.push(stat.href)}
+                        >
+                            <LuminaCardContent className="p-4 sm:p-6">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-white/80 text-[10px] sm:text-xs font-bold uppercase tracking-widest">{stat.title}</p>
+                                        <h3 className="text-2xl sm:text-3xl font-black mt-1 tracking-tight">{stat.value}</h3>
+                                        <div className="flex items-center gap-1 mt-2 text-white/90">
+                                            <TrendingUp className="w-3 h-3" />
+                                            <span className="text-[10px] sm:text-xs font-bold">{stat.change}</span>
+                                        </div>
+                                    </div>
+                                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
+                                        <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                                     </div>
                                 </div>
-                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
-                                    <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                                </div>
-                            </div>
-                        </LuminaCardContent>
-                    </LuminaCard>
-                ))}
-            </div>
+                            </LuminaCardContent>
+                        </LuminaCard>
+                    ))}
+                </div>
+            </ErrorBoundary>
 
             {/* Quick Access */}
             <LuminaCard variant="default" className="border-none shadow-card bg-card animate-fadeInUp" style={{ animationDelay: '150ms' }}>
