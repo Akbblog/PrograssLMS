@@ -50,23 +50,24 @@ export default function TeacherStudentsPage() {
             // Fetch stats for each student
             const stats: any = {};
             for (const student of studentList) {
+                const studentId = student._id || student.id;
                 try {
                     const [attendanceRes, gradesRes] = await Promise.all([
-                        attendanceAPI.getStudentAttendance(student._id),
-                        gradeAPI.getStudentGrades(student._id),
+                        attendanceAPI.getStudentAttendance(studentId),
+                        gradeAPI.getStudentGrades(studentId),
                     ]);
 
                     const attendance = unwrapArray((attendanceRes as any)?.data, "attendance");
                     const gradesData = (gradesRes as any).data;
 
-                    stats[student._id] = {
+                    stats[studentId] = {
                         attendanceRate: attendance.length > 0
                             ? ((attendance.filter((a: any) => a.status === "present").length / attendance.length) * 100).toFixed(0)
                             : "N/A",
                         averageGrade: gradesData?.average || "N/A",
                     };
                 } catch (err) {
-                    stats[student._id] = {
+                    stats[studentId] = {
                         attendanceRate: "N/A",
                         averageGrade: "N/A",
                     };
@@ -109,7 +110,7 @@ export default function TeacherStudentsPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 {classes.map((cls: any) => (
-                                    <SelectItem key={cls._id} value={cls._id}>{cls.name}</SelectItem>
+                                    <SelectItem key={cls.id || cls._id} value={cls.id || cls._id}>{cls.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -197,9 +198,10 @@ export default function TeacherStudentsPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {students.map((student: any) => {
-                                            const stats = studentStats[student._id] || {};
+                                            const studentId = student._id || student.id;
+                                            const stats = studentStats[studentId] || {};
                                             return (
-                                                <TableRow key={student._id}>
+                                                <TableRow key={studentId}>
                                                     <TableCell className="font-medium">{student.studentId || "N/A"}</TableCell>
                                                     <TableCell>{student.name}</TableCell>
                                                     <TableCell>{student.email}</TableCell>

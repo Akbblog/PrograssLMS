@@ -66,14 +66,47 @@ exports.getAllStudentsByAdminService = async (schoolId, filters = {}, res) => {
     
     const where = {};
     if (schoolId) where.schoolId = schoolId;
-    if (filters.enrollmentStatus) where.enrollmentStatus = filters.enrollmentStatus;
-    if (filters.currentClassLevel) where.OR = [ { currentClassLevel: filters.currentClassLevel }, { currentClassLevels: { has: filters.currentClassLevel } } ];
 
     const page = parseInt(filters.page) || 1;
     const limit = Math.min(parseInt(filters.limit) || 100, 100);
     const skip = (page -1) * limit;
 
-    console.log('[Get Students] Querying with schoolId:', schoolId, 'page:', page);
+    console.log('[Get Students] Querying with schoolId:', schoolId, 'page:', page, 'filters:', filters);
+    
+    let studentIds = null;
+    
+    // If filtering by classLevel, find students enrolled in that class
+    if (filters.currentClassLevel) {
+      console.log('[Get Students] Filtering by classLevel:', filters.currentClassLevel);
+      const enrollments = await prisma.enrollment.findMany({
+        where: {
+          classLevel: filters.currentClassLevel,
+          status: filters.enrollmentStatus || 'active',
+          schoolId: schoolId
+        },
+        select: { studentId: true }
+      });
+      studentIds = enrollments.map(e => e.studentId);
+      console.log('[Get Students] Found', studentIds.length, 'enrolled students');
+      if (studentIds.length === 0) {
+        return responseStatus(res, 200, 'success', { students: [], pagination: { total: 0, page, limit, pages: 0 } });
+      }
+      where.id = { in: studentIds };
+    } else if (filters.enrollmentStatus) {
+      // If filtering by enrollment status without a specific class
+      const enrollments = await prisma.enrollment.findMany({
+        where: {
+          status: filters.enrollmentStatus,
+          schoolId: schoolId
+        },
+        select: { studentId: true }
+      });
+      studentIds = enrollments.map(e => e.studentId);
+      if (studentIds.length === 0) {
+        return responseStatus(res, 200, 'success', { students: [], pagination: { total: 0, page, limit, pages: 0 } });
+      }
+      where.id = { in: studentIds };
+    }
     
     const total = await prisma.student.count({ where });
     const students = await prisma.student.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' } });
