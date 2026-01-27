@@ -8,6 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
 import { toast } from "sonner"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { SkeletonCard, SkeletonTable, SkeletonDashboardStats } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
 import {
     BookOpen,
     Users,
@@ -79,11 +82,13 @@ export default function TeacherDashboard() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-slate-50">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-10 w-10 border-2 border-teal-600 border-t-transparent mx-auto"></div>
-                    <p className="mt-4 text-slate-500 text-sm">Loading dashboard...</p>
+            <div className="space-y-6 p-6">
+                <div className="space-y-2">
+                    <div className="h-8 w-1/3 bg-slate-200 rounded animate-pulse"></div>
+                    <div className="h-4 w-1/2 bg-slate-200 rounded animate-pulse"></div>
                 </div>
+                <SkeletonDashboardStats />
+                <SkeletonTable rows={5} />
             </div>
         )
     }
@@ -151,23 +156,28 @@ export default function TeacherDashboard() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                {stats.map((stat, idx) => (
-                    <Card key={idx} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
-                                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
+            <ErrorBoundary
+                title="Dashboard Stats Error"
+                description="Unable to load dashboard statistics"
+            >
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {stats.map((stat, idx) => (
+                        <Card key={idx} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                            <CardContent className="p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-10 h-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
+                                        <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                                    </div>
+                                    <div>
+                                        <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+                                        <p className="text-xs text-slate-500">{stat.label}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
-                                    <p className="text-xs text-slate-500">{stat.label}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </ErrorBoundary>
 
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
