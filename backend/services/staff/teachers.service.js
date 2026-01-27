@@ -131,8 +131,12 @@ exports.teacherLoginService = async (data, res) => {
   const teacherData = teacherFound.toObject();
   delete teacherData.password;
 
+  // Ensure role is always 'teacher'
+  const teacherRole = teacherFound.role === 'teacher' ? 'teacher' : 'teacher';
+  console.log('[Teacher Login] Authenticated teacher:', email, 'with role:', teacherRole);
+
   // Generate token with schoolId and role for multi-tenancy
-  const token = generateToken(teacherFound._id, teacherFound.role, teacherFound.schoolId);
+  const token = generateToken(teacherFound._id, teacherRole, teacherFound.schoolId);
 
   return responseStatus(res, 200, "success", { teacher: teacherData, token });
 };

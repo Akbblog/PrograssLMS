@@ -36,8 +36,13 @@ exports.studentLoginService = async (data, res) => {
     console.log('[Student Login] Password mismatch for:', email);
     return responseStatus(res, 401, 'failed', 'Invalid login credentials');
   }
+  
+  // Ensure role is always 'student'
+  const studentRole = student.role === 'student' ? 'student' : 'student';
+  console.log('[Student Login] Authenticated student:', email, 'with role:', studentRole);
+  
   const { password: pw, ...studentData } = student;
-  const token = generateToken(student.id, student.role || 'student', student.schoolId);
+  const token = generateToken(student.id, studentRole, student.schoolId);
   return responseStatus(res, 200, 'success', { student: studentData, token });
 };
 

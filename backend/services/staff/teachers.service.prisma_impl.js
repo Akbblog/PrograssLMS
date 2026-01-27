@@ -59,8 +59,13 @@ exports.teacherLoginService = async (data, res) => {
     console.log('[Teacher Login] Password mismatch for:', email);
     return responseStatus(res, 401, 'failed', 'Invalid login credentials');
   }
+  
+  // Ensure role is always 'teacher'
+  const teacherRole = teacher.role === 'teacher' ? 'teacher' : 'teacher';
+  console.log('[Teacher Login] Authenticated teacher:', email, 'with role:', teacherRole);
+  
   const { password: pw, ...t } = teacher;
-  const token = generateToken(teacher.id, teacher.role || 'teacher', teacher.schoolId);
+  const token = generateToken(teacher.id, teacherRole, teacher.schoolId);
   return responseStatus(res, 200, 'success', { teacher: t, token });
 };
 

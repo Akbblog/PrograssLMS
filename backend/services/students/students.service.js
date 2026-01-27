@@ -128,8 +128,12 @@ exports.studentLoginService = async (data, res) => {
   const studentData = student.toObject();
   delete studentData.password;
 
+  // Ensure role is always 'student'
+  const studentRole = student.role === 'student' ? 'student' : 'student';
+  console.log('[Student Login] Authenticated student:', email, 'with role:', studentRole);
+
   // Generate token with schoolId and role for multi-tenancy
-  const token = generateToken(student._id, student.role, student.schoolId);
+  const token = generateToken(student._id, studentRole, student.schoolId);
   return responseStatus(res, 200, "success", { student: studentData, token });
 };
 /**
