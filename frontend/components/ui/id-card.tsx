@@ -427,11 +427,14 @@ function TeacherIDCard({
   const teacherData = data as TeacherCardData;
 
   // Get subject name
-  const getSubjectName = () => {
+  const getSubjectName = (): string => {
     if (typeof teacherData.subject === 'object' && teacherData.subject?.name) {
       return teacherData.subject.name;
     }
-    return teacherData.subject || teacherData.designation || 'Teacher';
+    if (typeof teacherData.subject === 'string') {
+      return teacherData.subject;
+    }
+    return teacherData.designation || 'Teacher';
   };
 
   // Get joining date
