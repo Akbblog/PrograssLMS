@@ -4,33 +4,32 @@ import { useEffect, useState } from "react"
 import { useAuthStore } from "@/store/authStore"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
 import { toast } from "sonner"
-import "@/app/components/ui/print-optimization.css"
 import {
-    Search,
     BookOpen,
     Users,
-    BarChart3,
-    ClipboardList,
+    ClipboardCheck,
     FileText,
     Clock,
-    TrendingUp,
     ChevronRight,
     Plus,
-    Target,
-    Sparkles,
-    Calendar,
     Download,
-    IdCard,
-    User,
-    Mail,
-    Hash,
-    Briefcase
+    Bell,
+    CheckCircle2,
+    AlertCircle,
+    PenLine,
+    Eye,
+    ArrowRight,
+    Inbox,
+    Award,
+    TrendingUp
 } from "lucide-react"
-import { LuminaCard, LuminaCardContent, LuminaCardHeader, LuminaCardTitle } from "@/components/ui/lumina-card"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { teacherAPI } from '@/lib/api/endpoints'
+import { IDCard } from "@/components/ui/id-card"
+import { CardPreviewModal } from "@/components/ui/card-preview-modal"
 
 export default function TeacherDashboard() {
     const user = useAuthStore((state) => state.user)
@@ -82,241 +81,325 @@ export default function TeacherDashboard() {
         return (
             <div className="flex items-center justify-center min-h-screen bg-slate-50">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
-                    <p className="mt-4 text-slate-500">Loading command center...</p>
+                    <div className="animate-spin rounded-full h-10 w-10 border-2 border-teal-600 border-t-transparent mx-auto"></div>
+                    <p className="mt-4 text-slate-500 text-sm">Loading dashboard...</p>
                 </div>
             </div>
         )
     }
 
-    const teacherStats = [
-        { id: 1, label: "Total Classes", value: dashboard ? dashboard.counts?.classes : "4", icon: BookOpen, color: "from-teal-500 to-teal-600" },
-        { id: 2, label: "Total Students", value: dashboard ? dashboard.counts?.students || "120" : "120", icon: Users, color: "from-cyan-500 to-cyan-600" },
-        { id: 3, label: "Avg. Performance", value: "78%", icon: TrendingUp, color: "from-emerald-500 to-emerald-600" },
-        { id: 4, label: "Pending Tasks", value: dashboard ? dashboard.counts?.upcomingAssignments : "12", icon: ClipboardList, color: "from-amber-500 to-amber-600" }
+    const hour = currentDateTime.getHours()
+    const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+
+    const todaysClasses = dashboard?.classes || [
+        { id: 1, name: "Class 10-A", subject: "Mathematics", time: "9:00 AM", room: "Room 201", students: 30, status: "completed" },
+        { id: 2, name: "Class 10-B", subject: "Mathematics", time: "10:30 AM", room: "Room 203", students: 28, status: "in-progress" },
+        { id: 3, name: "Class 11-A", subject: "Mathematics", time: "12:00 PM", room: "Room 201", students: 32, status: "upcoming" },
+        { id: 4, name: "Class 9-C", subject: "Mathematics", time: "2:30 PM", room: "Room 105", students: 25, status: "upcoming" }
     ]
 
-    const classes = dashboard && dashboard.classes ? dashboard.classes.map((c:any, i:number) => ({ id: c._id || i, name: c.name || c.title || `Class ${i+1}`, students: c.studentCount || c.students?.length || 0, subject: c.subject?.name || 'N/A', time: c.time || 'TBD', status: c.status || 'Scheduled' })) : [
-        { id: 1, name: "Class 10-A", students: 30, subject: "Mathematics", time: "9:00 AM - 10:00 AM", status: "Completed" },
-        { id: 2, name: "Class 10-B", students: 28, subject: "English", time: "10:15 AM - 11:15 AM", status: "In Progress" },
-        { id: 3, name: "Class 11-A", students: 32, subject: "Physics", time: "11:30 AM - 12:30 PM", status: "Upcoming" },
-        { id: 4, name: "Class 9-C", students: 25, subject: "History", time: "2:00 PM - 3:00 PM", status: "Upcoming" }
+    const stats = [
+        { label: "Total Students", value: dashboard?.counts?.students || 120, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+        { label: "Classes Today", value: todaysClasses.length, icon: BookOpen, color: "text-teal-600", bg: "bg-teal-50" },
+        { label: "Pending Grades", value: dashboard?.counts?.pendingGrades || 8, icon: PenLine, color: "text-amber-600", bg: "bg-amber-50" },
+        { label: "Assignments Due", value: dashboard?.counts?.upcomingAssignments || 3, icon: FileText, color: "text-rose-600", bg: "bg-rose-50" }
     ]
 
-    const recentActivities = dashboard && dashboard.upcomingAssignments ? dashboard.upcomingAssignments.map((a:any, i:number) => ({ id: a._id || i, action: `Assignment Due: ${a.title}`, time: new Date(a.dueDate).toLocaleString(), icon: ClipboardList })) : [
-        { id: 1, action: "Graded quiz for Class 10-A", time: "2 hours ago", icon: FileText },
-        { id: 2, action: "Posted assignment for Class 11-A", time: "4 hours ago", icon: ClipboardList },
-        { id: 3, action: "Took attendance for Class 10-B", time: "Yesterday", icon: Users },
+    const pendingTasks = [
+        { id: 1, type: "attendance", title: "Take attendance for Class 11-A", dueTime: "Before 12:00 PM", priority: "high" },
+        { id: 2, type: "grading", title: "Grade Quiz: Chapter 5 - Algebra", dueTime: "Due today", priority: "high" },
+        { id: 3, type: "assignment", title: "Review homework submissions", dueTime: "5 pending reviews", priority: "medium" }
+    ]
+
+    const recentSubmissions = [
+        { id: 1, student: "John Smith", assignment: "Homework Ch. 4", class: "10-A", time: "10 min ago", avatar: null },
+        { id: 2, student: "Sarah Johnson", assignment: "Quiz Practice", class: "10-B", time: "25 min ago", avatar: null },
+        { id: 3, student: "Mike Chen", assignment: "Project Draft", class: "11-A", time: "1 hour ago", avatar: null }
+    ]
+
+    const announcements = [
+        { id: 1, title: "Staff meeting tomorrow at 3 PM", type: "info", time: "2 hours ago" },
+        { id: 2, title: "Parent-teacher conference next week", type: "event", time: "Yesterday" }
     ]
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1600px] mx-auto">
-            {/* Welcome Section */}
-            <div className="animate-fadeInUp">
-                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-                    <div>
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="h-2 w-8 bg-teal-500 rounded-full"></div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">Educator Command Center</span>
-                        </div>
-                        <h1 className="text-4xl font-black text-foreground tracking-tight">
-                            Command, <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-emerald-600">{user?.name?.split(" ")[0] || "Professor"}</span>! 🧑‍🏫
-                        </h1>
-                        <p className="text-muted-foreground font-medium mt-1">
-                            {currentDateTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                        </p>
-                    </div>
-                    <div className="flex gap-3">
-                        <Button variant="ghost" className="bg-card border border-border hover:bg-accent text-muted-foreground font-bold px-6 rounded-2xl h-12 shadow-sm" asChild>
-                            <Link href="/teacher/schedule">
-                                Full Schedule
-                            </Link>
-                        </Button>
-                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-6 rounded-2xl h-12 shadow-xl shadow-primary/20 border-0" asChild>
-                            <Link href="/teacher/assignments/new">
-                                <Plus className="w-5 h-5 mr-2" />
-                                Create Task
-                            </Link>
-                        </Button>
-                    </div>
+        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto bg-slate-50 min-h-screen">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <p className="text-sm text-slate-500 mb-1">
+                        {currentDateTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-slate-800">
+                        {greeting}, <span className="text-teal-600">{user?.name?.split(" ")[0] || "Teacher"}</span>
+                    </h1>
+                </div>
+                <div className="flex gap-2">
+                    <Button variant="outline" className="h-10" asChild>
+                        <Link href="/teacher/attendance">
+                            <ClipboardCheck className="w-4 h-4 mr-2" />
+                            Take Attendance
+                        </Link>
+                    </Button>
+                    <Button className="h-10 bg-teal-600 hover:bg-teal-700" asChild>
+                        <Link href="/teacher/assignments">
+                            <Plus className="w-4 h-4 mr-2" />
+                            New Assignment
+                        </Link>
+                    </Button>
                 </div>
             </div>
 
-            {/* Teacher ID Card Widget */}
-            <Card className="border-none shadow-xl shadow-slate-200/50 bg-white overflow-hidden animate-fadeInUp" style={{ animationDelay: '50ms' }}>
-                <CardHeader className="pb-3 border-b border-slate-50">
-                    <CardTitle className="text-sm font-bold flex items-center gap-2 text-slate-600">
-                        <IdCard className="h-4 w-4" /> My Teacher ID Card
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row gap-6 items-center">
-                        <div className="flex-1">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <User className="h-4 w-4 text-slate-400" />
-                                    <div>
-                                        <p className="text-xs text-slate-400 uppercase">Name</p>
-                                        <p className="font-semibold">{user?.name}</p>
-                                    </div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {stats.map((stat, idx) => (
+                    <Card key={idx} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-lg ${stat.bg} flex items-center justify-center`}>
+                                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Hash className="h-4 w-4 text-slate-400" />
-                                    <div>
-                                        <p className="text-xs text-slate-400 uppercase">Employee ID</p>
-                                        <p className="font-semibold">{user?.employeeId}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Briefcase className="h-4 w-4 text-slate-400" />
-                                    <div>
-                                        <p className="text-xs text-slate-400 uppercase">Subject</p>
-                                        <p className="font-semibold">{user?.subject?.name || user?.subject}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Mail className="h-4 w-4 text-slate-400" />
-                                    <div>
-                                        <p className="text-xs text-slate-400 uppercase">Email</p>
-                                        <p className="font-semibold">{user?.email}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="w-32 h-40 bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-dashed border-teal-200 rounded-lg flex items-center justify-center">
-                                <IdCard className="h-12 w-12 text-teal-400" />
-                            </div>
-                            <Button size="sm" onClick={handleDownloadTeacherCard} className="bg-teal-600 hover:bg-teal-700">
-                                <Download className="h-4 w-4 mr-2" /> Download ID Card
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fadeInUp" style={{ animationDelay: '100ms' }}>
-                {teacherStats.map((stat) => (
-                    <LuminaCard
-                        key={stat.id}
-                        variant="gradient"
-                        gradientColor="teal"
-                        className="group"
-                        glow
-                    >
-                        <LuminaCardContent className="p-4 sm:p-6">
-                            <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="text-white/80 text-[10px] sm:text-xs font-black uppercase tracking-widest">{stat.label}</p>
-                                    <h3 className="text-2xl sm:text-3xl font-black mt-1 tracking-tight">{stat.value}</h3>
-                                </div>
-                                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                                    <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white transition-transform group-hover:scale-110" />
+                                    <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+                                    <p className="text-xs text-slate-500">{stat.label}</p>
                                 </div>
                             </div>
-                        </LuminaCardContent>
-                    </LuminaCard>
+                        </CardContent>
+                    </Card>
                 ))}
             </div>
 
             {/* Main Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fadeInUp" style={{ animationDelay: '200ms' }}>
-                {/* Today's Schedule */}
-                <LuminaCard variant="glass" className="lg:col-span-2 shadow-2xl shadow-slate-200/50 dark:shadow-none border-border">
-                    <LuminaCardHeader className="pb-6">
-                        <div className="flex items-center justify-between">
-                            <LuminaCardTitle className="text-xl font-black text-foreground flex items-center gap-2">
-                                <Clock className="h-6 w-6 text-teal-500" />
-                                Teaching Agenda
-                            </LuminaCardTitle>
-                            <Button variant="ghost" size="sm" className="text-teal-600 hover:text-teal-700 hover:bg-teal-50 dark:hover:bg-teal-950/30 font-black px-4 rounded-xl">
-                                Full Roster
-                                <ChevronRight className="w-4 h-4 ml-1" />
-                            </Button>
-                        </div>
-                    </LuminaCardHeader>
-                    <LuminaCardContent>
-                        <div className="space-y-4">
-                            {classes.map((cls: any) => (
-                                <div
-                                    key={cls.id}
-                                    className="group flex flex-col sm:flex-row sm:items-center gap-4 p-5 border border-border/50 rounded-3xl hover:shadow-xl hover:shadow-teal-500/5 hover:border-teal-100 dark:hover:border-teal-900 transition-all cursor-pointer bg-card"
-                                >
-                                    <div className="w-16 h-16 bg-teal-50 dark:bg-teal-950/30 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-teal-600 transition-all duration-500 shadow-sm relative overflow-hidden">
-                                        <BookOpen className="h-8 w-8 text-teal-600 dark:text-teal-400 group-hover:text-white transition-colors relative z-10" />
-                                        <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Today's Classes */}
+                    <Card className="border-0 shadow-sm">
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-teal-600" />
+                                    Today's Schedule
+                                </CardTitle>
+                                <Button variant="ghost" size="sm" className="text-teal-600 hover:text-teal-700" asChild>
+                                    <Link href="/teacher/schedule">
+                                        View Full Schedule
+                                        <ChevronRight className="w-4 h-4 ml-1" />
+                                    </Link>
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {todaysClasses.map((cls: any) => (
+                                <div key={cls.id} className={`flex items-center gap-4 p-4 rounded-xl border transition-all hover:shadow-sm cursor-pointer ${cls.status === 'completed' ? 'bg-slate-50 border-slate-100' : cls.status === 'in-progress' ? 'bg-teal-50 border-teal-200' : 'bg-white border-slate-200 hover:border-teal-200'}`}>
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${cls.status === 'completed' ? 'bg-slate-200' : cls.status === 'in-progress' ? 'bg-teal-600' : 'bg-slate-100'}`}>
+                                        <BookOpen className={`w-5 h-5 ${cls.status === 'in-progress' ? 'text-white' : 'text-slate-600'}`} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-black text-foreground tracking-tight group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors text-lg uppercase">{cls.name}</h3>
-                                            <Badge
-                                                className={`rounded-full px-3 py-0.5 text-[8px] font-black uppercase tracking-widest border-0 ${cls.status === 'Completed' ? 'bg-emerald-500 text-white shadow-emerald-100 dark:shadow-none' :
-                                                    cls.status === 'In Progress' ? 'bg-amber-500 text-white shadow-amber-100 dark:shadow-none animate-pulse' :
-                                                        'bg-muted text-muted-foreground'
-                                                    }`}
-                                            >
-                                                {cls.status}
-                                            </Badge>
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <h3 className={`font-semibold ${cls.status === 'completed' ? 'text-slate-500' : 'text-slate-800'}`}>{cls.name}</h3>
+                                            {cls.status === 'in-progress' && <Badge className="bg-teal-600 text-white text-[10px] px-2 py-0">LIVE</Badge>}
+                                            {cls.status === 'completed' && <CheckCircle2 className="w-4 h-4 text-green-500" />}
                                         </div>
-                                        <p className="text-sm text-muted-foreground font-bold tracking-tight">{cls.subject} <span className="mx-2 opacity-30">•</span> {cls.time}</p>
+                                        <p className="text-sm text-slate-500">{cls.subject} • {cls.room}</p>
                                     </div>
-                                    <div className="sm:text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 border-t sm:border-t-0 sm:border-l border-border/50 pt-3 sm:pt-0 sm:pl-6">
-                                        <p className="text-3xl font-black text-teal-600 dark:text-teal-400 tabular-nums leading-none tracking-tight">{cls.students}</p>
-                                        <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Enrolled</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </LuminaCardContent>
-                </LuminaCard>
-
-                {/* Recent Activity */}
-                <LuminaCard variant="glass" className="shadow-2xl shadow-slate-200/50 dark:shadow-none border-border">
-                    <LuminaCardHeader className="pb-6">
-                        <LuminaCardTitle className="text-xl font-black text-foreground flex items-center gap-2">
-                            <BarChart3 className="h-6 w-6 text-teal-500" />
-                            Operations Log
-                        </LuminaCardTitle>
-                    </LuminaCardHeader>
-                    <LuminaCardContent>
-                        <div className="space-y-4">
-                            {recentActivities.map((activity: any) => (
-                                <div key={activity.id} className="flex items-start gap-4 p-4 rounded-2xl hover:bg-teal-50/50 dark:hover:bg-teal-950/30 transition-all group overflow-hidden relative">
-                                    <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform shadow-sm">
-                                        <activity.icon className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-black text-foreground tracking-tight leading-snug">{activity.action}</p>
-                                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1.5">{activity.time}</p>
+                                    <div className="text-right">
+                                        <p className={`font-semibold ${cls.status === 'in-progress' ? 'text-teal-600' : 'text-slate-700'}`}>{cls.time}</p>
+                                        <p className="text-xs text-slate-400">{cls.students} students</p>
                                     </div>
                                 </div>
                             ))}
-                        </div>
+                        </CardContent>
+                    </Card>
 
-                        <div className="mt-8 p-6 bg-gradient-to-br from-teal-600 via-emerald-700 to-teal-800 rounded-3xl text-white relative overflow-hidden shadow-2xl group">
-                            <Sparkles className="absolute -top-4 -right-4 h-24 w-24 text-white/10 rotate-12 group-hover:scale-110 transition-transform" />
+                    {/* Quick Actions */}
+                    <Card className="border-0 shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base font-semibold">Quick Actions</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <Link href="/teacher/attendance" className="group">
+                                    <div className="p-4 rounded-xl border border-slate-200 hover:border-teal-300 hover:bg-teal-50/50 transition-all text-center">
+                                        <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-teal-50 group-hover:bg-teal-100 flex items-center justify-center transition-colors">
+                                            <ClipboardCheck className="w-5 h-5 text-teal-600" />
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-700">Attendance</p>
+                                    </div>
+                                </Link>
+                                <Link href="/teacher/grades" className="group">
+                                    <div className="p-4 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all text-center">
+                                        <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                                            <PenLine className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-700">Enter Grades</p>
+                                    </div>
+                                </Link>
+                                <Link href="/teacher/assignments" className="group">
+                                    <div className="p-4 rounded-xl border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 transition-all text-center">
+                                        <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-amber-50 group-hover:bg-amber-100 flex items-center justify-center transition-colors">
+                                            <FileText className="w-5 h-5 text-amber-600" />
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-700">Assignments</p>
+                                    </div>
+                                </Link>
+                                <Link href="/teacher/students" className="group">
+                                    <div className="p-4 rounded-xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all text-center">
+                                        <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-purple-50 group-hover:bg-purple-100 flex items-center justify-center transition-colors">
+                                            <Users className="w-5 h-5 text-purple-600" />
+                                        </div>
+                                        <p className="text-sm font-medium text-slate-700">My Students</p>
+                                    </div>
+                                </Link>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-1.5 mb-2">
-                                    <Target className="w-4 h-4 text-emerald-300" />
-                                    <h4 className="font-black text-[10px] uppercase tracking-[0.3em] text-emerald-100">
-                                        Active Directives
-                                    </h4>
-                                </div>
-                                <p className="text-sm text-teal-50 mb-6 font-bold leading-relaxed">System identified <span className="text-emerald-300 text-lg mx-1">3</span> incomplete attendance markers for today.</p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <Button size="sm" variant="ghost" className="text-[10px] h-11 justify-center bg-white/10 hover:bg-white/20 text-white border-white/20 font-black uppercase tracking-widest rounded-xl transition-all">
-                                        Post Tasks
-                                    </Button>
-                                    <Button size="sm" variant="ghost" className="text-[10px] h-11 justify-center bg-white/10 hover:bg-white/20 text-white border-white/20 font-black uppercase tracking-widest rounded-xl transition-all">
-                                        Grade Prep
+                    {/* ID Card */}
+                    <Card className="border-0 shadow-sm overflow-hidden">
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <Award className="w-4 h-4 text-teal-600" />
+                                    My ID Card
+                                </CardTitle>
+                                <div className="flex gap-2">
+                                    <CardPreviewModal
+                                        trigger={<Button variant="outline" size="sm"><Eye className="w-4 h-4 mr-2" />Preview</Button>}
+                                        cardData={{ type: 'teacher', data: user, employmentInfo: user?.employmentInfo }}
+                                        onDownload={handleDownloadTeacherCard}
+                                    />
+                                    <Button size="sm" onClick={handleDownloadTeacherCard} className="bg-teal-600 hover:bg-teal-700">
+                                        <Download className="w-4 h-4 mr-2" />Download
                                     </Button>
                                 </div>
                             </div>
-                        </div>
-                    </LuminaCardContent>
-                </LuminaCard>
+                        </CardHeader>
+                        <CardContent className="flex justify-center pb-6">
+                            <div className="transform scale-75 origin-top -my-8">
+                                <IDCard 
+                                    type="teacher" 
+                                    data={user ? {
+                                        name: user.name,
+                                        teacherId: user.employeeId || user._id || user.id,
+                                        employeeId: user.employeeId || user._id || user.id
+                                    } : { name: 'Teacher' }} 
+                                    showQRCode={true} 
+                                    showSignature={true} 
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Right Sidebar */}
+                <div className="space-y-6">
+                    {/* Pending Tasks */}
+                    <Card className="border-0 shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-amber-500" />
+                                Pending Tasks
+                                <Badge variant="secondary" className="ml-auto bg-amber-100 text-amber-700">{pendingTasks.length}</Badge>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {pendingTasks.map((task) => (
+                                <div key={task.id} className="p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer">
+                                    <div className="flex items-start gap-3">
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${task.priority === 'high' ? 'bg-rose-100' : 'bg-amber-100'}`}>
+                                            {task.type === 'attendance' && <ClipboardCheck className={`w-4 h-4 ${task.priority === 'high' ? 'text-rose-600' : 'text-amber-600'}`} />}
+                                            {task.type === 'grading' && <PenLine className={`w-4 h-4 ${task.priority === 'high' ? 'text-rose-600' : 'text-amber-600'}`} />}
+                                            {task.type === 'assignment' && <FileText className={`w-4 h-4 ${task.priority === 'high' ? 'text-rose-600' : 'text-amber-600'}`} />}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-slate-700 leading-tight">{task.title}</p>
+                                            <p className="text-xs text-slate-500 mt-0.5">{task.dueTime}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button variant="ghost" className="w-full text-teal-600 hover:text-teal-700 hover:bg-teal-50" size="sm">
+                                View All Tasks<ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    {/* Recent Submissions */}
+                    <Card className="border-0 shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                <Inbox className="w-4 h-4 text-blue-500" />
+                                Recent Submissions
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {recentSubmissions.map((sub) => (
+                                <div key={sub.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
+                                    <Avatar className="w-8 h-8">
+                                        <AvatarImage src={sub.avatar || undefined} />
+                                        <AvatarFallback className="bg-slate-200 text-xs">{sub.student.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-700 truncate">{sub.student}</p>
+                                        <p className="text-xs text-slate-500 truncate">{sub.assignment}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <Badge variant="outline" className="text-[10px]">{sub.class}</Badge>
+                                        <p className="text-[10px] text-slate-400 mt-0.5">{sub.time}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            <Button variant="ghost" className="w-full text-blue-600 hover:text-blue-700 hover:bg-blue-50" size="sm" asChild>
+                                <Link href="/teacher/assignments">View All Submissions<ArrowRight className="w-4 h-4 ml-2" /></Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    {/* Announcements */}
+                    <Card className="border-0 shadow-sm">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                <Bell className="w-4 h-4 text-purple-500" />
+                                Announcements
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {announcements.map((ann) => (
+                                <div key={ann.id} className="p-3 rounded-lg border border-slate-100 hover:border-slate-200 transition-colors cursor-pointer">
+                                    <p className="text-sm font-medium text-slate-700">{ann.title}</p>
+                                    <p className="text-xs text-slate-400 mt-1">{ann.time}</p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+
+                    {/* Performance */}
+                    <Card className="border-0 shadow-sm bg-teal-600 text-white">
+                        <CardContent className="p-5">
+                            <div className="flex items-center gap-2 mb-3">
+                                <TrendingUp className="w-4 h-4" />
+                                <h3 className="text-sm font-semibold">Class Performance</h3>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-teal-100">Average Score</span>
+                                    <span className="font-bold">78%</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-teal-100">Attendance Rate</span>
+                                    <span className="font-bold">92%</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm text-teal-100">Assignments Completed</span>
+                                    <span className="font-bold">85%</span>
+                                </div>
+                            </div>
+                            <Button variant="ghost" className="w-full mt-4 text-white hover:bg-white/10 border border-white/20" size="sm" asChild>
+                                <Link href="/teacher/performance">View Detailed Report</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     )

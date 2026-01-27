@@ -309,7 +309,7 @@ function StudentIDCard({
           <div style={{ fontSize: '11px', lineHeight: '1.6' }}>
             <div style={{ display: 'flex', marginBottom: '3px' }}>
               <span style={{ color: '#475569', width: '85px' }}>Student's Class :</span>
-              <span style={{ fontWeight: '600', color: '#0f172a' }}>{getClassName()} {studentData.section ? `(${studentData.section})` : ''}</span>
+              <span style={{ fontWeight: '600', color: '#0f172a' }}>{getClassName()}{(studentData.section ? `(${String(studentData.section)})` : '')}</span>
             </div>
             <div style={{ display: 'flex', marginBottom: '3px' }}>
               <span style={{ color: '#475569', width: '85px' }}>Father's Name :</span>
