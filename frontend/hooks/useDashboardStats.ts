@@ -47,7 +47,7 @@ export function useDashboardStats() {
       }
     },
     staleTime: 1000 * 60, // 60 seconds
-    gcTime: 1000 * 60 * 5, // 5 minutes (formerly cacheTime)
+    cacheTime: 1000 * 60 * 5, // 5 minutes
     retry: 1,
     refetchOnWindowFocus: false,
   };
