@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const generateToken = (id, role, schoolId) => {
   const payload = {
     _id: id,
-    role: role || "admin",
+    role: role || "user", // Default to generic 'user' instead of 'admin' to avoid privilege escalation
   };
 
   // Add schoolId if provided (not needed for super_admin)
