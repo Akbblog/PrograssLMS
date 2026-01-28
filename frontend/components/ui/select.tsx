@@ -14,7 +14,8 @@ function Select({
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   // Track whether this component is controlled or uncontrolled on first render
   // This prevents switching between modes which causes React warnings
-  const wasControlledRef = React.useRef(value !== undefined);
+  // Empty string "" is treated as uncontrolled (same as undefined)
+  const wasControlledRef = React.useRef(value !== undefined && value !== "");
   
   // Determine the value and defaultValue to pass to Radix
   // If started as controlled: always use the value prop
