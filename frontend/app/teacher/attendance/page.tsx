@@ -198,7 +198,7 @@ export default function TeacherAttendancePage() {
                             </SelectTrigger>
                             <SelectContent>
                                 {classes.map((cls: any) => (
-                                    <SelectItem key={cls._id} value={cls._id}>
+                                    <SelectItem key={cls.id || cls._id} value={cls.id || cls._id}>
                                         {cls.name}
                                     </SelectItem>
                                 ))}

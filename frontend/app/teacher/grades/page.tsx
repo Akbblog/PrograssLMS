@@ -200,7 +200,7 @@ export default function TeacherGradesPage() {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {classes.map((cls: any) => (
-                                                    <SelectItem key={cls._id} value={cls._id}>{cls.name}</SelectItem>
+                                                    <SelectItem key={cls.id || cls._id} value={cls.id || cls._id}>{cls.name}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -344,7 +344,7 @@ export default function TeacherGradesPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 {classes.map((cls: any) => (
-                                    <SelectItem key={cls._id} value={cls._id}>{cls.name}</SelectItem>
+                                    <SelectItem key={cls.id || cls._id} value={cls.id || cls._id}>{cls.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
