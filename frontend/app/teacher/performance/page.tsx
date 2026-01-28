@@ -31,8 +31,12 @@ export default function TeacherPerformancePage() {
     }, []);
 
     useEffect(() => {
+        // Show analytics when all filters are selected
         if (selectedClass && selectedSubject && selectedYear && selectedTerm) {
             fetchPerformance();
+        } else {
+            // Clear performance data if filters are incomplete
+            setPerformance(null);
         }
     }, [selectedClass, selectedSubject, selectedYear, selectedTerm]);
 
@@ -57,9 +61,13 @@ export default function TeacherPerformancePage() {
 
             const currentYear = yearsList.find((y: any) => y.isCurrent);
             const currentTerm = termsList.find((t: any) => t.isCurrent);
+            const firstClass = classesList.length > 0 ? classesList[0]._id : "";
+            const firstSubject = subjectsList.length > 0 ? subjectsList[0]._id : "";
 
             if (currentYear) setSelectedYear(currentYear._id);
             if (currentTerm) setSelectedTerm(currentTerm._id);
+            if (firstClass) setSelectedClass(firstClass);
+            if (firstSubject) setSelectedSubject(firstSubject);
 
         } catch (error: any) {
             toast.error("Failed to load filters");
@@ -310,7 +318,19 @@ export default function TeacherPerformancePage() {
             ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-xl border-2 border-dashed">
                     <BarChart3 className="h-12 w-12 text-muted-foreground opacity-30 mb-4" />
-                    <p className="text-lg font-medium text-muted-foreground">Select class details to view performance analytics</p>
+                    {selectedClass || selectedSubject || selectedYear || selectedTerm ? (
+                        <div className="text-center">
+                            <p className="text-lg font-medium text-muted-foreground mb-2">Almost there! Select all filters to view analytics</p>
+                            <div className="flex gap-4 text-sm text-muted-foreground">
+                                {!selectedClass && <span><span className="font-bold">•</span> Select Class</span>}
+                                {!selectedSubject && <span><span className="font-bold">•</span> Select Subject</span>}
+                                {!selectedYear && <span><span className="font-bold">•</span> Select Year</span>}
+                                {!selectedTerm && <span><span className="font-bold">•</span> Select Term</span>}
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-lg font-medium text-muted-foreground">Select class details to view performance analytics</p>
+                    )}
                 </div>
             )}
         </div>
