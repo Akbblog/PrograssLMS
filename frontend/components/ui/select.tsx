@@ -7,9 +7,14 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function Select({
+  value,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+  // Fix: Ensure value is never an empty string which causes controlled/uncontrolled switch issues
+  // Fix: Empty string causes controlled/uncontrolled switch - treat as undefined
+  const controlledValue = value === "" ? undefined : value;
+
+  return <SelectPrimitive.Root data-slot="select" value={controlledValue} {...props} />
 }
 
 function SelectGroup({
