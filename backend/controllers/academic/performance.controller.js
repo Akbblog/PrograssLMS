@@ -24,7 +24,7 @@ exports.getStudentPerformance = async (req, res) => {
 exports.getClassPerformance = async (req, res) => {
     try {
         const { classLevelId } = req.params;
-        const { subject, academicTerm } = req.query;
+        const { subject, academicYear, academicTerm } = req.query;
         const schoolId = req.schoolId;
 
         const performanceService = new PerformanceService(schoolId);

@@ -77,7 +77,8 @@ export default function TeacherPerformancePage() {
                 selectedYear,
                 selectedTerm
             );
-            setPerformance((res as any).data);
+            // The response structure is { status, data: {...} }
+            setPerformance((res as any)?.data || res);
         } catch (error: any) {
             toast.error(error.message || "No data for this selection");
             setPerformance(null);

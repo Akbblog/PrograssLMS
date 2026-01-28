@@ -126,8 +126,8 @@ class PerformanceService {
 
         const classPerformance = {
             totalStudents: students.length,
-            averageScore: 0,
-            performanceDistribution: { A: 0, B: 0, C: 0, D: 0, F: 0 },
+            classAverage: 0,
+            gradeDistribution: { A: 0, B: 0, C: 0, D: 0, F: 0 },
             topPerformers: [],
             strugglingStudents: []
         };
@@ -147,35 +147,35 @@ class PerformanceService {
                 totalScore += studentAverage;
                 count++;
 
-                // Categorize performance
-                if (studentAverage >= 90) classPerformance.performanceDistribution.A++;
-                else if (studentAverage >= 80) classPerformance.performanceDistribution.B++;
-                else if (studentAverage >= 70) classPerformance.performanceDistribution.C++;
-                else if (studentAverage >= 60) classPerformance.performanceDistribution.D++;
-                else classPerformance.performanceDistribution.F++;
+                // Categorize performance by grade
+                if (studentAverage >= 90) classPerformance.gradeDistribution.A++;
+                else if (studentAverage >= 80) classPerformance.gradeDistribution.B++;
+                else if (studentAverage >= 70) classPerformance.gradeDistribution.C++;
+                else if (studentAverage >= 60) classPerformance.gradeDistribution.D++;
+                else classPerformance.gradeDistribution.F++;
 
                 // Identify top performers and struggling students
                 if (studentAverage >= 85) {
                     classPerformance.topPerformers.push({
-                        student: student.name,
-                        score: studentAverage,
+                        studentName: student.name,
+                        averageScore: studentAverage,
                         studentId: student._id
                     });
                 } else if (studentAverage < 60) {
                     classPerformance.strugglingStudents.push({
-                        student: student.name,
-                        score: studentAverage,
+                        studentName: student.name,
+                        averageScore: studentAverage,
                         studentId: student._id
                     });
                 }
             }
         }
 
-        classPerformance.averageScore = count > 0 ? totalScore / count : 0;
+        classPerformance.classAverage = count > 0 ? totalScore / count : 0;
 
         // Sort top performers and struggling students
-        classPerformance.topPerformers.sort((a, b) => b.score - a.score);
-        classPerformance.strugglingStudents.sort((a, b) => a.score - b.score);
+        classPerformance.topPerformers.sort((a, b) => b.averageScore - a.averageScore);
+        classPerformance.strugglingStudents.sort((a, b) => a.averageScore - b.averageScore);
 
         return classPerformance;
     }
