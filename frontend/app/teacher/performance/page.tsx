@@ -111,52 +111,71 @@ export default function TeacherPerformancePage() {
                     <div className="grid gap-2">
                         <Label>Class</Label>
                         <Select value={selectedClass || ""} onValueChange={setSelectedClass}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Class" /></SelectTrigger>
-                            <SelectContent>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Class" />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
                                 {classes && classes.length > 0 ? (
-                                    classes.map(c => <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>)
-                                ) : (
-                                    <div className="p-2 text-sm text-muted-foreground">No classes available</div>
-                                )}
+                                    classes.map(c => (
+                                        <SelectItem key={c._id} value={c._id}>
+                                            {c.name}
+                                        </SelectItem>
+                                    ))
+                                ) : null}
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className="grid gap-2">
                         <Label>Subject</Label>
                         <Select value={selectedSubject || ""} onValueChange={setSelectedSubject}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Subject" /></SelectTrigger>
-                            <SelectContent>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Subject" />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
                                 {subjects && subjects.length > 0 ? (
-                                    subjects.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)
-                                ) : (
-                                    <div className="p-2 text-sm text-muted-foreground">No subjects available</div>
-                                )}
+                                    subjects.map(s => (
+                                        <SelectItem key={s._id} value={s._id}>
+                                            {s.name}
+                                        </SelectItem>
+                                    ))
+                                ) : null}
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className="grid gap-2">
                         <Label>Academic Year</Label>
                         <Select value={selectedYear || ""} onValueChange={setSelectedYear}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Year" /></SelectTrigger>
-                            <SelectContent>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Year" />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
                                 {years && years.length > 0 ? (
-                                    years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)
-                                ) : (
-                                    <div className="p-2 text-sm text-muted-foreground">No years available</div>
-                                )}
+                                    years.map(y => (
+                                        <SelectItem key={y._id} value={y._id}>
+                                            {y.name}
+                                        </SelectItem>
+                                    ))
+                                ) : null}
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className="grid gap-2">
                         <Label>Academic Term</Label>
                         <Select value={selectedTerm || ""} onValueChange={setSelectedTerm}>
-                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Term" /></SelectTrigger>
-                            <SelectContent>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select Term" />
+                            </SelectTrigger>
+                            <SelectContent className="z-50">
                                 {terms && terms.length > 0 ? (
-                                    terms.map(t => <SelectItem key={t._id} value={t._id}>{t.name}</SelectItem>)
-                                ) : (
-                                    <div className="p-2 text-sm text-muted-foreground">No terms available</div>
-                                )}
+                                    terms.map(t => (
+                                        <SelectItem key={t._id} value={t._id}>
+                                            {t.name}
+                                        </SelectItem>
+                                    ))
+                                ) : null}
                             </SelectContent>
                         </Select>
                     </div>
