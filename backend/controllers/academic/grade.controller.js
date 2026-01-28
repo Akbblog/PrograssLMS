@@ -101,10 +101,37 @@ exports.getStudentGrades = async (req, res) => {
         const { academicYear, academicTerm, subject } = req.query;
         const schoolId = req.schoolId;
 
+        // Validate studentId
+        if (!studentId || studentId.trim() === '') {
+            return res.status(400).json({ 
+                status: "fail", 
+                message: "Student ID is required" 
+            });
+        }
+
         // Use Prisma if enabled
         if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
-            const { PrismaClient } = require('@prisma/client');
-            const prisma = new PrismaClient();
+            const { getPrisma } = require('../../../lib/prismaClient');
+            const prisma = getPrisma();
+            
+            if (!prisma) {
+                return res.status(500).json({
+                    status: "fail",
+                    message: "Database connection not available"
+                });
+            }
+            
+            // First verify the student exists
+            const student = await prisma.student.findUnique({
+                where: { id: studentId }
+            });
+            
+            if (!student) {
+                return res.status(404).json({
+                    status: "fail",
+                    message: "Student not found"
+                });
+            }
             
             let where = { studentId: studentId, schoolId: schoolId };
             if (academicYear) where.academicYear = academicYear;
@@ -114,8 +141,6 @@ exports.getStudentGrades = async (req, res) => {
                 where: where,
                 orderBy: { createdAt: 'desc' }
             });
-            
-            await prisma.$disconnect();
             
             // Calculate overall average
             const totalScore = results.reduce((sum, result) => sum + (result.score || 0), 0);
@@ -158,7 +183,21 @@ exports.getStudentGrades = async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(400).json({ status: "fail", message: error.message });
+        console.error('Error fetching student grades:', error);
+        
+        // Don't return generic 400 - return appropriate status
+        if (error.message?.includes('not found') || error.message?.includes('invalid')) {
+            return res.status(404).json({ 
+                status: "fail", 
+                message: "Student or grades not found" 
+            });
+        }
+        
+        // Database or server errors
+        return res.status(500).json({ 
+            status: "fail", 
+            message: "Failed to fetch student grades"
+        });
     }
 };
 
