@@ -110,30 +110,54 @@ export default function TeacherPerformancePage() {
                 <CardContent className="grid md:grid-cols-4 gap-4 px-6 pb-6">
                     <div className="grid gap-2">
                         <Label>Class</Label>
-                        <Select value={selectedClass} onValueChange={setSelectedClass}>
-                            <SelectTrigger><SelectValue placeholder="Select Class" /></SelectTrigger>
-                            <SelectContent>{classes.map(c => <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>)}</SelectContent>
+                        <Select value={selectedClass || ""} onValueChange={setSelectedClass}>
+                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Class" /></SelectTrigger>
+                            <SelectContent>
+                                {classes && classes.length > 0 ? (
+                                    classes.map(c => <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>)
+                                ) : (
+                                    <div className="p-2 text-sm text-muted-foreground">No classes available</div>
+                                )}
+                            </SelectContent>
                         </Select>
                     </div>
                     <div className="grid gap-2">
                         <Label>Subject</Label>
-                        <Select value={selectedSubject} onValueChange={setSelectedSubject}>
-                            <SelectTrigger><SelectValue placeholder="Select Subject" /></SelectTrigger>
-                            <SelectContent>{subjects.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)}</SelectContent>
+                        <Select value={selectedSubject || ""} onValueChange={setSelectedSubject}>
+                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Subject" /></SelectTrigger>
+                            <SelectContent>
+                                {subjects && subjects.length > 0 ? (
+                                    subjects.map(s => <SelectItem key={s._id} value={s._id}>{s.name}</SelectItem>)
+                                ) : (
+                                    <div className="p-2 text-sm text-muted-foreground">No subjects available</div>
+                                )}
+                            </SelectContent>
                         </Select>
                     </div>
                     <div className="grid gap-2">
                         <Label>Academic Year</Label>
-                        <Select value={selectedYear} onValueChange={setSelectedYear}>
-                            <SelectTrigger><SelectValue placeholder="Select Year" /></SelectTrigger>
-                            <SelectContent>{years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)}</SelectContent>
+                        <Select value={selectedYear || ""} onValueChange={setSelectedYear}>
+                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Year" /></SelectTrigger>
+                            <SelectContent>
+                                {years && years.length > 0 ? (
+                                    years.map(y => <SelectItem key={y._id} value={y._id}>{y.name}</SelectItem>)
+                                ) : (
+                                    <div className="p-2 text-sm text-muted-foreground">No years available</div>
+                                )}
+                            </SelectContent>
                         </Select>
                     </div>
                     <div className="grid gap-2">
                         <Label>Academic Term</Label>
-                        <Select value={selectedTerm} onValueChange={setSelectedTerm}>
-                            <SelectTrigger><SelectValue placeholder="Select Term" /></SelectTrigger>
-                            <SelectContent>{terms.map(t => <SelectItem key={t._id} value={t._id}>{t.name}</SelectItem>)}</SelectContent>
+                        <Select value={selectedTerm || ""} onValueChange={setSelectedTerm}>
+                            <SelectTrigger className="w-full"><SelectValue placeholder="Select Term" /></SelectTrigger>
+                            <SelectContent>
+                                {terms && terms.length > 0 ? (
+                                    terms.map(t => <SelectItem key={t._id} value={t._id}>{t.name}</SelectItem>)
+                                ) : (
+                                    <div className="p-2 text-sm text-muted-foreground">No terms available</div>
+                                )}
+                            </SelectContent>
                         </Select>
                     </div>
                 </CardContent>
