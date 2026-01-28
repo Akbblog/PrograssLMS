@@ -12,28 +12,40 @@ function Select({
   onValueChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  // Fix: Track internal value to prevent controlled/uncontrolled switching
-  // When value prop is passed (even as ""), component is controlled
-  // We use internal state to ensure consistent behavior
-  const [internalValue, setInternalValue] = React.useState(value ?? defaultValue ?? "");
-
-  // Sync internal value with prop when it changes
-  React.useEffect(() => {
-    if (value !== undefined) {
-      setInternalValue(value);
-    }
-  }, [value]);
+  // Track if this component is controlled or uncontrolled
+  // This decision is made once at mount and never changes
+  const isControlledRef = React.useRef<boolean>(value !== undefined);
+  
+  // For uncontrolled mode, track the internal value
+  const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
 
   const handleValueChange = (newValue: string) => {
-    setInternalValue(newValue);
+    // For uncontrolled mode, update internal state
+    if (!isControlledRef.current) {
+      setInternalValue(newValue);
+    }
+    // Always call the callback if provided
     onValueChange?.(newValue);
   };
 
-  // Always pass a value to stay in controlled mode (never undefined after first render)
+  // Determine what value to pass to Radix UI
+  // If controlled: use the prop value, convert empty string to undefined
+  // If uncontrolled: use internal state, never pass the value prop to Radix
+  const selectValue = isControlledRef.current 
+    ? (value === "" ? undefined : value)
+    : undefined;
+
+  // For uncontrolled mode, pass defaultValue to Radix UI
+  // For controlled mode, Radix UI doesn't need defaultValue
+  const selectDefaultValue = !isControlledRef.current 
+    ? (defaultValue ?? "")
+    : undefined;
+
   return (
     <SelectPrimitive.Root
       data-slot="select"
-      value={internalValue === "" ? undefined : internalValue}
+      value={selectValue}
+      defaultValue={selectDefaultValue}
       onValueChange={handleValueChange}
       {...props}
     />
