@@ -92,7 +92,7 @@ studentsRouter
 
 studentsRouter
   .route('/students/:id')
-  .get(isLoggedIn, isAdmin, getStudentByIdController)
+  .get(isLoggedIn, isAdminOrTeacher, getStudentByIdController)
   .patch(isLoggedIn, isAdmin, hasPermission('manageStudents'), validateBody(studentUpdateSchema), updateStudentByIdController)
   .delete(isLoggedIn, isAdmin, hasPermission('manageStudents'), deleteStudentByIdController);
 

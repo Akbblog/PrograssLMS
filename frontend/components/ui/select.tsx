@@ -8,13 +8,36 @@ import { cn } from "@/lib/utils"
 
 function Select({
   value,
+  defaultValue,
+  onValueChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  // Fix: Ensure value is never an empty string which causes controlled/uncontrolled switch issues
-  // Fix: Empty string causes controlled/uncontrolled switch - treat as undefined
-  const controlledValue = value === "" ? undefined : value;
+  // Fix: Track internal value to prevent controlled/uncontrolled switching
+  // When value prop is passed (even as ""), component is controlled
+  // We use internal state to ensure consistent behavior
+  const [internalValue, setInternalValue] = React.useState(value ?? defaultValue ?? "");
 
-  return <SelectPrimitive.Root data-slot="select" value={controlledValue} {...props} />
+  // Sync internal value with prop when it changes
+  React.useEffect(() => {
+    if (value !== undefined) {
+      setInternalValue(value);
+    }
+  }, [value]);
+
+  const handleValueChange = (newValue: string) => {
+    setInternalValue(newValue);
+    onValueChange?.(newValue);
+  };
+
+  // Always pass a value to stay in controlled mode (never undefined after first render)
+  return (
+    <SelectPrimitive.Root
+      data-slot="select"
+      value={internalValue === "" ? undefined : internalValue}
+      onValueChange={handleValueChange}
+      {...props}
+    />
+  );
 }
 
 function SelectGroup({

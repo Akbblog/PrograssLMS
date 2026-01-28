@@ -241,7 +241,7 @@ export const academicAPI = {
   createSimpleSubject: (data: any) => api.post('/subjects', data),
   updateSubject: (id: string, data: any) => api.patch(`/subject/${id}`, data),
   deleteSubject: (id: string) => api.delete(`/subject/${id}`),
-  getStudentsByClass: (classId: string) => api.get(`/admin/students?currentClassLevel=${classId}`),
+  getStudentsByClass: (classId: string) => api.get(`/students?currentClassLevel=${classId}`),
   getSubjectsByClass: (classId: string) => api.get(`/admin/subjects-by-class/${classId}`),
   getTeachersByClass: (classId: string) => api.get(`/admin/teachers-by-class/${classId}`),
   assignSubjectToClass: (classId: string, subjectId: string) => api.post(`/class-levels/${classId}/subjects/${subjectId}`),
@@ -252,10 +252,10 @@ export const academicAPI = {
 
 // Assignment endpoints
 export const assignmentAPI = {
-  getAssignments: (params?: any) => api.get('/academic/assignments', { params }),
-  createAssignment: (data: any) => api.post('/academic/assignments', data),
-  submitAssignment: (assignmentId: string, data: any) => api.post(`/academic/assignments/${assignmentId}/submit`, data),
-  gradeSubmission: (assignmentId: string, studentId: string, data: any) => api.post(`/academic/assignments/${assignmentId}/grade/${studentId}`, data),
+  getAssignments: (params?: any) => api.get('/assignments', { params }),
+  createAssignment: (data: any) => api.post('/assignments', data),
+  submitAssignment: (assignmentId: string, data: any) => api.post(`/assignments/${assignmentId}/submit`, data),
+  gradeSubmission: (assignmentId: string, studentId: string, data: any) => api.post(`/assignments/${assignmentId}/grade/${studentId}`, data),
 };
 
 // Enrollment endpoints
@@ -270,8 +270,8 @@ export const enrollmentAPI = {
 export const gradeAPI = {
   // Backend routes for grades are mounted at `/grades/...`
   getStudentGrades: (studentId: string, params?: any) => api.get(`/grades/student/${studentId}`, { params }),
-  getClassGrades: (params: any) => api.get('/academic/grades/class', { params }),
-  createGrade: (data: any) => api.post('/academic/grades', data),
+  getClassGrades: (params: any) => api.get('/grades/class', { params }),
+  createGrade: (data: any) => api.post('/grades', data),
 };
 
 // Grading Policy endpoints
