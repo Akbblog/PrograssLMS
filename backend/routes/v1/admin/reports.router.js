@@ -16,15 +16,13 @@ const {
 
 const router = express.Router();
 
-// All admin reports require auth + admin + viewReports permission
-router.use(isLoggedIn, isAdmin, hasPermission('viewReports'));
-
-router.get('/admin/reports/dashboard', getDashboardOverviewController);
-router.get('/admin/reports/attendance', getAttendanceReportController);
-router.get('/admin/reports/academic', getAcademicReportController);
-router.get('/admin/reports/finance', getFinanceReportController);
-router.get('/admin/reports/hr', getHRReportController);
-router.get('/admin/reports/transport', getTransportReportController);
-router.get('/admin/reports/library', getLibraryReportController);
+// Each route has its own middleware chain to prevent global blocking
+router.get('/admin/reports/dashboard', isLoggedIn, isAdmin, hasPermission('viewReports'), getDashboardOverviewController);
+router.get('/admin/reports/attendance', isLoggedIn, isAdmin, hasPermission('viewReports'), getAttendanceReportController);
+router.get('/admin/reports/academic', isLoggedIn, isAdmin, hasPermission('viewReports'), getAcademicReportController);
+router.get('/admin/reports/finance', isLoggedIn, isAdmin, hasPermission('viewReports'), getFinanceReportController);
+router.get('/admin/reports/hr', isLoggedIn, isAdmin, hasPermission('viewReports'), getHRReportController);
+router.get('/admin/reports/transport', isLoggedIn, isAdmin, hasPermission('viewReports'), getTransportReportController);
+router.get('/admin/reports/library', isLoggedIn, isAdmin, hasPermission('viewReports'), getLibraryReportController);
 
 module.exports = router;
