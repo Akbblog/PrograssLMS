@@ -66,8 +66,8 @@ export default function TeacherAttendancePage() {
             const currentYear = years.find((y: any) => y.isCurrent) || years[0];
             const currentTerm = terms.find((t: any) => t.isCurrent) || terms[0]; // Assuming isCurrent flag exists or pick first
 
-            if (currentYear) setAcademicYear(currentYear._id);
-            if (currentTerm) setAcademicTerm(currentTerm._id);
+            if (currentYear) setAcademicYear(currentYear.id || currentYear._id);
+            if (currentTerm) setAcademicTerm(currentTerm.id || currentTerm._id);
 
         } catch (error) {
             console.error("Failed to fetch initial data:", error);
@@ -99,14 +99,16 @@ export default function TeacherAttendancePage() {
                 if (existingRecord) {
                     const recordMap: Record<string, any> = {};
                     existingRecord.records.forEach((r: any) => {
-                        recordMap[r.student._id] = { status: r.status, remarks: r.remarks || "" };
+                        const studentId = r.student?.id || r.student?._id || r.student;
+                        recordMap[studentId] = { status: r.status, remarks: r.remarks || "" };
                     });
                     setAttendanceData(recordMap);
                 } else {
                     // Initialize default (Present)
                     const defaultMap: Record<string, any> = {};
                     studentsList.forEach((s: any) => {
-                        defaultMap[s._id] = { status: "present", remarks: "" };
+                        const studentId = s.id || s._id;
+                        defaultMap[studentId] = { status: "present", remarks: "" };
                     });
                     setAttendanceData(defaultMap);
                 }
@@ -114,7 +116,8 @@ export default function TeacherAttendancePage() {
                 // No attendance found, initialize default
                 const defaultMap: Record<string, any> = {};
                 studentsList.forEach((s: any) => {
-                    defaultMap[s._id] = { status: "present", remarks: "" };
+                    const studentId = s.id || s._id;
+                    defaultMap[studentId] = { status: "present", remarks: "" };
                 });
                 setAttendanceData(defaultMap);
             }
@@ -240,34 +243,37 @@ export default function TeacherAttendancePage() {
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        students.map((student) => (
-                                            <TableRow key={student._id}>
-                                                <TableCell className="font-medium">{student.name}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex gap-2">
-                                                        {["present", "absent", "late", "excused"].map((status) => (
-                                                            <div key={status} className="flex items-center space-x-2">
-                                                                <Checkbox
-                                                                    id={`${student._id}-${status}`}
-                                                                    checked={attendanceData[student._id]?.status === status}
-                                                                    onCheckedChange={() => handleStatusChange(student._id, status)}
-                                                                />
-                                                                <Label htmlFor={`${student._id}-${status}`} className="capitalize">
-                                                                    {status}
-                                                                </Label>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Input
-                                                        placeholder="Optional remarks"
-                                                        value={attendanceData[student._id]?.remarks || ""}
-                                                        onChange={(e) => handleRemarksChange(student._id, e.target.value)}
-                                                    />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
+                                        students.map((student) => {
+                                            const studentId = student.id || student._id;
+                                            return (
+                                                <TableRow key={studentId}>
+                                                    <TableCell className="font-medium">{student.name}</TableCell>
+                                                    <TableCell>
+                                                        <div className="flex gap-2">
+                                                            {["present", "absent", "late", "excused"].map((status) => (
+                                                                <div key={status} className="flex items-center space-x-2">
+                                                                    <Checkbox
+                                                                        id={`${studentId}-${status}`}
+                                                                        checked={attendanceData[studentId]?.status === status}
+                                                                        onCheckedChange={() => handleStatusChange(studentId, status)}
+                                                                    />
+                                                                    <Label htmlFor={`${studentId}-${status}`} className="capitalize">
+                                                                        {status}
+                                                                    </Label>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Input
+                                                            placeholder="Optional remarks"
+                                                            value={attendanceData[studentId]?.remarks || ""}
+                                                            onChange={(e) => handleRemarksChange(studentId, e.target.value)}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        })
                                     )}
                                 </TableBody>
                             </Table>
