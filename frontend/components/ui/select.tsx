@@ -12,13 +12,21 @@ function Select({
   onValueChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  // Always pass value if provided, otherwise use defaultValue
-  // This ensures the component stays in one mode
+  // Track whether this component is controlled or uncontrolled on first render
+  // This prevents switching between modes which causes React warnings
+  const wasControlledRef = React.useRef(value !== undefined);
+  
+  // Determine the value and defaultValue to pass to Radix
+  // If started as controlled: always use the value prop
+  // If started as uncontrolled: never use the value prop, use defaultValue
+  const selectValue = wasControlledRef.current ? (value === "" ? undefined : value) : undefined;
+  const selectDefaultValue = !wasControlledRef.current ? (defaultValue ?? "") : undefined;
+
   return (
     <SelectPrimitive.Root
       data-slot="select"
-      value={value === "" ? undefined : value}
-      defaultValue={defaultValue}
+      value={selectValue}
+      defaultValue={selectDefaultValue}
       onValueChange={onValueChange}
       {...props}
     />

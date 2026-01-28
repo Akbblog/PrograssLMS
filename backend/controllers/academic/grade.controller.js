@@ -115,7 +115,7 @@ exports.getStudentGrades = async (req, res) => {
 
         try {
             if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
-                const { getPrisma } = require('../../../lib/prismaClient');
+                const { getPrisma } = require('../../lib/prismaClient');
                 const prisma = getPrisma();
                 
                 if (prisma) {
