@@ -73,6 +73,16 @@ function SelectContent({
   align = "center",
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  const [mounted, setMounted] = React.useState(false)
+  
+  // Only render the Portal on the client side to prevent SSR hydration mismatch
+  // This fixes React 19 + Radix UI Portal rendering issues
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  if (!mounted) return null
+  
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
