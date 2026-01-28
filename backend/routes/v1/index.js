@@ -433,6 +433,15 @@ try {
     });
 }
 
+// ============ SCHOOL ROUTES ============
+try {
+    router.use('/school', require('./school/branding.router'));
+    console.log('[ROUTES] ✅ Mounted: /school (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load branding.router:', e);
+    routeErrors.push({ path: './school/branding.router', mountPath: '/school', error: e.message, stack: e.stack });
+}
+
 // ============ CONTACT ROUTES ============
 try {
     router.use('/contact', require('./contact.router'));
