@@ -12,22 +12,16 @@ function Select({
   onValueChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  // Track whether this component is controlled or uncontrolled on first render
-  // This prevents switching between modes which causes React warnings
-  // Empty string "" is treated as uncontrolled (same as undefined)
-  const wasControlledRef = React.useRef(value !== undefined && value !== "");
-  
-  // Determine the value and defaultValue to pass to Radix
-  // If started as controlled: always use the value prop
-  // If started as uncontrolled: never use the value prop, use defaultValue
-  const selectValue = wasControlledRef.current ? (value === "" ? undefined : value) : undefined;
-  const selectDefaultValue = !wasControlledRef.current ? (defaultValue ?? "") : undefined;
+  // Normalize empty string to undefined for Radix UI compatibility
+  // This ensures proper placeholder display and controlled state handling
+  const normalizedValue = value === "" ? undefined : value;
+  const normalizedDefaultValue = defaultValue === "" ? undefined : defaultValue;
 
   return (
     <SelectPrimitive.Root
       data-slot="select"
-      value={selectValue}
-      defaultValue={selectDefaultValue}
+      value={normalizedValue}
+      defaultValue={normalizedDefaultValue}
       onValueChange={onValueChange}
       {...props}
     />
@@ -84,7 +78,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl",
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-[var(--radix-select-content-available-height)] min-w-[8rem] origin-[var(--radix-select-content-transform-origin)] overflow-x-hidden overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl",
           position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className
@@ -98,7 +92,7 @@ function SelectContent({
           className={cn(
             "p-1",
             position === "popper" &&
-            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
+            "w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
           )}
         >
           {children}
