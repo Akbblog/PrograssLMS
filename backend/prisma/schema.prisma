@@ -199,6 +199,8 @@ model Result {
   academicTerm     String?  @db.VarChar(36)
   academicYear     String?  @db.VarChar(36)
   isPublished      Boolean  @default(false)
+  schoolId         String   @db.VarChar(36)
+  examName         String?  @db.VarChar(255)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 }
