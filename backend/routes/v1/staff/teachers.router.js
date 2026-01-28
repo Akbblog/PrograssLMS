@@ -1,5 +1,6 @@
 const express = require("express");
 const teachersRouter = express.Router();
+console.log('[TeachersRouter] File loaded and router created');
 //middleware
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
 const isAdmin = require("../../../middlewares/isAdmin");
@@ -62,11 +63,17 @@ teachersRouter
   .get(isLoggedIn, isAdmin, hasPermission('manageTeachers'), getAllTeachersController);
 
 teachersRouter
-  .route('/teacher/update-profile')
-  .patch(isLoggedIn, isTeacher, updateTeacherProfileController);
+  .route('/teacher/dashboard')
+  .get((req, res, next) => {
+    console.log('[Teachers Router] Caught /teacher/dashboard GET request');
+    next();
+  }, isLoggedIn, isTeacher, require('../../../controllers/staff/teachers.controller').getTeacherDashboardController);
 
 teachersRouter
-  .route('/teacher/dashboard')
-  .get(isLoggedIn, isTeacher, require('../../../controllers/staff/teachers.controller').getTeacherDashboardController);
+  .route('/teacher/update-profile')
+  .patch((req, res, next) => {
+    console.log('[Teachers Router] Caught /teacher/update-profile PATCH request');
+    next();
+  }, isLoggedIn, isTeacher, updateTeacherProfileController);
 
 module.exports = teachersRouter;

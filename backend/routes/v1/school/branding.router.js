@@ -6,7 +6,7 @@ const isAdminOrTeacher = require('../../../middlewares/isAdminOrTeacher');
 /**
  * @desc Get school branding
  * @route GET /api/v1/school/branding
- * @access Public
+ * @access Public - No authentication required
  */
 router.get('/branding', async (req, res) => {
   try {
