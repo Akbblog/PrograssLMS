@@ -37,11 +37,14 @@ export async function getSchoolBranding(): Promise<SchoolBranding> {
         return JSON.parse(stored);
       }
     }
-    
+
     // If not in localStorage, fetch from API
-    const response = await fetch('/api/school/branding');
+    // Use the API endpoint that points to backend
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+    const response = await fetch(`${API_BASE_URL}/school/branding`);
     if (response.ok) {
-      const branding = await response.json();
+      const result = await response.json();
+      const branding = result.data || result;
       // Store in localStorage for future use
       if (typeof window !== 'undefined') {
         localStorage.setItem('schoolBranding', JSON.stringify(branding));
@@ -51,7 +54,7 @@ export async function getSchoolBranding(): Promise<SchoolBranding> {
   } catch (error) {
     console.error('Failed to fetch school branding:', error);
   }
-  
+
   // Return default branding as fallback
   return defaultSchoolBranding;
 }
@@ -66,7 +69,7 @@ export async function updateSchoolBranding(branding: SchoolBranding): Promise<vo
       },
       body: JSON.stringify(branding),
     });
-    
+
     if (response.ok) {
       // Update localStorage
       if (typeof window !== 'undefined') {
