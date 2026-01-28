@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Loader2, ShieldAlert, TrendingUp, Users, Plus, Info, AlertTriangle, CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
+import { unwrapArray } from "@/lib/utils"
 
 export default function TeacherBehaviorPage() {
     const user = useAuthStore((state) => state.user)
@@ -60,12 +61,15 @@ export default function TeacherBehaviorPage() {
                 academicAPI.getClasses(),
                 academicAPI.getAcademicYears()
             ])
-            setClasses(classesRes.data)
-            setAcademicYears(yearsRes.data)
+            const classesList = unwrapArray((classesRes as any)?.data, "classes")
+            const yearsList = unwrapArray((yearsRes as any)?.data, "years")
+
+            setClasses(classesList)
+            setAcademicYears(yearsList)
 
             // Set defaults
-            if (yearsRes.data.length > 0) {
-                const activeYear = yearsRes.data.find((y: any) => y.status === "active") || yearsRes.data[0]
+            if (yearsList.length > 0) {
+                const activeYear = yearsList.find((y: any) => y.status === "active") || yearsList[0]
                 setSelectedYear(activeYear._id)
             }
         } catch (error) {
@@ -78,7 +82,7 @@ export default function TeacherBehaviorPage() {
     const fetchAlerts = async () => {
         try {
             const res = await behaviorAPI.getAlerts(selectedYear)
-            setAlerts(res.data)
+            setAlerts(unwrapArray((res as any)?.data, "alerts"))
         } catch (error) {
             console.error(error)
         }
@@ -96,7 +100,7 @@ export default function TeacherBehaviorPage() {
     const fetchStudentsForClass = async (classId: string) => {
         try {
             const res = await academicAPI.getStudentsByClass(classId)
-            setStudents(res.data)
+            setStudents(unwrapArray((res as any)?.data, "students"))
         } catch (error) {
             toast.error("Failed to load students")
         }
