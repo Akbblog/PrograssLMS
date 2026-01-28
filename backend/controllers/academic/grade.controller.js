@@ -109,91 +109,88 @@ exports.getStudentGrades = async (req, res) => {
             });
         }
 
-        // Use Prisma if enabled
-        if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
-            const { getPrisma } = require('../../../lib/prismaClient');
-            const prisma = getPrisma();
-            
-            if (!prisma) {
-                return res.status(500).json({
-                    status: "fail",
-                    message: "Database connection not available"
-                });
+        // Try Prisma first, fall back to MongoDB if it fails
+        let results;
+        let usedPrisma = false;
+
+        try {
+            if (process.env.USE_PRISMA === '1' || process.env.USE_PRISMA === 'true') {
+                const { getPrisma } = require('../../../lib/prismaClient');
+                const prisma = getPrisma();
+                
+                if (prisma) {
+                    usedPrisma = true;
+                    
+                    // First verify the student exists
+                    const student = await prisma.student.findUnique({
+                        where: { id: studentId }
+                    });
+                    
+                    if (!student) {
+                        return res.status(404).json({
+                            status: "fail",
+                            message: "Student not found"
+                        });
+                    }
+                    
+                    let where = { studentId: studentId, schoolId: schoolId };
+                    if (academicYear) where.academicYear = academicYear;
+                    if (academicTerm) where.academicTerm = academicTerm;
+                    
+                    results = await prisma.result.findMany({
+                        where: where,
+                        orderBy: { createdAt: 'desc' }
+                    });
+
+                    // Calculate overall average
+                    const totalScore = results.reduce((sum, result) => sum + (result.score || 0), 0);
+                    const average = results.length > 0 ? totalScore / results.length : 0;
+
+                    return res.status(200).json({
+                        status: "success",
+                        data: {
+                            grades: results,
+                            average: average.toFixed(2),
+                            totalGrades: results.length,
+                        },
+                    });
+                }
             }
-            
-            // First verify the student exists
-            const student = await prisma.student.findUnique({
-                where: { id: studentId }
-            });
-            
-            if (!student) {
-                return res.status(404).json({
-                    status: "fail",
-                    message: "Student not found"
-                });
-            }
-            
-            let where = { studentId: studentId, schoolId: schoolId };
-            if (academicYear) where.academicYear = academicYear;
-            if (academicTerm) where.academicTerm = academicTerm;
-            
-            const results = await prisma.result.findMany({
-                where: where,
-                orderBy: { createdAt: 'desc' }
-            });
-            
-            // Calculate overall average
-            const totalScore = results.reduce((sum, result) => sum + (result.score || 0), 0);
-            const average = results.length > 0 ? totalScore / results.length : 0;
-
-            return res.status(200).json({
-                status: "success",
-                data: {
-                    grades: results,
-                    average: average.toFixed(2),
-                    totalGrades: results.length,
-                },
-            });
-        } else {
-            // MongoDB fallback
-            const Grade = require("../../models/Academic/Grade.model");
-            let query = { student: studentId, schoolId };
-            if (academicYear) query.academicYear = academicYear;
-            if (academicTerm) query.academicTerm = academicTerm;
-            if (subject) query.subject = subject;
-
-            const grades = await Grade.find(query)
-                .populate("subject", "name")
-                .populate("teacher", "name")
-                .populate("academicYear", "name")
-                .populate("academicTerm", "name")
-                .sort({ gradedAt: -1 });
-
-            // Calculate overall average
-            const totalPercentage = grades.reduce((sum, grade) => sum + grade.percentage, 0);
-            const average = grades.length > 0 ? totalPercentage / grades.length : 0;
-
-            res.status(200).json({
-                status: "success",
-                data: {
-                    grades,
-                    average: average.toFixed(2),
-                    totalGrades: grades.length,
-                },
-            });
+        } catch (prismaError) {
+            console.warn('Prisma query failed, falling back to MongoDB:', prismaError.message);
+            // Fall through to MongoDB fallback
         }
+
+        // MongoDB fallback
+        const Grade = require("../../models/Academic/Grade.model");
+        let query = { student: studentId, schoolId };
+        if (academicYear) query.academicYear = academicYear;
+        if (academicTerm) query.academicTerm = academicTerm;
+        if (subject) query.subject = subject;
+
+        const grades = await Grade.find(query)
+            .populate("subject", "name")
+            .populate("teacher", "name")
+            .populate("academicYear", "name")
+            .populate("academicTerm", "name")
+            .sort({ gradedAt: -1 });
+
+        // Calculate overall average
+        const totalPercentage = grades.reduce((sum, grade) => sum + grade.percentage, 0);
+        const average = grades.length > 0 ? totalPercentage / grades.length : 0;
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                grades,
+                average: average.toFixed(2),
+                totalGrades: grades.length,
+            },
+        });
     } catch (error) {
         console.error('Error fetching student grades:', error);
         
-        // Don't return generic 400 - return appropriate status
-        if (error.message?.includes('not found') || error.message?.includes('invalid')) {
-            return res.status(404).json({ 
-                status: "fail", 
-                message: "Student or grades not found" 
-            });
-        }
-        
-        // Database or server errors
+        // Return 500 for server errors
         return res.status(500).json({ 
             status: "fail", 
             message: "Failed to fetch student grades"

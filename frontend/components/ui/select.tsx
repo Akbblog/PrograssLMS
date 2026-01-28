@@ -12,41 +12,14 @@ function Select({
   onValueChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  // Track if this component is controlled or uncontrolled
-  // This decision is made once at mount and never changes
-  const isControlledRef = React.useRef<boolean>(value !== undefined);
-  
-  // For uncontrolled mode, track the internal value
-  const [internalValue, setInternalValue] = React.useState(defaultValue ?? "");
-
-  const handleValueChange = (newValue: string) => {
-    // For uncontrolled mode, update internal state
-    if (!isControlledRef.current) {
-      setInternalValue(newValue);
-    }
-    // Always call the callback if provided
-    onValueChange?.(newValue);
-  };
-
-  // Determine what value to pass to Radix UI
-  // If controlled: use the prop value, convert empty string to undefined
-  // If uncontrolled: use internal state, never pass the value prop to Radix
-  const selectValue = isControlledRef.current 
-    ? (value === "" ? undefined : value)
-    : undefined;
-
-  // For uncontrolled mode, pass defaultValue to Radix UI
-  // For controlled mode, Radix UI doesn't need defaultValue
-  const selectDefaultValue = !isControlledRef.current 
-    ? (defaultValue ?? "")
-    : undefined;
-
+  // Always pass value if provided, otherwise use defaultValue
+  // This ensures the component stays in one mode
   return (
     <SelectPrimitive.Root
       data-slot="select"
-      value={selectValue}
-      defaultValue={selectDefaultValue}
-      onValueChange={handleValueChange}
+      value={value === "" ? undefined : value}
+      defaultValue={defaultValue}
+      onValueChange={onValueChange}
       {...props}
     />
   );
