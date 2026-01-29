@@ -1,6 +1,7 @@
 const express = require("express");
 const usersRouter = express.Router();
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
+const mongoose = require("mongoose");
 
 // Import individual models
 const Admin = require("../../../models/Staff/admin.model");
@@ -21,15 +22,18 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     
     // Get all active users for communication
     // Note: Each model has different status fields
+    // Convert schoolId string to ObjectId for Mongoose queries
+    const schoolObjectId = mongoose.Types.ObjectId(schoolId);
+
     const [admins, teachers, students] = await Promise.all([
       // Admins: Get all verified admins for this school
-      Admin.find({ schoolId })
+      Admin.find({ schoolId: schoolObjectId })
         .select('_id name email avatar role')
         .lean(),
       // Teachers: Get all active teachers (not withdrawn/suspended)
       // Use $or to support both the new `status` enum and legacy `isActive` flag
       Teacher.find({ 
-        schoolId, 
+        schoolId: schoolObjectId, 
         $or: [
           { status: { $in: ['active', 'inactive'] } },
           { isActive: true }
@@ -40,7 +44,7 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
       // Students: Get all active students (not withdrawn/suspended)
       // Use $or to support both the new boolean flags and legacy `isActive`
       Student.find({ 
-        schoolId,
+        schoolId: schoolObjectId,
         $or: [
           { isWithdrawn: false, isSuspended: false },
           { isActive: true }
