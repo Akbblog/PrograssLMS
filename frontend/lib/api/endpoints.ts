@@ -168,6 +168,8 @@ export const adminAPI = {
   getDashboardStats: () => api.get('/admin/stats'),
   // Student dashboard
   getStudentDashboard: () => api.get('/students/dashboard'),
+  // Communication users (for NewChatDialog)
+  getTeachersForAttendance: () => api.get('/communication/users'),
   // Documents
   getDocumentTemplates: () => api.get('/documents/templates'),
   createDocumentTemplate: (data: any) => api.post('/documents/templates', data),
