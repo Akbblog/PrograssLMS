@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const Admin = require("../../../models/Staff/admin.model");
 const Teacher = require("../../../models/Staff/teachers.model");
 const Student = require("../../../models/Students/students.model");
+const School = require("../../../models/School.model");
 
 // Get all users for communication (no admin permissions required)
 usersRouter.get('/', isLoggedIn, async (req, res) => {
@@ -21,32 +22,32 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     }
     
     // Get all active users for communication
-    // Note: schoolId is a string value (e.g., "school-star-001"), not a MongoDB ObjectId
-    // Mongoose will handle type coercion during query matching
-    const schoolObjectId = schoolId;
+    // First, find the School document to get the actual ObjectId
+    const school = await School.findOne({ 
+      $or: [
+        { _id: schoolId }, // Try as ObjectId first
+        { name: { $regex: schoolId, $options: 'i' } }, // Fallback to name match
+        { email: { $regex: schoolId, $options: 'i' } } // Fallback to email match
+      ]
+    }).select('_id').lean();
+
+    if (!school) {
+      return res.status(404).json({
+        status: "fail",
+        message: "School not found"
+      });
+    }
+
+    const schoolObjectId = school._id;
 
     const [admins, teachers, students] = await Promise.all([
       // Admins: Get all verified admins for this school
-      // Use $expr to compare string schoolId with ObjectId field by converting to string
-      Admin.find({ 
-        $expr: {
-          $eq: [
-            { $toString: "$schoolId" },
-            schoolId
-          ]
-        }
-      })
+      Admin.find({ schoolId: schoolObjectId })
         .select('_id name email avatar role')
         .lean(),
       // Teachers: Get all active teachers (not withdrawn/suspended)
-      // Use $expr to compare string schoolId with ObjectId field by converting to string
       Teacher.find({ 
-        $expr: {
-          $eq: [
-            { $toString: "$schoolId" },
-            schoolId
-          ]
-        },
+        schoolId: schoolObjectId, 
         $or: [
           { status: { $in: ['active', 'inactive'] } },
           { isActive: true }
@@ -55,14 +56,8 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
         .select('_id name email avatar role')
         .lean(),
       // Students: Get all active students (not withdrawn/suspended)
-      // Use $expr to compare string schoolId with ObjectId field by converting to string
       Student.find({ 
-        $expr: {
-          $eq: [
-            { $toString: "$schoolId" },
-            schoolId
-          ]
-        },
+        schoolId: schoolObjectId,
         $or: [
           { isWithdrawn: false, isSuspended: false },
           { isActive: true }
