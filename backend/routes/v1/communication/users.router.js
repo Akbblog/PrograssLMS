@@ -1,8 +1,11 @@
 const express = require("express");
 const usersRouter = express.Router();
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
-const { unwrapArray } = require("../../../handlers/responseStatus.handler");
-const User = require("../../../models/Users/user.model");
+
+// Import individual models
+const Admin = require("../../../models/Staff/admin.model");
+const Teacher = require("../../../models/Staff/teachers.model");
+const Student = require("../../../models/Students/students.model");
 
 // Get all users for communication (no admin permissions required)
 usersRouter.get('/', isLoggedIn, async (req, res) => {
@@ -18,13 +21,13 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     
     // Get all active users for communication
     const [admins, teachers, students] = await Promise.all([
-      User.find({ role: 'admin', schoolId, isActive: true })
+      Admin.find({ schoolId, isActive: true })
         .select('_id name email avatar role')
         .lean(),
-      User.find({ role: 'teacher', schoolId, isActive: true })
+      Teacher.find({ schoolId, isActive: true })
         .select('_id name email avatar role')
         .lean(),
-      User.find({ role: 'student', schoolId, isActive: true })
+      Student.find({ schoolId, isActive: true })
         .select('_id name email avatar role')
         .lean()
     ]);
