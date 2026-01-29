@@ -123,40 +123,32 @@ export default function NewChatDialog({
     const fetchUsers = async () => {
         try {
             setLoading(true)
-            const [adminsRes, teachersRes, studentsRes] = await Promise.all([
-                adminAPI.getAdmins(),
-                // Use teacher-specific endpoint that doesn't require admin permissions
-                adminAPI.getTeachersForAttendance(),
-                adminAPI.getStudents(),
-            ])
+            // Use the communication/users endpoint that returns all users without admin restrictions
+            const response = await adminAPI.getTeachersForAttendance()
 
-            const normalizeUser = (item: unknown, role: User["role"]): User | null => {
+            const normalizeUser = (item: unknown, role?: string): User | null => {
                 if (!item || typeof item !== "object") return null
                 const record = item as Record<string, unknown>
                 const idValue = record._id ?? record.id
                 const nameValue = record.name
                 const emailValue = record.email
+                const roleValue = role || record.role
 
                 const _id = typeof idValue === "string" ? idValue : ""
                 const name = typeof nameValue === "string" ? nameValue : ""
                 const email = typeof emailValue === "string" ? emailValue : ""
                 const avatar = typeof record.avatar === "string" ? record.avatar : undefined
+                const userRole = typeof roleValue === "string" ? roleValue : "teacher"
 
                 if (!_id || !name || !email) return null
-                return { _id, name, email, role, avatar }
+                return { _id, name, email, role: userRole as User["role"], avatar }
             }
 
-            const admins = unwrapArray<unknown>(adminsRes)
-                .map((item) => normalizeUser(item, "admin"))
-                .filter((u): u is User => Boolean(u))
-            const teachers = unwrapArray<unknown>(teachersRes)
-                .map((item) => normalizeUser(item, "teacher"))
-                .filter((u): u is User => Boolean(u))
-            const students = unwrapArray<unknown>(studentsRes)
-                .map((item) => normalizeUser(item, "student"))
+            const allUsers = unwrapArray<unknown>(response)
+                .map((item) => normalizeUser(item))
                 .filter((u): u is User => Boolean(u))
 
-            setUsers([...admins, ...teachers, ...students])
+            setUsers(allUsers)
         } catch (error) {
             console.error("Failed to fetch users:", error)
             toast.error("Failed to load users")

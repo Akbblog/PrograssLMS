@@ -8,7 +8,7 @@ exports.createAssignment = async (req, res) => {
     const schoolId = req.userAuth.schoolId;
     const teacher = req.userAuth._id;
 
-    const assignment = await prisma.assignment.create({ data: { title, description, subjectId: subject, classLevel, teacherId: teacher, dueDate: new Date(dueDate), totalPoints: totalPoints || 100, attachments: JSON.stringify(attachments || []), schoolId, academicYear, academicTerm } });
+    const assignment = await prisma.assignment.create({ data: { title, description, subjectId: subject, classLevel, teacherId: teacher, dueDate: new Date(dueDate), totalPoints: parseInt(totalPoints, 10) || 100, attachments: JSON.stringify(attachments || []), schoolId, academicYear, academicTerm } });
 
     return res.status(201).json({ status: 'success', data: assignment });
   } catch (err) {

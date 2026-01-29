@@ -5,7 +5,7 @@ const { unwrapArray } = require("../../../handlers/responseStatus.handler");
 const User = require("../../../models/Users/user.model");
 
 // Get all users for communication (no admin permissions required)
-usersRouter.get('/users', isLoggedIn, async (req, res) => {
+usersRouter.get('/', isLoggedIn, async (req, res) => {
   try {
     const schoolId = req.schoolId;
     

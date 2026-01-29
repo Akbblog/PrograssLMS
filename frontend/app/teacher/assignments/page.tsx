@@ -78,7 +78,9 @@ export default function TeacherAssignmentsPage() {
     const handleCreateAssignment = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await assignmentAPI.createAssignment(formData);
+            // Convert totalPoints to integer
+            const submitData = { ...formData, totalPoints: parseInt(formData.totalPoints, 10) };
+            await assignmentAPI.createAssignment(submitData);
             toast.success("Assignment created successfully");
             setIsDialogOpen(false);
             setFormData({
@@ -128,34 +130,41 @@ export default function TeacherAssignmentsPage() {
                             <Plus className="mr-2 h-4 w-4" /> Create Assignment
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-2xl" aria-describedby="assignment-form-description">
                         <DialogHeader>
                             <DialogTitle>Create New Assignment</DialogTitle>
+                            <p id="assignment-form-description" className="text-sm text-muted-foreground mt-1">Fill in all required fields to create a new assignment.</p>
                         </DialogHeader>
-                        <form onSubmit={handleCreateAssignment} className="space-y-4">
-                            <div className="grid gap-4">
-                                <div className="grid gap-2">
-                                    <Label>Title</Label>
+                        <form onSubmit={handleCreateAssignment} className="space-y-6 px-2">
+                            <div className="grid gap-6">
+                                <div className="grid gap-3">
+                                    <Label htmlFor="title-input" className="font-semibold">Title</Label>
                                     <Input
+                                        id="title-input"
                                         required
+                                        className="h-10"
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        placeholder="Enter assignment title"
                                     />
                                 </div>
-                                <div className="grid gap-2">
-                                    <Label>Description</Label>
+                                <div className="grid gap-3">
+                                    <Label htmlFor="description-input" className="font-semibold">Description</Label>
                                     <Textarea
+                                        id="description-input"
                                         required
+                                        className="min-h-24"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         rows={3}
+                                        placeholder="Enter assignment description"
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="grid gap-2">
-                                        <Label>Subject</Label>
-                                        <Select value={formData.subject} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
-                                            <SelectTrigger>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="subject-select" className="font-semibold">Subject</Label>
+                                        <Select value={formData.subject || ""} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
+                                            <SelectTrigger id="subject-select" className="h-10">
                                                 <SelectValue placeholder="Select Subject" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -165,10 +174,10 @@ export default function TeacherAssignmentsPage() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label>Class</Label>
-                                        <Select value={formData.classLevel} onValueChange={(value) => setFormData({ ...formData, classLevel: value })}>
-                                            <SelectTrigger>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="class-select" className="font-semibold">Class</Label>
+                                        <Select value={formData.classLevel || ""} onValueChange={(value) => setFormData({ ...formData, classLevel: value })}>
+                                            <SelectTrigger id="class-select" className="h-10">
                                                 <SelectValue placeholder="Select Class" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -179,31 +188,36 @@ export default function TeacherAssignmentsPage() {
                                         </Select>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="grid gap-2">
-                                        <Label>Due Date</Label>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="due-date" className="font-semibold">Due Date</Label>
                                         <Input
+                                            id="due-date"
                                             type="date"
                                             required
+                                            className="h-10"
                                             value={formData.dueDate}
                                             onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                                         />
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label>Total Points</Label>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="total-points" className="font-semibold">Total Points</Label>
                                         <Input
+                                            id="total-points"
                                             type="number"
                                             required
+                                            min="1"
+                                            className="h-10"
                                             value={formData.totalPoints}
                                             onChange={(e) => setFormData({ ...formData, totalPoints: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="grid gap-2">
-                                        <Label>Academic Year</Label>
-                                        <Select value={formData.academicYear} onValueChange={(value) => setFormData({ ...formData, academicYear: value })}>
-                                            <SelectTrigger>
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="year-select" className="font-semibold">Academic Year</Label>
+                                        <Select value={formData.academicYear || ""} onValueChange={(value) => setFormData({ ...formData, academicYear: value })}>
+                                            <SelectTrigger id="year-select" className="h-10">
                                                 <SelectValue placeholder="Select Year" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -213,10 +227,10 @@ export default function TeacherAssignmentsPage() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label>Academic Term</Label>
-                                        <Select value={formData.academicTerm} onValueChange={(value) => setFormData({ ...formData, academicTerm: value })}>
-                                            <SelectTrigger>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="term-select" className="font-semibold">Academic Term</Label>
+                                        <Select value={formData.academicTerm || ""} onValueChange={(value) => setFormData({ ...formData, academicTerm: value })}>
+                                            <SelectTrigger id="term-select" className="h-10">
                                                 <SelectValue placeholder="Select Term" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -228,7 +242,10 @@ export default function TeacherAssignmentsPage() {
                                     </div>
                                 </div>
                             </div>
-                            <Button type="submit" className="w-full">Create Assignment</Button>
+                            <div className="flex gap-3 pt-4">
+                                <Button type="submit" className="flex-1">Create Assignment</Button>
+                                <Button type="button" variant="outline" className="flex-1" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                            </div>
                         </form>
                     </DialogContent>
                 </Dialog>
