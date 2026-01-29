@@ -22,8 +22,8 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     
     // Get all active users for communication
     // Note: Each model has different status fields
-    // Convert schoolId string to ObjectId for Mongoose queries
-    const schoolObjectId = mongoose.Types.ObjectId(schoolId);
+    // Convert schoolId string to ObjectId for Mongoose queries (use new constructor)
+    const schoolObjectId = new mongoose.Types.ObjectId(schoolId);
 
     const [admins, teachers, students] = await Promise.all([
       // Admins: Get all verified admins for this school
