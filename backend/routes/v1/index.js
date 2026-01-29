@@ -338,11 +338,22 @@ try {
 }
 
 try {
-    router.use('/communication/users', require('./communication/users.router'));
+    const usersRouter = require('./communication/users.router');
+    console.log('[ROUTES] ✅ Loaded users.router successfully');
+    router.use('/communication/users', usersRouter);
     console.log('[ROUTES] ✅ Mounted: /communication/users (Explicit)');
 } catch (e) {
-    console.error('[ROUTES] ❌ Failed to load users.router:', e);
-    routeErrors.push({ path: './communication/users.router', error: e.message });
+    console.error('[ROUTES] ❌ Failed to load users.router:', e.message);
+    console.error('[ROUTES] Stack:', e.stack);
+    routeErrors.push({ path: './communication/users.router', error: e.message, stack: e.stack });
+    // Fallback error handler
+    router.use('/communication/users', (req, res) => {
+        res.status(503).json({
+            message: 'Service /communication/users temporarily unavailable',
+            error: e.message,
+            details: 'Check /api/v1/debug/errors for more info'
+        });
+    });
 }
 
 // ============ LIBRARY ROUTES ============

@@ -7,7 +7,14 @@ const User = require("../../../models/Users/user.model");
 // Get all users for communication (no admin permissions required)
 usersRouter.get('/', isLoggedIn, async (req, res) => {
   try {
-    const schoolId = req.schoolId;
+    const schoolId = req.userAuth?.schoolId;
+    
+    if (!schoolId) {
+      return res.status(400).json({
+        status: "fail",
+        message: "School ID not found in request"
+      });
+    }
     
     // Get all active users for communication
     const [admins, teachers, students] = await Promise.all([
