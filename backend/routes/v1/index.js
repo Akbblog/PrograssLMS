@@ -337,6 +337,14 @@ try {
     routeErrors.push({ path: './communication/notifications.router', error: e.message });
 }
 
+try {
+    router.use('/communication/users', require('./communication/users.router'));
+    console.log('[ROUTES] ✅ Mounted: /communication/users (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load users.router:', e);
+    routeErrors.push({ path: './communication/users.router', error: e.message });
+}
+
 // ============ LIBRARY ROUTES ============
 try {
     router.use('/library', require('./library/library.router'));

@@ -216,7 +216,7 @@ export const attendanceAPI = {
   // Teacher Attendance
   markTeacherAttendance: (data: any) => api.post('/teacher-attendance', data),
   getTeacherAttendance: (date: string) => api.get(`/teacher-attendance?date=${date}`),
-  getTeachersForAttendance: () => api.get('/teacher-attendance/teachers'),
+  getTeachersForAttendance: () => api.get('/communication/users'),
   getTeacherAttendanceHistory: (startDate?: string, endDate?: string) =>
     api.get('/teacher-attendance/history', { params: { startDate, endDate } }),
   getIndividualTeacherAttendance: (teacherId: string, startDate?: string, endDate?: string) =>

@@ -125,7 +125,8 @@ export default function NewChatDialog({
             setLoading(true)
             const [adminsRes, teachersRes, studentsRes] = await Promise.all([
                 adminAPI.getAdmins(),
-                adminAPI.getTeachers(),
+                // Use teacher-specific endpoint that doesn't require admin permissions
+                adminAPI.getTeachersForAttendance(),
                 adminAPI.getStudents(),
             ])
 
