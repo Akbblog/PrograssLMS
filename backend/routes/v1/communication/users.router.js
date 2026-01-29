@@ -20,14 +20,25 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     }
     
     // Get all active users for communication
+    // Note: Each model has different status fields
     const [admins, teachers, students] = await Promise.all([
-      Admin.find({ schoolId, isActive: true })
+      // Admins: Get all verified admins for this school
+      Admin.find({ schoolId })
         .select('_id name email avatar role')
         .lean(),
-      Teacher.find({ schoolId, isActive: true })
+      // Teachers: Get all active teachers (not withdrawn/suspended)
+      Teacher.find({ 
+        schoolId, 
+        status: { $in: ['active', 'inactive'] }
+      })
         .select('_id name email avatar role')
         .lean(),
-      Student.find({ schoolId, isActive: true })
+      // Students: Get all active students (not withdrawn/suspended)
+      Student.find({ 
+        schoolId,
+        isWithdrawn: false,
+        isSuspended: false
+      })
         .select('_id name email avatar role')
         .lean()
     ]);
@@ -43,7 +54,7 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
       data: allUsers
     });
   } catch (error) {
-    console.error("Error fetching users for communication:", error);
+    console.error("Error fetching users for communication:", error.message);
     res.status(500).json({
       status: "fail",
       message: "Failed to fetch users"
