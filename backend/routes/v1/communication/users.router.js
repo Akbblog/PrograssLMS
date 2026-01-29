@@ -27,17 +27,24 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
         .select('_id name email avatar role')
         .lean(),
       // Teachers: Get all active teachers (not withdrawn/suspended)
+      // Use $or to support both the new `status` enum and legacy `isActive` flag
       Teacher.find({ 
         schoolId, 
-        status: { $in: ['active', 'inactive'] }
+        $or: [
+          { status: { $in: ['active', 'inactive'] } },
+          { isActive: true }
+        ]
       })
         .select('_id name email avatar role')
         .lean(),
       // Students: Get all active students (not withdrawn/suspended)
+      // Use $or to support both the new boolean flags and legacy `isActive`
       Student.find({ 
         schoolId,
-        isWithdrawn: false,
-        isSuspended: false
+        $or: [
+          { isWithdrawn: false, isSuspended: false },
+          { isActive: true }
+        ]
       })
         .select('_id name email avatar role')
         .lean()
@@ -54,10 +61,13 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
       data: allUsers
     });
   } catch (error) {
-    console.error("Error fetching users for communication:", error.message);
+    // Log the full error object for better debugging on Vercel
+    console.error("Error fetching users for communication:", error);
     res.status(500).json({
       status: "fail",
-      message: "Failed to fetch users"
+      message: "Failed to fetch users",
+      // Include error details in response for debugging (remove in prod if needed)
+      error: error && error.message ? error.message : String(error)
     });
   }
 });
