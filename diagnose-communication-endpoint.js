@@ -83,12 +83,12 @@ try {
 try {
     const routePath = path.join(__dirname, 'backend/routes/v1/communication/users.router.js');
     const content = fs.readFileSync(routePath, 'utf8');
-    const queriesUsers = content.includes('User.find');
+    const queriesUsers = content.includes('Admin.find') && content.includes('Teacher.find') && content.includes('Student.find');
     const usesPromiseAll = content.includes('Promise.all');
     diagnostics.push({ 
         check: 'User queries configured', 
         status: queriesUsers ? '✅' : '❌',
-        details: queriesUsers ? 'Queries all user types' : 'No user queries'
+        details: queriesUsers ? 'Queries all user types (Admin, Teacher, Student)' : 'No user queries'
     });
     diagnostics.push({ 
         check: 'Parallel queries', 
