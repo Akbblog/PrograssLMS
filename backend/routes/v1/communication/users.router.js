@@ -13,22 +13,30 @@ const School = require("../../../models/School.model");
 usersRouter.get('/', isLoggedIn, async (req, res) => {
   try {
     const schoolId = req.userAuth?.schoolId;
-    
+
     if (!schoolId) {
       return res.status(400).json({
         status: "fail",
         message: "School ID not found in request"
       });
     }
-    
+
     // Get all active users for communication
     // First, find the School document to get the actual ObjectId
-    const school = await School.findOne({ 
-      $or: [
-        { _id: schoolId }, // Try as ObjectId first
-        { name: { $regex: schoolId, $options: 'i' } }, // Fallback to name match
-        { email: { $regex: schoolId, $options: 'i' } } // Fallback to email match
-      ]
+    // Build query conditions based on schoolId format
+    const queryConditions = [];
+
+    // Only add _id condition if schoolId is a valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(schoolId) && String(new mongoose.Types.ObjectId(schoolId)) === schoolId) {
+      queryConditions.push({ _id: schoolId });
+    }
+
+    // Add other lookup options for custom string IDs (like "school-star-001")
+    queryConditions.push({ schoolCode: schoolId });
+    queryConditions.push({ name: { $regex: `^${schoolId.replace(/[-_]/g, '.*')}$`, $options: 'i' } });
+
+    const school = await School.findOne({
+      $or: queryConditions
     }).select('_id').lean();
 
     if (!school) {
@@ -46,8 +54,8 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
         .select('_id name email avatar role')
         .lean(),
       // Teachers: Get all active teachers (not withdrawn/suspended)
-      Teacher.find({ 
-        schoolId: schoolObjectId, 
+      Teacher.find({
+        schoolId: schoolObjectId,
         $or: [
           { status: { $in: ['active', 'inactive'] } },
           { isActive: true }
@@ -56,7 +64,7 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
         .select('_id name email avatar role')
         .lean(),
       // Students: Get all active students (not withdrawn/suspended)
-      Student.find({ 
+      Student.find({
         schoolId: schoolObjectId,
         $or: [
           { isWithdrawn: false, isSuspended: false },
