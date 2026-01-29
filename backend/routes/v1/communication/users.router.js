@@ -27,13 +27,26 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
 
     const [admins, teachers, students] = await Promise.all([
       // Admins: Get all verified admins for this school
-      Admin.find({ schoolId: schoolObjectId })
+      // Use $expr to compare string schoolId with ObjectId field by converting to string
+      Admin.find({ 
+        $expr: {
+          $eq: [
+            { $toString: "$schoolId" },
+            schoolId
+          ]
+        }
+      })
         .select('_id name email avatar role')
         .lean(),
       // Teachers: Get all active teachers (not withdrawn/suspended)
-      // Use $or to support both the new `status` enum and legacy `isActive` flag
+      // Use $expr to compare string schoolId with ObjectId field by converting to string
       Teacher.find({ 
-        schoolId: schoolObjectId, 
+        $expr: {
+          $eq: [
+            { $toString: "$schoolId" },
+            schoolId
+          ]
+        },
         $or: [
           { status: { $in: ['active', 'inactive'] } },
           { isActive: true }
@@ -42,9 +55,14 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
         .select('_id name email avatar role')
         .lean(),
       // Students: Get all active students (not withdrawn/suspended)
-      // Use $or to support both the new boolean flags and legacy `isActive`
+      // Use $expr to compare string schoolId with ObjectId field by converting to string
       Student.find({ 
-        schoolId: schoolObjectId,
+        $expr: {
+          $eq: [
+            { $toString: "$schoolId" },
+            schoolId
+          ]
+        },
         $or: [
           { isWithdrawn: false, isSuspended: false },
           { isActive: true }
