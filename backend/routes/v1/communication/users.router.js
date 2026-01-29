@@ -21,11 +21,9 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     }
     
     // Get all active users for communication
-    // Note: Each model has different status fields
-    // Convert schoolId to ObjectId only if it is a valid hex string; otherwise use the raw value
-    const schoolObjectId = mongoose.isValidObjectId && mongoose.isValidObjectId(schoolId)
-      ? new mongoose.Types.ObjectId(schoolId)
-      : schoolId;
+    // Note: schoolId is a string value (e.g., "school-star-001"), not a MongoDB ObjectId
+    // Mongoose will handle type coercion during query matching
+    const schoolObjectId = schoolId;
 
     const [admins, teachers, students] = await Promise.all([
       // Admins: Get all verified admins for this school
