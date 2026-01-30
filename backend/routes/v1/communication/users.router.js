@@ -1,15 +1,10 @@
 const express = require("express");
 const usersRouter = express.Router();
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
-const mongoose = require("mongoose");
-
-// Import individual models
-const Admin = require("../../../models/Staff/admin.model");
-const Teacher = require("../../../models/Staff/teachers.model");
-const Student = require("../../../models/Students/students.model");
-const School = require("../../../models/School.model");
+const { getPrisma } = require("../../../lib/prismaClient");
 
 // Get all users for communication (no admin permissions required)
+// Now uses Prisma (MySQL) instead of Mongoose (MongoDB)
 usersRouter.get('/', isLoggedIn, async (req, res) => {
   try {
     const schoolId = req.userAuth?.schoolId;
@@ -21,23 +16,23 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
       });
     }
 
-    // Get all active users for communication
-    // First, find the School document to get the actual ObjectId
-    // Build query conditions based on schoolId format
-    const queryConditions = [];
-
-    // Only add _id condition if schoolId is a valid ObjectId
-    if (mongoose.Types.ObjectId.isValid(schoolId) && String(new mongoose.Types.ObjectId(schoolId)) === schoolId) {
-      queryConditions.push({ _id: schoolId });
+    // Get Prisma client
+    const prisma = getPrisma();
+    if (!prisma) {
+      return res.status(503).json({
+        status: "fail",
+        message: "Database connection not available",
+        error: "Prisma client not initialized. Check DATABASE_URL environment variable."
+      });
     }
 
-    // Add other lookup options for custom string IDs (like "school-star-001")
-    queryConditions.push({ schoolCode: schoolId });
-    queryConditions.push({ name: { $regex: `^${schoolId.replace(/[-_]/g, '.*')}$`, $options: 'i' } });
-
-    const school = await School.findOne({
-      $or: queryConditions
-    }).select('_id').lean();
+    // Verify the school exists
+    const school = await prisma.school.findFirst({
+      where: {
+        id: schoolId
+      },
+      select: { id: true }
+    });
 
     if (!school) {
       return res.status(404).json({
@@ -46,39 +41,50 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
       });
     }
 
-    const schoolObjectId = school._id;
+    const schoolIdToQuery = school.id;
 
+    // Fetch all users in parallel using Prisma
     const [admins, teachers, students] = await Promise.all([
-      // Admins: Get all verified admins for this school
-      Admin.find({ schoolId: schoolObjectId })
-        .select('_id name email avatar role')
-        .lean(),
-      // Teachers: Get all active teachers (not withdrawn/suspended)
-      Teacher.find({
-        schoolId: schoolObjectId,
-        $or: [
-          { status: { $in: ['active', 'inactive'] } },
-          { isActive: true }
-        ]
+      // Admins for this school
+      prisma.admin.findMany({
+        where: { schoolId: schoolIdToQuery },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatar: true,
+          role: true
+        }
+      }),
+      // Teachers for this school
+      prisma.teacher.findMany({
+        where: { schoolId: schoolIdToQuery },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatar: true,
+          role: true
+        }
+      }),
+      // Students for this school
+      prisma.student.findMany({
+        where: { schoolId: schoolIdToQuery },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          avatar: true,
+          role: true
+        }
       })
-        .select('_id name email avatar role')
-        .lean(),
-      // Students: Get all active students (not withdrawn/suspended)
-      Student.find({
-        schoolId: schoolObjectId,
-        $or: [
-          { isWithdrawn: false, isSuspended: false },
-          { isActive: true }
-        ]
-      })
-        .select('_id name email avatar role')
-        .lean()
     ]);
 
+    // Normalize the data format (Prisma uses 'id', frontend expects '_id')
     const allUsers = [
-      ...admins.map(u => ({ ...u, role: 'admin' })),
-      ...teachers.map(u => ({ ...u, role: 'teacher' })),
-      ...students.map(u => ({ ...u, role: 'student' }))
+      ...admins.map(u => ({ _id: u.id, name: u.name, email: u.email, avatar: u.avatar, role: u.role || 'admin' })),
+      ...teachers.map(u => ({ _id: u.id, name: u.name, email: u.email, avatar: u.avatar, role: u.role || 'teacher' })),
+      ...students.map(u => ({ _id: u.id, name: u.name, email: u.email, avatar: u.avatar, role: u.role || 'student' }))
     ];
 
     res.status(200).json({
@@ -91,7 +97,6 @@ usersRouter.get('/', isLoggedIn, async (req, res) => {
     res.status(500).json({
       status: "fail",
       message: "Failed to fetch users",
-      // Include error details in response for debugging (remove in prod if needed)
       error: error && error.message ? error.message : String(error)
     });
   }
