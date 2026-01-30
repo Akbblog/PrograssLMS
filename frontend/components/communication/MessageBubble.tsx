@@ -99,9 +99,17 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
         return uid && String(uid) === String(message.senderId)
     })
 
-    const sender = message.sender && typeof message.sender === 'object'
+    // Resolve sender info with robust fallbacks
+    const rawSender = message.sender && typeof message.sender === 'object'
         ? (message.sender as any)
-        : participantInfo?.user || { name: message.senderId }
+        : participantInfo?.user
+
+    // Ensure sender always has a name property
+    const sender = {
+        ...rawSender,
+        name: rawSender?.name || (typeof message.sender === 'string' ? undefined : message.sender?.name) || 'Unknown User',
+        avatar: rawSender?.avatar || undefined
+    }
 
     const isOutgoing = currentUser && (String(currentUser._id || currentUser.id) === String(message.senderId))
     const isRead = message.status?.readBy?.length > 0
@@ -233,7 +241,7 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                         <AvatarImage src={sender.avatar} alt={sender.name} />
                     ) : (
                         <AvatarFallback className="bg-blue-500 text-white text-xs">
-                            {sender.name.charAt(0)}
+                            {(sender?.name || 'U').charAt(0).toUpperCase()}
                         </AvatarFallback>
                     )}
                 </Avatar>
@@ -244,17 +252,16 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                 {/* Sender name for group chats */}
                 {!isOutgoing && !isGrouped && (
                     <span className="text-xs text-slate-500 mb-1 px-3">
-                        {sender.name}
+                        {sender?.name || 'Unknown User'}
                     </span>
                 )}
 
                 {/* Message content */}
                 <div
-                    className={`relative px-4 py-2 rounded-2xl shadow-sm ${
-                        isOutgoing
+                    className={`relative px-4 py-2 rounded-2xl shadow-sm ${isOutgoing
                             ? 'bg-blue-500 text-white'
                             : 'bg-white text-slate-900 border border-slate-200'
-                    }`}
+                        }`}
                     onMouseEnter={() => setShowMenu(true)}
                     onMouseLeave={() => setShowMenu(false)}
                 >
@@ -275,9 +282,8 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                     )}
 
                     {/* Menu button */}
-                    <div className={`absolute top-0 ${
-                        isOutgoing ? '-left-8' : '-right-8'
-                    } opacity-0 group-hover:opacity-100 transition-opacity`}>
+                    <div className={`absolute top-0 ${isOutgoing ? '-left-8' : '-right-8'
+                        } opacity-0 group-hover:opacity-100 transition-opacity`}>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
@@ -329,9 +335,8 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
                 </div>
 
                 {/* Timestamp and status */}
-                <div className={`flex items-center gap-1 mt-1 text-xs text-slate-500 ${
-                    isOutgoing ? 'justify-end' : 'justify-start'
-                }`}>
+                <div className={`flex items-center gap-1 mt-1 text-xs text-slate-500 ${isOutgoing ? 'justify-end' : 'justify-start'
+                    }`}>
                     <span>{message.createdAt ? formatTime(message.createdAt) : ''}</span>
                     {renderStatusIcon()}
                 </div>
