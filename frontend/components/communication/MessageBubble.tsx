@@ -237,8 +237,8 @@ export default function MessageBubble({ message, showAvatar, isGrouped }: Messag
             {/* Avatar for incoming messages */}
             {!isOutgoing && showAvatar && (
                 <Avatar className="w-8 h-8 flex-shrink-0">
-                    {sender.avatar ? (
-                        <AvatarImage src={sender.avatar} alt={sender.name} />
+                    {sender?.avatar ? (
+                        <AvatarImage src={sender.avatar} alt={sender?.name || 'User'} />
                     ) : (
                         <AvatarFallback className="bg-blue-500 text-white text-xs">
                             {(sender?.name || 'U').charAt(0).toUpperCase()}

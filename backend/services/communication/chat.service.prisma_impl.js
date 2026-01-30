@@ -445,7 +445,7 @@ async function removeParticipantService(conversationId, participantId, userId, r
   }
 }
 
-async function deleteMessageService(conversationId, messageId, userId, res) {
+async function deleteMessageService(messageId, userId, userRole, res) {
   try {
     const prisma = getPrismaOrThrow();
     await ensureChatTables(prisma);
@@ -453,9 +453,8 @@ async function deleteMessageService(conversationId, messageId, userId, res) {
     // Only sender can delete
     const [m] = await query(
       prisma,
-      `SELECT senderId FROM communication_messages WHERE id = ? AND conversationId = ? LIMIT 1`,
-      messageId,
-      conversationId
+      `SELECT senderId, conversationId FROM communication_messages WHERE id = ? LIMIT 1`,
+      messageId
     );
     if (!m) return responseStatus(res, 404, "failed", "Message not found");
     if (m.senderId !== userId) return responseStatus(res, 403, "failed", "Not allowed");
@@ -468,19 +467,25 @@ async function deleteMessageService(conversationId, messageId, userId, res) {
   }
 }
 
-async function deleteConversationService(conversationId, userId, res) {
+async function deleteConversationService(conversationId, userId, userRole, schoolId, res) {
   try {
     const prisma = getPrismaOrThrow();
     await ensureChatTables(prisma);
 
+    // Verify user is owner or admin
     const [owner] = await query(
       prisma,
       `SELECT role FROM communication_participants WHERE conversationId = ? AND userId = ? LIMIT 1`,
       conversationId,
       userId
     );
-    if (!owner || owner.role !== "owner") {
-      return responseStatus(res, 403, "failed", "Only the conversation owner can delete this conversation");
+    
+    // Allow deletion if user is owner OR admin
+    if (!owner && userRole !== "Admin") {
+      return responseStatus(res, 403, "failed", "Only the conversation owner or admins can delete this conversation");
+    }
+    if (owner && owner.role !== "owner" && userRole !== "Admin") {
+      return responseStatus(res, 403, "failed", "Only the conversation owner or admins can delete this conversation");
     }
 
     await exec(prisma, `UPDATE communication_conversations SET isActive = 0 WHERE id = ?`, conversationId);

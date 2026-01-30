@@ -187,14 +187,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
             const response = await communicationAPI.sendMessage(conversationId, data)
 
-            // Add message to local state
+            // Add message to local state with sender hydration
             const newMessage = {
                 ...response.data,
                 id: response.data._id,
                 senderId: response.data.sender,
                 senderType: response.data.senderModel,
                 type: response.data.messageType,
-                createdAt: response.data.createdAt
+                createdAt: response.data.createdAt,
+                // Hydrate sender object if provided by backend, otherwise use minimal data
+                sender: response.data.sender ? {
+                    _id: response.data.sender,
+                    id: response.data.sender,
+                    name: response.data.senderName || 'Unknown User',
+                    avatar: response.data.senderAvatar || null
+                } : null
             }
 
             set((state) => ({
