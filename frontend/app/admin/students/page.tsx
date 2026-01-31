@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { enrollmentAPI } from "@/lib/api/endpoints";
 import { useMutation } from '@tanstack/react-query';
@@ -184,17 +184,20 @@ const StudentCard = React.memo(function StudentCard({ student, onView, onEdit, o
 
 export default function AdminStudentsPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const classIdParam = searchParams.get("classId") || "";
     const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState<"all" | "active" | "suspended">("all");
     const [viewMode, setViewMode] = useState<"card" | "table">("card");
+    const [classFilter, setClassFilter] = useState<string>(classIdParam);
     const [enrollmentDialog, setEnrollmentDialog] = useState<any>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [studentToDelete, setStudentToDelete] = useState<any>(null);
     const [enrolling, setEnrolling] = useState(false);
     const [enrollmentForm, setEnrollmentForm] = useState({ subject: "", classLevel: "", academicYear: "", academicTerm: "" });
 
-    const { data: studentsData, isLoading: studentsLoading } = useStudents();
+    const { data: studentsData, isLoading: studentsLoading } = useStudents({ classId: classFilter || undefined });
     const { data: subjectsData } = useSubjects();
     const { data: classesData } = useClasses();
     const { data: yearsData } = useAcademicYears();
@@ -202,7 +205,8 @@ export default function AdminStudentsPage() {
     const deleteStudentMutation = useDeleteStudent();
 
     // keep the legacy filter effect but use query data
-    useEffect(() => { filterStudents(); }, [searchQuery, statusFilter, studentsData]);
+    useEffect(() => { filterStudents(); }, [searchQuery, statusFilter, classFilter, studentsData]);
+    useEffect(() => { setClassFilter(classIdParam); }, [classIdParam]);
 
     // set default academic year when query returns
     useEffect(() => {
@@ -222,6 +226,13 @@ export default function AdminStudentsPage() {
         let filtered = [...students];
         if (statusFilter === "active") filtered = filtered.filter(s => !s.isWithdrawn && !s.isSuspended);
         else if (statusFilter === "suspended") filtered = filtered.filter(s => s.isSuspended);
+
+        if (classFilter) {
+            filtered = filtered.filter((s) => {
+                const classId = s.currentClassLevel?._id || s.currentClassLevel || s.currentClassLevels?.[0]?._id || s.currentClassLevels?.[0];
+                return classId === classFilter;
+            });
+        }
 
         if (searchQuery) {
             const q = searchQuery.toLowerCase();
@@ -253,6 +264,14 @@ export default function AdminStudentsPage() {
     };
 
     const handleDelete = (student: any) => { setStudentToDelete(student); setDeleteDialogOpen(true); };
+    const handleClassFilterChange = (value: string) => {
+        setClassFilter(value);
+        const params = new URLSearchParams(searchParams.toString());
+        if (value) params.set("classId", value);
+        else params.delete("classId");
+        const query = params.toString();
+        router.replace(`/admin/students${query ? `?${query}` : ""}`);
+    };
 
     const confirmDelete = async () => {
         if (!studentToDelete) return;
@@ -313,6 +332,22 @@ export default function AdminStudentsPage() {
                     <div className="relative flex-1 max-w-sm">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input placeholder="Search students..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Label className="text-xs text-slate-500">Class</Label>
+                        <div className="relative">
+                            <select
+                                value={classFilter}
+                                onChange={(e) => handleClassFilterChange(e.target.value)}
+                                className="h-10 px-3 pr-8 text-sm rounded-md border border-input bg-background appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring min-w-[160px]"
+                            >
+                                <option value="">All Classes</option>
+                                {classes.map((c: any) => (
+                                    <option key={c._id} value={c._id}>{c.name}</option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
+                        </div>
                     </div>
                     <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
                         {["all", "active", "suspended"].map((f) => (

@@ -8,16 +8,18 @@ type Student = {
   avatar?: string
 }
 
+type AttendanceRecord = {
+  attendanceId?: string
+  student?: Student
+  classLevel?: { name?: string }
+  timestamp?: string | number | Date
+  qrScanTimestamp?: string | number | Date
+  createdAt?: string | number | Date
+  date?: string | number | Date
+}
+
 type Props = {
-  record: {
-    attendanceId?: string
-    student?: Student
-    classLevel?: { name?: string }
-    timestamp?: string | number | Date
-    qrScanTimestamp?: string | number | Date
-    createdAt?: string | number | Date
-    date?: string | number | Date
-  }
+  record: AttendanceRecord
   onClose?: () => void
 }
 
