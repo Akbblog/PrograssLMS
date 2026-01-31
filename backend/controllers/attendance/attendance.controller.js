@@ -37,9 +37,29 @@ exports.scanQRCode = async (req, res) => {
     qrRecord.lastScannedAt = new Date();
     await qrRecord.save();
 
-    // Emit socket event
+    // Emit socket event with populated student and class details so frontend doesn't need to fetch on every scan
     const io = attendanceSocket.getIO();
-    if (io) io.emit('attendance:marked', { attendanceId: attendance._id, student: attendance.student, timestamp: attendance.qrScanTimestamp });
+    if (io) {
+      try {
+        const populated = await Attendance.findById(attendance._id)
+          .populate('student', 'name avatar currentClassLevel')
+          .populate('classLevel', 'name')
+          .lean();
+
+        const payload = {
+          attendanceId: attendance._id,
+          timestamp: attendance.qrScanTimestamp,
+          student: populated?.student || null,
+          classLevel: populated?.classLevel || attendance.classLevel,
+        };
+
+        io.emit('attendance:marked', payload);
+      } catch (e) {
+        console.warn('attendance.controller: failed to populate student before emit', e.message);
+        // Fallback to minimal payload to avoid breaking real-time updates
+        io.emit('attendance:marked', { attendanceId: attendance._id, student: attendance.student, timestamp: attendance.qrScanTimestamp });
+      }
+    }
 
     res.status(201).json({ status: 'success', data: attendance });
   } catch (err) {
