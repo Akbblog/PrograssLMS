@@ -14,6 +14,9 @@ type Props = {
     student?: Student
     classLevel?: { name?: string }
     timestamp?: string | number | Date
+    qrScanTimestamp?: string | number | Date
+    createdAt?: string | number | Date
+    date?: string | number | Date
   }
   onClose?: () => void
 }
@@ -26,7 +29,7 @@ export default function AttendanceToast({ record, onClose }: Props) {
 
   if (!record) return null
 
-  const ts = record.timestamp || record.qrScanTimestamp || record.createdAt || record.date;
+  const ts = record.timestamp || record.qrScanTimestamp || record.createdAt || record.date
   const when = ts ? new Date(ts).toLocaleTimeString() : ''
 
   return (
@@ -36,7 +39,7 @@ export default function AttendanceToast({ record, onClose }: Props) {
           <img src={record.student?.avatar || '/images/default-avatar.png'} alt="avatar" className="w-12 h-12 rounded-full object-cover" />
           <div>
             <div className="font-semibold text-sm">{record.student?.name || 'Unknown Student'}</div>
-            <div className="text-xs text-gray-500">{record.classLevel?.name || ''} • {when}</div>
+            <div className="text-xs text-gray-500">{record.classLevel?.name || ''} - {when}</div>
           </div>
         </div>
       </div>
