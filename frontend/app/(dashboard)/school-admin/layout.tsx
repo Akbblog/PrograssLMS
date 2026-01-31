@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import Navbar from "@/components/layout/Navbar"
 import SchoolAdminSidebar from "@/components/layout/SchoolAdminSidebar"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
@@ -15,7 +15,9 @@ export default function SchoolAdminLayout({
     return (
         <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr]">
             <div className="hidden border-r bg-white md:block">
-                <SchoolAdminSidebar />
+                <Suspense fallback={<div className="h-full w-full" />}>
+                    <SchoolAdminSidebar />
+                </Suspense>
             </div>
             <div className="flex flex-col">
                 <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
@@ -27,7 +29,9 @@ export default function SchoolAdminLayout({
 
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                 <SheetContent side="left" className="p-0 w-[240px]">
-                    <SchoolAdminSidebar />
+                    <Suspense fallback={<div className="h-full w-full" />}>
+                        <SchoolAdminSidebar />
+                    </Suspense>
                 </SheetContent>
             </Sheet>
         </div>
