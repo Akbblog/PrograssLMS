@@ -207,12 +207,6 @@ export default function AdminStudentsPage() {
     // keep the legacy filter effect but use query data
     useEffect(() => { filterStudents(); }, [searchQuery, statusFilter, classFilter, studentsData]);
     useEffect(() => { setClassFilter(classIdParam); }, [classIdParam]);
-    useEffect(() => {
-        if (!classFilter) return;
-        if (classes.length === 0) return;
-        const exists = classes.some((c: any) => c._id === classFilter);
-        if (!exists) handleClassFilterChange("");
-    }, [classFilter, classes]);
 
     // set default academic year when query returns
     useEffect(() => {
@@ -227,6 +221,13 @@ export default function AdminStudentsPage() {
     const classes = unwrapArray<any>(classesData, "classes");
     const years = unwrapArray<any>(yearsData, "years");
     const terms = unwrapArray<any>(termsData, "terms");
+
+    useEffect(() => {
+        if (!classFilter) return;
+        if (classes.length === 0) return;
+        const exists = classes.some((c: any) => c._id === classFilter);
+        if (!exists) handleClassFilterChange("");
+    }, [classFilter, classes]);
 
     const filterStudents = () => {
         let filtered = [...students];
