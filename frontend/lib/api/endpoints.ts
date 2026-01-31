@@ -211,7 +211,6 @@ export const attendanceAPI = {
   // Live / QR
   getLiveStats: () => api.get('/attendance/live-stats'),
   getRecentScans: () => api.get('/attendance/recent-scans'),
-  getRecentScans: () => api.get('/attendance/recent-scans'),
   getAttendanceHistory: (classLevel: string, startDate?: string, endDate?: string) =>
     api.get(`/attendance/history/${classLevel}`, { params: { startDate, endDate } }),
   getAttendanceSummary: (classLevel: string, startDate?: string, endDate?: string) =>
