@@ -207,6 +207,12 @@ export default function AdminStudentsPage() {
     // keep the legacy filter effect but use query data
     useEffect(() => { filterStudents(); }, [searchQuery, statusFilter, classFilter, studentsData]);
     useEffect(() => { setClassFilter(classIdParam); }, [classIdParam]);
+    useEffect(() => {
+        if (!classFilter) return;
+        if (classes.length === 0) return;
+        const exists = classes.some((c: any) => c._id === classFilter);
+        if (!exists) handleClassFilterChange("");
+    }, [classFilter, classes]);
 
     // set default academic year when query returns
     useEffect(() => {
@@ -271,6 +277,11 @@ export default function AdminStudentsPage() {
         else params.delete("classId");
         const query = params.toString();
         router.replace(`/admin/students${query ? `?${query}` : ""}`);
+    };
+    const clearFilters = () => {
+        setSearchQuery("");
+        setStatusFilter("all");
+        handleClassFilterChange("");
     };
 
     const confirmDelete = async () => {
@@ -379,8 +390,16 @@ export default function AdminStudentsPage() {
                             <Users className="h-8 w-8 text-slate-400" />
                         </div>
                         <h3 className="text-lg font-medium text-slate-700">No students found</h3>
-                        <p className="text-slate-500 mt-1">{searchQuery ? "Try adjusting your search" : "Register your first student"}</p>
-                        {!searchQuery && (
+                        <p className="text-slate-500 mt-1">
+                            {searchQuery || statusFilter !== "all" || classFilter
+                                ? "No students match the current filters."
+                                : "Register your first student"}
+                        </p>
+                        {searchQuery || statusFilter !== "all" || classFilter ? (
+                            <Button type="button" variant="outline" className="mt-4" onClick={clearFilters}>
+                                Clear filters
+                            </Button>
+                        ) : (
                             <Button asChild className="mt-4">
                                 <Link href="/admin/students/create"><Plus className="mr-2 h-4 w-4" /> Register Student</Link>
                             </Button>
