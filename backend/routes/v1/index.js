@@ -286,6 +286,14 @@ try {
     routeErrors.push({ path: './admin/cards.router', error: e.message });
 }
 
+try {
+    router.use('/', require('./admin/cardTemplates.router'));
+    console.log('[ROUTES] ✅ Mounted: /admin/card-templates (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] ❌ Failed to load admin/cardTemplates.router:', e);
+    routeErrors.push({ path: './admin/cardTemplates.router', error: e.message });
+}
+
 // ============ ADMIN REPORTS ROUTES ============
 try {
     router.use('/', require('./admin/reports.router'));

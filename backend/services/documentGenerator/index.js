@@ -57,9 +57,9 @@ async function generateFeeVoucher(payload) {
 
 // Generate student/staff ID card
 async function generateStudentCard(payload) {
-  const { student = {}, school = {} , qrDataUrl = null, attendanceData = null, academicData = null } = payload || {};
+  const { student = {}, school = {} , qrDataUrl = null, attendanceData = null, academicData = null, template = null } = payload || {};
   const StudentCardTemplate = require('./templates/StudentCardTemplate');
-  const element = StudentCardTemplate({ student, qrDataUrl, school, attendanceData, academicData });
+  const element = StudentCardTemplate({ student, qrDataUrl, school, attendanceData, academicData, template });
   if (!element) throw new Error('Document element is null');
   const pdfRenderer = await loadReactPDF();
   const stream = await pdfRenderer.renderToStream(element);
@@ -74,9 +74,9 @@ async function generateStudentCard(payload) {
 
 // Generate staff/teacher ID card
 async function generateStaffCard(payload) {
-  const { staff = {}, school = {}, qrDataUrl = null, employmentInfo = null } = payload || {};
+  const { staff = {}, school = {}, qrDataUrl = null, employmentInfo = null, template = null } = payload || {};
   const StaffCardTemplate = require('./templates/StaffCardTemplate');
-  const element = StaffCardTemplate({ staff, qrDataUrl, school, employmentInfo });
+  const element = StaffCardTemplate({ staff, qrDataUrl, school, employmentInfo, template });
   if (!element) throw new Error('Document element is null');
   const pdfRenderer = await loadReactPDF();
   const stream = await pdfRenderer.renderToStream(element);

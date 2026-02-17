@@ -54,7 +54,24 @@ exports.generateStudentCardController = async (req, res) => {
     }
     if (!student) return responseStatus(res, 404, 'failed', 'Student not found');
 
-    const { dataUrl } = await qrGenerator.generateQRCodeImage({ id: student.id || student._id, type: 'student' });
+    // Resolve avatar to base64 for PDF rendering
+    const { resolveAvatarToBase64 } = require('../../services/cardAvatarHelper');
+    const avatarBase64 = await resolveAvatarToBase64(student.avatar);
+    if (avatarBase64) student.avatar = avatarBase64;
+
+    // Get active template
+    let template = null;
+    try {
+      const CardTemplate = require('../../models/Documents/CardTemplate.model');
+      template = await CardTemplate.findOne({ schoolId: student.schoolId || req.userAuth?.schoolId, entityType: 'student', isActive: true }).lean();
+    } catch (e) { /* template system optional */ }
+
+    const { dataUrl } = await qrGenerator.generateQRCodeImage({
+      id: student.id || student._id,
+      type: 'student',
+      schoolId: String(student.schoolId || req.userAuth?.schoolId || ''),
+      templateVersion: template?.version || 1,
+    });
     
     // Fetch enhanced data for card
     let attendanceData = null;
@@ -177,11 +194,20 @@ exports.generateStudentCardController = async (req, res) => {
       }
     }
     
-    const pdfBuffer = await documentGenerator.generateStudentCard({ 
-      student, 
+    // Fetch school info for branding
+    let school = {};
+    try {
+      const School = require('../../models/School.model');
+      school = await School.findById(student.schoolId || req.userAuth?.schoolId).lean() || {};
+    } catch (e) { /* optional */ }
+
+    const pdfBuffer = await documentGenerator.generateStudentCard({
+      student,
       qrDataUrl: dataUrl,
       attendanceData,
-      academicData
+      academicData,
+      template,
+      school,
     });
 
     res.setHeader('Content-Type', 'application/pdf');

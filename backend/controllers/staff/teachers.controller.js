@@ -49,7 +49,24 @@ exports.generateTeacherCardController = async (req, res) => {
     }
     if (!teacher) return responseStatus(res, 404, 'failed', 'Teacher not found');
 
-    const { dataUrl } = await qrGenerator.generateQRCodeImage({ id: teacher.id || teacher._id, type: 'staff' });
+    // Resolve avatar to base64 for PDF rendering
+    const { resolveAvatarToBase64 } = require('../../services/cardAvatarHelper');
+    const avatarBase64 = await resolveAvatarToBase64(teacher.avatar);
+    if (avatarBase64) teacher.avatar = avatarBase64;
+
+    // Get active template
+    let template = null;
+    try {
+      const CardTemplate = require('../../models/Documents/CardTemplate.model');
+      template = await CardTemplate.findOne({ schoolId: teacher.schoolId || req.userAuth?.schoolId, entityType: 'teacher', isActive: true }).lean();
+    } catch (e) { /* template system optional */ }
+
+    const { dataUrl } = await qrGenerator.generateQRCodeImage({
+      id: teacher.id || teacher._id,
+      type: 'staff',
+      schoolId: String(teacher.schoolId || req.userAuth?.schoolId || ''),
+      templateVersion: template?.version || 1,
+    });
     
     // Fetch enhanced employment data for card
     let employmentInfo = null;
@@ -122,10 +139,19 @@ exports.generateTeacherCardController = async (req, res) => {
       }
     }
     
-    const pdfBuffer = await documentGenerator.generateStaffCard({ 
-      staff: teacher, 
+    // Fetch school info for branding
+    let school = {};
+    try {
+      const School = require('../../models/School.model');
+      school = await School.findById(teacher.schoolId || req.userAuth?.schoolId).lean() || {};
+    } catch (e) { /* optional */ }
+
+    const pdfBuffer = await documentGenerator.generateStaffCard({
+      staff: teacher,
       qrDataUrl: dataUrl,
-      employmentInfo
+      employmentInfo,
+      template,
+      school,
     });
 
     res.setHeader('Content-Type', 'application/pdf');

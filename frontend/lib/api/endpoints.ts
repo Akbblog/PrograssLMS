@@ -186,6 +186,20 @@ export const adminAPI = {
     api.get(`/teachers/${teacherId}/card`, { responseType: 'blob' as any }),
 };
 
+// Card Template endpoints
+export const cardTemplateAPI = {
+  list: (entityType?: string) =>
+    api.get('/admin/card-templates', { params: entityType ? { entityType } : {} }),
+  get: (id: string) => api.get(`/admin/card-templates/${id}`),
+  create: (data: any) => api.post('/admin/card-templates', data),
+  update: (id: string, data: any) => api.patch(`/admin/card-templates/${id}`, data),
+  delete: (id: string) => api.delete(`/admin/card-templates/${id}`),
+  activate: (id: string) => api.post(`/admin/card-templates/${id}/activate`),
+  getAvailableFields: (entityType: string) =>
+    api.get(`/admin/card-templates/available-fields/${entityType}`),
+  ensureDefault: () => api.post('/admin/card-templates/ensure-default'),
+};
+
 // Finance endpoints
 export const financeAPI = {
   createFeeStructure: (data: any) => api.post('/finance/fees/structure', data),

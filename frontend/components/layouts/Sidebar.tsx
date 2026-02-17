@@ -112,6 +112,16 @@ const sidebarItems = [
             { title: "Reports", href: "/admin/transport/reports" },
         ],
     },
+    {
+        title: "ID Cards",
+        href: "/admin/card-designer",
+        icon: CreditCard,
+        subItems: [
+            { title: "Card Designer", href: "/admin/card-designer" },
+            { title: "Templates", href: "/admin/card-designer/templates" },
+            { title: "Bulk Print", href: "/admin/card-designer/bulk" },
+        ],
+    },
     { title: "Communication", href: "/admin/communication", icon: MessageSquare },
     { title: "Exams", href: "/admin/exams", icon: FileText },
     { title: "Finance", href: "/admin/finance", icon: CreditCard },
