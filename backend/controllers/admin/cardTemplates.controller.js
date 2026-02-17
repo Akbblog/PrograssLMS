@@ -1,7 +1,8 @@
 const responseStatus = require('../../handlers/responseStatus.handler');
 const CardTemplate = require('../../models/Documents/CardTemplate.model');
-const { DEFAULT_STUDENT_FIELDS } = require('../../services/documentGenerator/templates/StudentCardTemplate');
-const { DEFAULT_STAFF_FIELDS } = require('../../services/documentGenerator/templates/StaffCardTemplate');
+// Import field defaults from lightweight file to avoid pulling in @react-pdf/renderer
+// (which fails on Vercel serverless due to native dependencies)
+const { DEFAULT_STUDENT_FIELDS, DEFAULT_STAFF_FIELDS } = require('../../services/documentGenerator/templates/cardFieldDefaults');
 
 // GET /api/v1/admin/card-templates
 exports.listCardTemplates = async (req, res) => {
