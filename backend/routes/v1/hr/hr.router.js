@@ -25,6 +25,7 @@ router.get('/leaves/balance/:staffId', isLoggedIn, leaveController.getBalance);
 router.get('/payroll', isLoggedIn, isAdmin, payrollController.listPayrolls);
 router.post('/payroll/generate', isLoggedIn, isAdmin, payrollController.generatePayroll);
 router.post('/payroll/:id/process', isLoggedIn, isAdmin, payrollController.processPayroll);
+router.post('/payroll/:id/settle', isLoggedIn, isAdmin, payrollController.settlePayroll);
 
 // Appraisals
 router.get('/appraisals', isLoggedIn, isAdmin, appraisalController.listAppraisals);

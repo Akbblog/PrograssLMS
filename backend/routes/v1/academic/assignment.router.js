@@ -1,7 +1,7 @@
 const express = require("express");
 const assignmentController = require("../../../controllers/academic/assignment.controller");
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
-const isAdmin = require("../../../middlewares/isAdmin");
+const { requireFinancialClearance } = require("../../../middlewares/financialGatekeeper");
 
 const assignmentRouter = express.Router();
 
@@ -9,10 +9,10 @@ const assignmentRouter = express.Router();
 assignmentRouter.post("/assignments", isLoggedIn, assignmentController.createAssignment);
 
 // Get Assignments
-assignmentRouter.get("/assignments", isLoggedIn, assignmentController.getAssignments);
+assignmentRouter.get("/assignments", isLoggedIn, requireFinancialClearance("courses"), assignmentController.getAssignments);
 
 // Submit Assignment (Student)
-assignmentRouter.post("/assignments/:assignmentId/submit", isLoggedIn, assignmentController.submitAssignment);
+assignmentRouter.post("/assignments/:assignmentId/submit", isLoggedIn, requireFinancialClearance("courses"), assignmentController.submitAssignment);
 
 // Grade Submission (Teacher/Admin)
 assignmentRouter.post("/assignments/:assignmentId/grade/:studentId", isLoggedIn, assignmentController.gradeSubmission);

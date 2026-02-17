@@ -1,7 +1,7 @@
 const express = require("express");
 const gradeController = require("../../../controllers/academic/grade.controller");
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
-const isAdmin = require("../../../middlewares/isAdmin");
+const { requireFinancialClearance } = require("../../../middlewares/financialGatekeeper");
 
 const gradeRouter = express.Router();
 
@@ -9,7 +9,7 @@ const gradeRouter = express.Router();
 gradeRouter.post("/grades", isLoggedIn, gradeController.createGrade);
 
 // Get Student Grades
-gradeRouter.get("/grades/student/:studentId", isLoggedIn, gradeController.getStudentGrades);
+gradeRouter.get("/grades/student/:studentId", isLoggedIn, requireFinancialClearance("grades"), gradeController.getStudentGrades);
 
 // Get Class Grades (Teacher/Admin)
 gradeRouter.get("/grades/class", isLoggedIn, gradeController.getClassGrades);

@@ -279,8 +279,8 @@ export const assignmentAPI = {
 export const enrollmentAPI = {
   // Backend routes for enrollments are mounted at `/enrollments/...` (not `/academic/enrollments/...`)
   getStudentEnrollments: (studentId: string) => api.get(`/enrollments/student/${studentId}`),
-  createEnrollment: (data: any) => api.post('/academic/enrollments', data),
-  updateProgress: (enrollmentId: string, progress: number) => api.patch(`/academic/enrollments/${enrollmentId}/progress`, { progress }),
+  createEnrollment: (data: any) => api.post('/enrollments', data),
+  updateProgress: (enrollmentId: string, progress: number) => api.patch(`/enrollments/${enrollmentId}/progress`, { progress }),
 };
 
 // Grade endpoints
@@ -420,6 +420,7 @@ export const hrAPI = {
   getPayrolls: (params?: any) => api.get('/hr/payroll', { params }),
   generatePayroll: (data: any) => api.post('/hr/payroll/generate', data),
   processPayroll: (id: string) => api.post(`/hr/payroll/${id}/process`),
+  settlePayroll: (id: string, data?: any) => api.post(`/hr/payroll/${id}/settle`, data || {}),
   getPayslip: (id: string) => api.get(`/hr/payroll/${id}/payslip`, { responseType: 'blob' as any }),
   // Appraisals
   getAppraisals: (params?: any) => api.get('/hr/appraisals', { params }),

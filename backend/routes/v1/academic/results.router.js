@@ -4,6 +4,7 @@ const resultsRouter = express.Router();
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
 const isStudent = require("../../../middlewares/isStudent");
 const isTeacher = require("../../../middlewares/isTeacher");
+const { requireFinancialClearance } = require("../../../middlewares/financialGatekeeper");
 // controllers
 const {
   studentCheckExamResultController,
@@ -12,7 +13,7 @@ const {
 // student check exam result
 resultsRouter
   .route("/exam-result/:examId/check")
-  .post(isLoggedIn, isStudent, studentCheckExamResultController);
+  .post(isLoggedIn, isStudent, requireFinancialClearance("grades"), studentCheckExamResultController);
 //   Teacher get all exam result
 resultsRouter
   .route("/exam-results/:classLevelId")

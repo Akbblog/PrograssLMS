@@ -86,6 +86,83 @@ model Enrollment {
   updatedAt     DateTime @updatedAt
 }
 
+model Course {
+  id               String   @id @default(uuid()) @db.VarChar(36)
+  title            String   @db.VarChar(255)
+  description      String?  @db.Text
+  thumbnail        String?  @db.Text
+  category         String?  @db.VarChar(100)
+  difficulty       String   @default("beginner") @db.VarChar(50)
+  subjectId        String?  @db.VarChar(36)
+  classLevels      String?  @db.Text
+  instructorId     String?  @db.VarChar(36)
+  estimatedHours   Float    @default(0)
+  prerequisites    String?  @db.Text
+  tags             String?  @db.Text
+  status           String   @default("draft") @db.VarChar(50)
+  publishedAt      DateTime?
+  allowEnrollment  Boolean  @default(true)
+  requireCompletion Boolean @default(false)
+  showProgress     Boolean  @default(true)
+  certificate      Boolean  @default(false)
+  schoolId         String   @db.VarChar(36)
+  createdBy        String   @db.VarChar(36)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([schoolId, status, createdAt])
+}
+
+model CourseModule {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  sequence    Int      @default(1)
+  courseId    String   @db.VarChar(36)
+  duration    Int      @default(0)
+  isRequired  Boolean  @default(true)
+  schoolId    String   @db.VarChar(36)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([courseId, sequence])
+  @@index([schoolId, courseId])
+}
+
+model CourseLesson {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  sequence    Int      @default(1)
+  type        String   @default("video") @db.VarChar(50)
+  content     String?  @db.Text
+  duration    Int      @default(0)
+  moduleId    String   @db.VarChar(36)
+  isPreview   Boolean  @default(false)
+  isRequired  Boolean  @default(true)
+  resources   String?  @db.Text
+  schoolId    String   @db.VarChar(36)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([moduleId, sequence])
+  @@index([schoolId, moduleId])
+}
+
+model CourseLessonCompletion {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  lessonId    String   @db.VarChar(36)
+  studentId   String   @db.VarChar(36)
+  completedAt DateTime @default(now())
+  watchTime   Int      @default(0)
+  schoolId    String   @db.VarChar(36)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([lessonId, studentId])
+  @@index([studentId, schoolId])
+}
+
 model Attendance {
   id            String   @id @default(uuid()) @db.VarChar(36)
   classLevel    String   @db.VarChar(36)
@@ -134,27 +211,204 @@ model AssignmentSubmission {
 model FeePayment {
   id            String   @id @default(uuid()) @db.VarChar(36)
   studentId     String   @db.VarChar(36)
+  feeStructureId String?  @db.VarChar(36)
+  invoiceId     String?  @db.VarChar(36)
   totalAmount   Float?
   amountPaid    Float?   @default(0)
+  amountDue     Float?
   balanceDue    Float?
   dueDate       DateTime?
+  paymentDate   DateTime? @default(now())
   paymentMethod String?  @db.VarChar(50)
+  transactionId String?  @db.VarChar(255)
+  remarks       String?  @db.Text
+  recordedBy    String?  @db.VarChar(36)
   status        String?  @db.VarChar(50)
   academicYear  String?  @db.VarChar(36)
+  academicTerm  String?  @db.VarChar(36)
   schoolId      String   @db.VarChar(36)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([schoolId, studentId, status])
+  @@index([schoolId, invoiceId])
 }
 
 model FeeStructure {
   id            String   @id @default(uuid()) @db.VarChar(36)
   name          String   @db.VarChar(255)
+  description   String?  @db.Text
   academicYear  String   @db.VarChar(36)
+  academicTerm  String?  @db.VarChar(36)
   feeCategories String?  @db.Text
+  paymentPlans  String?  @db.Text
+  legacyAmount  Float?
+  legacyDueDate DateTime?
+  legacyType    String?  @db.VarChar(100)
+  effectiveFrom DateTime?
+  effectiveUntil DateTime?
   status        String   @default("active") @db.VarChar(50)
   schoolId      String   @db.VarChar(36)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([schoolId, academicYear, status])
+}
+
+model Invoice {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  schoolId      String   @db.VarChar(36)
+  studentId     String   @db.VarChar(36)
+  feeStructureId String? @db.VarChar(36)
+  sourceType    String   @default("manual") @db.VarChar(100)
+  sourceRef     String?  @db.VarChar(255)
+  academicYear  String?  @db.VarChar(36)
+  academicTerm  String?  @db.VarChar(36)
+  currency      String   @default("USD") @db.VarChar(10)
+  status        String   @default("pending") @db.VarChar(50)
+  subtotal      Float    @default(0)
+  totalDue      Float    @default(0)
+  totalPaid     Float    @default(0)
+  outstanding   Float    @default(0)
+  dueDate       DateTime?
+  issuedAt      DateTime @default(now())
+  paidAt        DateTime?
+  metadata      String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([schoolId, studentId, status])
+  @@index([schoolId, sourceType, sourceRef])
+}
+
+model InvoiceLine {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  invoiceId     String   @db.VarChar(36)
+  code          String?  @db.VarChar(100)
+  name          String   @db.VarChar(255)
+  quantity      Float    @default(1)
+  unitPrice     Float    @default(0)
+  amount        Float    @default(0)
+  metadata      String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([invoiceId])
+}
+
+model InvoicePayerAllocation {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  invoiceId     String   @db.VarChar(36)
+  payerType     String   @default("parent") @db.VarChar(50)
+  payerRef      String?  @db.VarChar(255)
+  percentage    Float?
+  fixedAmount   Float?
+  amountDue     Float    @default(0)
+  amountPaid    Float    @default(0)
+  status        String   @default("pending") @db.VarChar(50)
+  metadata      String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([invoiceId, payerType])
+}
+
+model FinancialAccount {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  schoolId      String   @db.VarChar(36)
+  code          String   @db.VarChar(64)
+  name          String   @db.VarChar(255)
+  category      String   @db.VarChar(50)
+  normalSide    String   @db.VarChar(10)
+  isSystem      Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([schoolId, code])
+  @@index([schoolId, category])
+}
+
+model JournalEntry {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  schoolId      String   @db.VarChar(36)
+  referenceType String   @db.VarChar(100)
+  referenceId   String?  @db.VarChar(255)
+  description   String?  @db.Text
+  postedAt      DateTime @default(now())
+  metadata      String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([schoolId, referenceType, referenceId])
+}
+
+model JournalLine {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  journalEntryId String  @db.VarChar(36)
+  accountId     String   @db.VarChar(36)
+  debit         Float    @default(0)
+  credit        Float    @default(0)
+  memo          String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([journalEntryId])
+  @@index([accountId])
+}
+
+model StudentFinancialClearance {
+  id              String   @id @default(uuid()) @db.VarChar(36)
+  schoolId        String   @db.VarChar(36)
+  studentId       String   @db.VarChar(36)
+  status          String   @default("clear") @db.VarChar(50)
+  outstandingAmount Float  @default(0)
+  holdCourses     Boolean  @default(false)
+  holdGrades      Boolean  @default(false)
+  holdCertificates Boolean @default(false)
+  reason          String?  @db.Text
+  lastEvaluatedAt DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([schoolId, studentId])
+}
+
+model PayrollRun {
+  id             String   @id @default(uuid()) @db.VarChar(36)
+  schoolId       String   @db.VarChar(36)
+  staffId        String   @db.VarChar(36)
+  month          Int
+  year           Int
+  status         String   @default("pending") @db.VarChar(50)
+  baseSalary     Float    @default(0)
+  activityAmount Float    @default(0)
+  bonusAmount    Float    @default(0)
+  deductionAmount Float   @default(0)
+  grossSalary    Float    @default(0)
+  netSalary      Float    @default(0)
+  metrics        String?  @db.Text
+  generatedAt    DateTime @default(now())
+  processedAt    DateTime?
+  paymentDate    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([schoolId, staffId, month, year])
+}
+
+model FinancialEvent {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  schoolId      String   @db.VarChar(36)
+  eventType     String   @db.VarChar(100)
+  eventKey      String   @db.VarChar(255)
+  status        String   @default("processed") @db.VarChar(50)
+  payload       String?  @db.Text
+  processedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([schoolId, eventType, eventKey])
 }
 
 model Subject {

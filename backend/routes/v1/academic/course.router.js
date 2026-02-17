@@ -4,6 +4,7 @@ const courseRouter = express.Router();
 // Middleware
 const isAdmin = require("../../../middlewares/isAdmin");
 const isLoggedIn = require("../../../middlewares/isLoggedIn");
+const { requireFinancialClearance } = require("../../../middlewares/financialGatekeeper");
 
 // Controllers
 const {
@@ -26,12 +27,12 @@ const {
 
 courseRouter
     .route("/courses")
-    .get(isLoggedIn, getAllCoursesController)
+    .get(isLoggedIn, requireFinancialClearance("courses"), getAllCoursesController)
     .post(isLoggedIn, isAdmin, createCourseController);
 
 courseRouter
     .route("/courses/:id")
-    .get(isLoggedIn, getCourseController)
+    .get(isLoggedIn, requireFinancialClearance("courses"), getCourseController)
     .patch(isLoggedIn, isAdmin, updateCourseController)
     .delete(isLoggedIn, isAdmin, deleteCourseController);
 
@@ -63,6 +64,6 @@ courseRouter
 
 courseRouter
     .route("/lessons/:id/complete")
-    .post(isLoggedIn, markLessonCompleteController);
+    .post(isLoggedIn, requireFinancialClearance("courses"), markLessonCompleteController);
 
 module.exports = courseRouter;
