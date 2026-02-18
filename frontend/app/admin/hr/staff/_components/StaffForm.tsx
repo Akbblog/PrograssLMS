@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -98,6 +98,123 @@ type StaffFormValues = z.infer<typeof staffSchema>;
 type StaffDocument = NonNullable<StaffFormValues["documents"]>[number];
 type StaffDocumentType = StaffDocument["type"];
 
+const EMPTY_FORM_VALUES: StaffFormValues = {
+  personalInfo: {
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    gender: "male",
+    nationalId: "",
+    maritalStatus: "single",
+    photo: "",
+  },
+  contactInfo: {
+    email: "",
+    phone: "",
+    alternatePhone: "",
+    address: {
+      street: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      country: "",
+    },
+    emergencyContact: {
+      name: "",
+      relationship: "",
+      phone: "",
+    },
+  },
+  employmentInfo: {
+    department: "teaching",
+    designation: "",
+    employmentType: "full-time",
+    joiningDate: "",
+    workLocation: "",
+    shift: "",
+  },
+  qualifications: [],
+  bankDetails: {
+    accountNumber: "",
+    bankName: "",
+    branchName: "",
+    ifscCode: "",
+  },
+  salary: {
+    basicSalary: 0,
+    allowances: [],
+    deductions: [],
+  },
+  documents: [],
+};
+
+const toDateInputValue = (value: any) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+};
+
+const normalizeDefaultValues = (raw: any): StaffFormValues => {
+  if (!raw) return { ...EMPTY_FORM_VALUES };
+
+  const personalInfo = raw.personalInfo || {};
+  const contactInfo = raw.contactInfo || {};
+  const address = contactInfo.address || {};
+  const emergency = contactInfo.emergencyContact || {};
+  const employment = raw.employmentInfo || {};
+  const bank = raw.bankDetails || {};
+  const salary = raw.salary || {};
+
+  return {
+    personalInfo: {
+      ...EMPTY_FORM_VALUES.personalInfo,
+      ...personalInfo,
+      dateOfBirth: toDateInputValue(personalInfo.dateOfBirth),
+      photo: personalInfo.photo || "",
+      gender: personalInfo.gender || "male",
+      maritalStatus: personalInfo.maritalStatus || "single",
+    },
+    contactInfo: {
+      ...EMPTY_FORM_VALUES.contactInfo,
+      ...contactInfo,
+      address: {
+        ...EMPTY_FORM_VALUES.contactInfo.address,
+        ...address,
+      },
+      emergencyContact: {
+        ...EMPTY_FORM_VALUES.contactInfo.emergencyContact,
+        ...emergency,
+      },
+    },
+    employmentInfo: {
+      ...EMPTY_FORM_VALUES.employmentInfo,
+      ...employment,
+      joiningDate: toDateInputValue(employment.joiningDate),
+      employmentType: employment.employmentType || "full-time",
+      department: employment.department || "teaching",
+    },
+    qualifications: Array.isArray(raw.qualifications)
+      ? raw.qualifications.map((q: any) => ({
+          degree: q?.degree || "",
+          institution: q?.institution || "",
+          year: Number(q?.year || new Date().getFullYear()),
+          grade: q?.grade || "",
+        }))
+      : [],
+    bankDetails: {
+      ...EMPTY_FORM_VALUES.bankDetails,
+      ...bank,
+    },
+    salary: {
+      basicSalary: Number(salary.basicSalary || 0),
+      allowances: Array.isArray(salary.allowances) ? salary.allowances : [],
+      deductions: Array.isArray(salary.deductions) ? salary.deductions : [],
+    },
+    documents: Array.isArray(raw.documents) ? raw.documents : [],
+  };
+};
+
 const inferDocumentType = (name = "", mimeType = ""): StaffDocumentType => {
   const fileName = `${name} ${mimeType}`.toLowerCase();
   if (fileName.includes("resume") || fileName.includes("cv")) return "resume";
@@ -141,16 +258,11 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
     trigger,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm<StaffFormValues>({
     resolver: zodResolver(staffSchema),
-    defaultValues: defaultValues || {
-        personalInfo: { gender: 'male', maritalStatus: 'single', photo: '' },
-        employmentInfo: { employmentType: 'full-time', department: 'teaching' },
-        qualifications: [],
-        salary: { basicSalary: 0, allowances: [], deductions: [] },
-        documents: []
-    },
+    defaultValues: EMPTY_FORM_VALUES,
   });
 
   const { fields: qualFields, append: appendQual, remove: removeQual } = useFieldArray({ control, name: "qualifications" });
@@ -158,6 +270,12 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
   const { fields: deducFields, append: appendDeduc, remove: removeDeduc } = useFieldArray({ control, name: "salary.deductions" });
   const { fields: documentFields, append: appendDocument, remove: removeDocument } = useFieldArray({ control, name: "documents" });
   const photoUrl = watch("personalInfo.photo");
+
+  useEffect(() => {
+    reset(normalizeDefaultValues(defaultValues));
+    setCurrentStep(1);
+    setUploadError(null);
+  }, [defaultValues, reset]);
 
   const uploadFile = async (file: File) => {
     const response: any = await hrAPI.uploadFile(file);
@@ -214,14 +332,19 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
   const nextStep = async () => {
     let isValid = false;
     // Validate only current step fields
-    if (currentStep === 1) isValid = await trigger("personalInfo");
-    if (currentStep === 2) isValid = await trigger("contactInfo");
-    if (currentStep === 3) isValid = await trigger("employmentInfo");
-    if (currentStep === 4) isValid = await trigger("qualifications");
-    if (currentStep === 5) isValid = await trigger(["bankDetails", "salary"]);
+    if (currentStep === 1) isValid = await trigger("personalInfo", { shouldFocus: true });
+    if (currentStep === 2) isValid = await trigger("contactInfo", { shouldFocus: true });
+    if (currentStep === 3) isValid = await trigger("employmentInfo", { shouldFocus: true });
+    if (currentStep === 4) isValid = await trigger("qualifications", { shouldFocus: true });
+    if (currentStep === 5) isValid = await trigger(["bankDetails", "salary"], { shouldFocus: true });
     if (currentStep === 6) isValid = true; 
 
-    if (isValid) setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    if (isValid) {
+      setUploadError(null);
+      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    } else {
+      setUploadError("Please fill all required fields in this step before continuing.");
+    }
   };
 
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -284,6 +407,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                 <div className="space-y-2">
                   <Label>Date of Birth <span className="text-destructive">*</span></Label>
                   <Input type="date" {...register("personalInfo.dateOfBirth")} />
+                  {errors.personalInfo?.dateOfBirth && <span className="text-xs text-destructive">{errors.personalInfo.dateOfBirth.message}</span>}
                 </div>
                 <div className="space-y-2">
                   <Label>Gender <span className="text-destructive">*</span></Label>
@@ -291,7 +415,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                     control={control}
                     name="personalInfo.gender"
                     render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="male">Male</SelectItem>
@@ -301,6 +425,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                       </Select>
                     )}
                   />
+                  {errors.personalInfo?.gender && <span className="text-xs text-destructive">{errors.personalInfo.gender.message}</span>}
                 </div>
               </div>
 
@@ -308,6 +433,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                  <div className="space-y-2">
                   <Label>National ID <span className="text-destructive">*</span></Label>
                   <Input {...register("personalInfo.nationalId")} />
+                  {errors.personalInfo?.nationalId && <span className="text-xs text-destructive">{errors.personalInfo.nationalId.message}</span>}
                 </div>
                 <div className="space-y-2">
                    <Label>Marital Status</Label>
@@ -315,7 +441,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                     control={control}
                     name="personalInfo.maritalStatus"
                     render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger><SelectValue placeholder="Select Status" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="single">Single</SelectItem>
@@ -433,7 +559,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                             control={control}
                             name="employmentInfo.department"
                             render={({ field }) => (
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                                 <SelectTrigger><SelectValue placeholder="Select Department" /></SelectTrigger>
                                 <SelectContent>
                                 <SelectItem value="teaching">Teaching</SelectItem>
@@ -458,7 +584,7 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                             control={control}
                             name="employmentInfo.employmentType"
                             render={({ field }) => (
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                                 <SelectTrigger><SelectValue placeholder="Select Type" /></SelectTrigger>
                                 <SelectContent>
                                 <SelectItem value="full-time">Full Time</SelectItem>

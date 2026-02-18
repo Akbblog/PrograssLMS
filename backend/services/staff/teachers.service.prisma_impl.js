@@ -118,6 +118,12 @@ exports.adminUpdateTeacherProfileService = async (data, teacherId) => {
   if (data.firstName) update.firstName = data.firstName;
   if (data.lastName) update.lastName = data.lastName;
   if (data.avatar) update.avatar = data.avatar;
+  if (Object.prototype.hasOwnProperty.call(data, 'personalInfoPhoto')) {
+    update.personalInfoPhoto = data.personalInfoPhoto || null;
+  }
+  if (Object.prototype.hasOwnProperty.call(data, 'documents')) {
+    update.documents = Array.isArray(data.documents) ? data.documents : null;
+  }
 
   const updated = await prisma.teacher.update({ where: { id: teacherId }, data: update, select: teacherSafeSelect });
   return updated;

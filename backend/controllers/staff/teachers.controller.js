@@ -331,9 +331,10 @@ exports.updateTeacherProfileController = async (req, res) => {
  **/
 exports.adminUpdateTeacherProfileController = async (req, res) => {
   try {
+    const teacherId = req.params.id || req.params.teachersId;
     const result = await adminUpdateTeacherProfileService(
       req.body,
-      req.params.teachersId
+      teacherId
     );
     responseStatus(res, 200, "success", result);
   } catch (error) {
