@@ -1,6 +1,7 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Readable } = require('stream');
 const util = require('util');
 const readFile = util.promisify(fs.readFile);
 const unlink = util.promisify(fs.unlink);
@@ -54,6 +55,31 @@ const storage = diskStorageAvailable
 
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit per file
 
+const truthy = (value) => ['1', 'true', 'yes', 'on'].includes(String(value || '').toLowerCase());
+
+const getFtpConfig = () => {
+  const host = process.env.FTP_HOST;
+  const user = process.env.FTP_USER || process.env.FTP_USERNAME;
+  const password = process.env.FTP_PASSWORD || process.env.FTP_PASS;
+  const port = process.env.FTP_PORT ? parseInt(process.env.FTP_PORT, 10) : 21;
+  const folder = (process.env.FTP_FOLDER || process.env.FTP_BASE_DIR || '').trim();
+  const publicBase = (process.env.FTP_PUBLIC_BASE || process.env.FILES_PUBLIC_BASE || '').trim();
+  const secure = truthy(process.env.FTP_SECURE);
+
+  return {
+    host,
+    user,
+    password,
+    port,
+    folder,
+    publicBase,
+    secure,
+    configured: Boolean(host && user && password),
+  };
+};
+
+const normalizeFtpPath = (value = '') => value.replace(/^\/+|\/+$/g, '');
+
 /**
  * Middleware to accept multiple attachments under the field name `attachments`
  */
@@ -77,21 +103,35 @@ exports.processAttachments = async (req, res, next) => {
 
     // Prepare FTP if configured (preferred over local)
     let ftpClient = null;
-    const ftpConfigured = Boolean(process.env.FTP_HOST && process.env.FTP_USER && process.env.FTP_PASSWORD);
-    if (ftpConfigured) {
+    let ftpSetupError = null;
+    const ftpConfig = getFtpConfig();
+
+    if (ftpConfig.configured) {
       try {
         const ftp = require('basic-ftp');
         ftpClient = new ftp.Client();
-        const ftpPort = process.env.FTP_PORT ? parseInt(process.env.FTP_PORT, 10) : 21;
-        await ftpClient.access({ host: process.env.FTP_HOST, port: ftpPort, user: process.env.FTP_USER, password: process.env.FTP_PASSWORD, secure: false });
-        const remoteBase = process.env.FTP_FOLDER || '/public_html';
-        // ensure a communication folder exists
-        await ftpClient.ensureDir(remoteBase + '/communication');
+        await ftpClient.access({
+          host: ftpConfig.host,
+          port: ftpConfig.port,
+          user: ftpConfig.user,
+          password: ftpConfig.password,
+          secure: ftpConfig.secure,
+        });
+
+        const configuredFolder = normalizeFtpPath(ftpConfig.folder);
+        const currentFolder = normalizeFtpPath(await ftpClient.pwd().catch(() => ''));
+        const baseDir = (configuredFolder && currentFolder.endsWith(configuredFolder)) ? '' : configuredFolder;
+        const ftpActiveDir = baseDir ? `${baseDir}/communication` : 'communication';
+        // ensureDir also cd's into target dir, so subsequent uploads use file name only.
+        await ftpClient.ensureDir(ftpActiveDir);
       } catch (e) {
+        ftpSetupError = e;
         console.warn('[fileUpload] FTP setup failed, continuing without FTP:', e.message || e);
         try { if (ftpClient) await ftpClient.close(); } catch(e){}
         ftpClient = null;
       }
+    } else if (isRunningInServerless) {
+      console.warn('[fileUpload] FTP is not configured. Set FTP_HOST, FTP_USER and FTP_PASSWORD in deployment environment variables.');
     }
 
     // Try S3 upload if credentials are available
@@ -164,15 +204,16 @@ exports.processAttachments = async (req, res, next) => {
         // FTP if configured (preferred), otherwise local fallback
         if (ftpClient) {
           try {
-            const remoteName = `communication/${Date.now()}-${f.originalname.replace(/\s+/g,'-')}`;
-            // upload from buffer or file
-            if (fileBuffer) {
-              await ftpClient.uploadFrom(fileBuffer, remoteName);
-            } else if (f.path) {
-              await ftpClient.uploadFrom(f.path, remoteName);
-            }
-            const publicBase = process.env.FTP_PUBLIC_BASE; // optional HTTP base to serve files
-            const url = publicBase ? `${publicBase.replace(/\/$/, '')}/${remoteName}` : `ftp://${process.env.FTP_HOST}/${remoteName}`;
+            const generatedName = `${Date.now()}-${Math.round(Math.random() * 1e9)}-${f.originalname.replace(/\s+/g, '-')}`;
+            const remotePublicPath = `communication/${generatedName}`;
+            const uploadSource = f.path ? f.path : Readable.from(fileBuffer);
+            await ftpClient.uploadFrom(uploadSource, generatedName);
+
+            const publicBase = ftpConfig.publicBase;
+            const url = publicBase
+              ? `${publicBase.replace(/\/$/, '')}/${remotePublicPath}`
+              : `ftp://${ftpConfig.host}/${remotePublicPath}`;
+
             attachments.push({ url, name: f.originalname, size: f.size, mimeType: f.mimetype, type: (f.mimetype || '').split('/')[0] });
             // remove local copy if exists
             if (f.path) await unlink(f.path);
@@ -193,7 +234,7 @@ exports.processAttachments = async (req, res, next) => {
                 size: f.size,
                 mimeType: f.mimetype,
                 type: (f.mimetype || '').split('/')[0],
-                note: 'No persistent storage available for this upload (FTP failed and no local file)'
+                note: 'No persistent storage available for this upload (FTP failed in serverless memory mode).'
               });
             }
           }
@@ -215,7 +256,9 @@ exports.processAttachments = async (req, res, next) => {
               size: f.size,
               mimeType: f.mimetype,
               type: (f.mimetype || '').split('/')[0],
-              note: 'No persistent storage available for this upload (running in serverless without S3/FTP configured)'
+              note: ftpSetupError
+                ? `No persistent storage available for this upload (FTP setup failed: ${ftpSetupError.message || ftpSetupError})`
+                : 'No persistent storage available for this upload (running in serverless without S3/FTP configured). Set FTP_HOST/FTP_USER/FTP_PASSWORD.'
             });
           }
         }
