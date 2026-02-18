@@ -446,11 +446,14 @@ try {
 
 // ============ UPLOAD ROUTE ============
 try {
-    router.use('/', require('./uploads.router'));
-    console.log('[ROUTES] Mounted: /uploads (Explicit)');
+    router.use('/uploads', require('./uploads.router'));
+    console.log('[ROUTES] ✅ Mounted: /uploads (Explicit)');
 } catch (e) {
-    console.error('[ROUTES] Failed to load uploads.router:', e);
+    console.error('[ROUTES] ❌ Failed to load uploads.router:', e);
     routeErrors.push({ path: './uploads.router', mountPath: '/uploads', error: e.message, stack: e.stack });
+    router.use('/uploads', (req, res) => {
+        res.status(503).json({ message: 'Service /uploads temporarily unavailable', error: e.message });
+    });
 }
 
 // ============ SUPERADMIN ROUTES ============

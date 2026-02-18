@@ -101,3 +101,70 @@ async function generateDocument(templateType, payload) {
 
 module.exports = { generateDocument, generateFeeVoucher, generateStudentCard, generateStaffCard };
 
+// Minimal Salary Slip generator (uses @react-pdf/renderer)
+async function generateSalarySlip(payload) {
+  const { payrollRun, payroll, staff = {}, school = {}, payrollRun: runOverride } = payload || {};
+  const run = payrollRun || payroll || runOverride;
+  if (!run) throw new Error('Payroll data required');
+
+  const pdfRenderer = await loadReactPDF();
+  const ReactPDF = pdfRenderer;
+  const React = require('react');
+  const { Document, Page, View, Text, StyleSheet } = ReactPDF;
+
+  const styles = StyleSheet.create({
+    page: { padding: 18, fontFamily: 'Helvetica', fontSize: 11 },
+    header: { marginBottom: 12 },
+    title: { fontSize: 16, fontWeight: 'bold', marginBottom: 6 },
+    row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
+    label: { color: '#555' },
+    value: { fontWeight: '600' },
+    section: { marginTop: 8, marginBottom: 8 },
+  });
+
+  const element = React.createElement(Document, null,
+    React.createElement(Page, { size: 'A4', style: styles.page },
+      React.createElement(View, { style: styles.header },
+        React.createElement(Text, { style: styles.title }, (school && school.name) || 'School'),
+        React.createElement(Text, null, `Payslip: ${run.month || run.month} / ${run.year || run.year}`)
+      ),
+      React.createElement(View, { style: styles.row },
+        React.createElement(Text, { style: styles.label }, 'Employee'),
+        React.createElement(Text, { style: styles.value }, (staff && staff.personalInfo && staff.personalInfo.firstName) ? `${staff.personalInfo.firstName} ${staff.personalInfo.lastName}` : (staff.name || run.metrics?.staffName || 'Staff'))
+      ),
+      React.createElement(View, { style: styles.row },
+        React.createElement(Text, { style: styles.label }, 'Basic Salary'),
+        React.createElement(Text, { style: styles.value }, String(run.baseSalary || run.basicSalary || run.baseSalary || 0))
+      ),
+      React.createElement(View, { style: styles.section },
+        React.createElement(Text, { style: styles.label }, 'Allowances'),
+        (run.allowances || []).map((a, idx) => React.createElement(View, { style: styles.row, key: `a-${idx}` },
+          React.createElement(Text, null, a.type || a.type),
+          React.createElement(Text, null, String(a.amount || a.amount || 0))
+        ))
+      ),
+      React.createElement(View, { style: styles.section },
+        React.createElement(Text, { style: styles.label }, 'Deductions'),
+        (run.deductions || []).map((d, idx) => React.createElement(View, { style: styles.row, key: `d-${idx}` },
+          React.createElement(Text, null, d.type || d.type),
+          React.createElement(Text, null, String(d.amount || d.amount || 0))
+        ))
+      ),
+      React.createElement(View, { style: styles.row },
+        React.createElement(Text, { style: styles.label }, 'Net Salary'),
+        React.createElement(Text, { style: styles.value }, String(run.netSalary || run.net || 0))
+      )
+    )
+  );
+
+  const stream = await ReactPDF.renderToStream(element);
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  const pdfBuffer = Buffer.concat(chunks);
+  return pdfBuffer;
+}
+
+module.exports.generateSalarySlip = generateSalarySlip;
+

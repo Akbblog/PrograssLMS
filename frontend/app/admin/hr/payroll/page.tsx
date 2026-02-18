@@ -520,7 +520,26 @@ export default function PayrollPage() {
                             <Button variant="outline" onClick={() => setSelectedPayroll(null)}>
                                 Close
                             </Button>
-                            <Button className="min-w-[120px]">
+                            <Button
+                                className="min-w-[120px]"
+                                onClick={async () => {
+                                    if (!selectedPayroll) return;
+                                    try {
+                                        const res = await hrAPI.getPayslip(selectedPayroll._id);
+                                        const blob = new Blob([res.data], { type: 'application/pdf' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `payslip-${selectedPayroll._id}.pdf`;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        a.remove();
+                                        URL.revokeObjectURL(url);
+                                    } catch (err: any) {
+                                        toast.error(err?.response?.data?.message || err.message || 'Failed to download payslip');
+                                    }
+                                }}
+                            >
                                 <Download className="mr-2 h-4 w-4" /> Download Payslip
                             </Button>
                         </DialogFooter>

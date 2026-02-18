@@ -240,3 +240,46 @@ exports.settlePayroll = async (req, res) => {
     return res.status(400).json({ status: "fail", message: err.message });
   }
 };
+
+exports.getPayslip = async (req, res) => {
+  try {
+    const schoolId = getSchoolId(req);
+    if (!schoolId) return res.status(400).json({ status: 'fail', message: 'Missing schoolId' });
+
+    if (usePrisma) {
+      const prisma = getPrisma();
+      if (!prisma) return res.status(503).json({ status: 'fail', message: 'Database unavailable' });
+
+      const payrollRunId = req.params.id;
+      const run = await prisma.payrollRun.findFirst({ where: { id: String(payrollRunId), schoolId: String(schoolId) } });
+      if (!run) return res.status(404).json({ status: 'fail', message: 'Payroll run not found' });
+
+      const staff = await prisma.teacher.findUnique({ where: { id: run.staffId } }).catch(() => null);
+
+      const docGen = require('../../services/documentGenerator');
+      if (typeof docGen.generateSalarySlip === 'function') {
+        const pdfBuffer = await docGen.generateSalarySlip({ payrollRun: run, staff: staff || {}, schoolId });
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="payslip-${run.id}.pdf"`);
+        return res.send(pdfBuffer);
+      } else {
+        return res.status(200).json({ status: 'success', data: { payroll: run, staff } });
+      }
+    }
+
+    const payroll = await Payroll.findById(req.params.id).populate('staff').lean();
+    if (!payroll) return res.status(404).json({ status: 'fail', message: 'Not found' });
+
+    const docGen = require('../../services/documentGenerator');
+    if (typeof docGen.generateSalarySlip === 'function') {
+      const pdfBuffer = await docGen.generateSalarySlip({ payroll, staff: payroll.staff });
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="payslip-${payroll._id}.pdf"`);
+      return res.send(pdfBuffer);
+    }
+
+    return res.status(200).json({ status: 'success', data: payroll });
+  } catch (err) {
+    return res.status(400).json({ status: 'fail', message: err.message });
+  }
+};

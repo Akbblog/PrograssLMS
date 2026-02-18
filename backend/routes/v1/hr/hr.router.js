@@ -23,6 +23,7 @@ router.get('/leaves/balance/:staffId', isLoggedIn, leaveController.getBalance);
 
 // Payroll
 router.get('/payroll', isLoggedIn, isAdmin, payrollController.listPayrolls);
+router.get('/payroll/:id/payslip', isLoggedIn, isAdmin, payrollController.getPayslip);
 router.post('/payroll/generate', isLoggedIn, isAdmin, payrollController.generatePayroll);
 router.post('/payroll/:id/process', isLoggedIn, isAdmin, payrollController.processPayroll);
 router.post('/payroll/:id/settle', isLoggedIn, isAdmin, payrollController.settlePayroll);
