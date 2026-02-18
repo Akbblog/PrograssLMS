@@ -444,6 +444,15 @@ try {
     });
 }
 
+// ============ UPLOAD ROUTE ============
+try {
+    router.use('/', require('./uploads.router'));
+    console.log('[ROUTES] Mounted: /uploads (Explicit)');
+} catch (e) {
+    console.error('[ROUTES] Failed to load uploads.router:', e);
+    routeErrors.push({ path: './uploads.router', mountPath: '/uploads', error: e.message, stack: e.stack });
+}
+
 // ============ SUPERADMIN ROUTES ============
 try {
     router.use('/superadmin', require('./superadmin/school.router'));

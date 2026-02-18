@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Check, ChevronsLeft, ChevronsRight, Upload, X, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { hrAPI } from "@/lib/api/endpoints";
 
 // --- Schema Definitions ---
 const staffSchema = z.object({
@@ -94,6 +95,23 @@ const staffSchema = z.object({
 });
 
 type StaffFormValues = z.infer<typeof staffSchema>;
+type StaffDocument = NonNullable<StaffFormValues["documents"]>[number];
+type StaffDocumentType = StaffDocument["type"];
+
+const inferDocumentType = (name = "", mimeType = ""): StaffDocumentType => {
+  const fileName = `${name} ${mimeType}`.toLowerCase();
+  if (fileName.includes("resume") || fileName.includes("cv")) return "resume";
+  if (fileName.includes("address")) return "address_proof";
+  if (fileName.includes("id") || fileName.includes("passport")) return "id_proof";
+  if (fileName.includes("degree") || fileName.includes("certificate") || fileName.includes("qualification")) {
+    return "qualification";
+  }
+  return "other";
+};
+
+const getErrorMessage = (error: any, fallback: string) => {
+  return error?.message || error?.response?.data?.message || error?.data?.message || fallback;
+};
 
 interface StaffFormProps {
   defaultValues?: Partial<StaffFormValues>;
@@ -113,16 +131,21 @@ const STEPS = [
 
 export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading }: StaffFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isUploadingDocuments, setIsUploadingDocuments] = useState(false);
   const {
     register,
     control,
     handleSubmit,
     trigger,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<StaffFormValues>({
     resolver: zodResolver(staffSchema),
     defaultValues: defaultValues || {
-        personalInfo: { gender: 'male', maritalStatus: 'single' },
+        personalInfo: { gender: 'male', maritalStatus: 'single', photo: '' },
         employmentInfo: { employmentType: 'full-time', department: 'teaching' },
         qualifications: [],
         salary: { basicSalary: 0, allowances: [], deductions: [] },
@@ -133,6 +156,60 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
   const { fields: qualFields, append: appendQual, remove: removeQual } = useFieldArray({ control, name: "qualifications" });
   const { fields: allowFields, append: appendAllow, remove: removeAllow } = useFieldArray({ control, name: "salary.allowances" });
   const { fields: deducFields, append: appendDeduc, remove: removeDeduc } = useFieldArray({ control, name: "salary.deductions" });
+  const { fields: documentFields, append: appendDocument, remove: removeDocument } = useFieldArray({ control, name: "documents" });
+  const photoUrl = watch("personalInfo.photo");
+
+  const uploadFile = async (file: File) => {
+    const response: any = await hrAPI.uploadFile(file);
+    const payload = response?.data ?? response;
+    if (!payload?.url) throw new Error(payload?.message || "Upload failed");
+    return {
+      url: payload.url as string,
+      name: (payload.name || file.name) as string,
+      type: (payload.type || file.type) as string,
+    };
+  };
+
+  const handlePhotoChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploadError(null);
+    setIsUploadingPhoto(true);
+
+    try {
+      const uploaded = await uploadFile(file);
+      setValue("personalInfo.photo", uploaded.url, { shouldDirty: true, shouldValidate: true });
+    } catch (error: any) {
+      setUploadError(getErrorMessage(error, "Failed to upload photo"));
+    } finally {
+      setIsUploadingPhoto(false);
+      event.target.value = "";
+    }
+  };
+
+  const handleDocumentsChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    setUploadError(null);
+    setIsUploadingDocuments(true);
+
+    try {
+      for (const file of files) {
+        const uploaded = await uploadFile(file);
+        appendDocument({
+          type: inferDocumentType(uploaded.name, uploaded.type),
+          name: uploaded.name,
+          url: uploaded.url,
+        });
+      }
+    } catch (error: any) {
+      setUploadError(getErrorMessage(error, "Failed to upload document(s)"));
+    } finally {
+      setIsUploadingDocuments(false);
+      event.target.value = "";
+    }
+  };
 
   const nextStep = async () => {
     let isValid = false;
@@ -251,6 +328,34 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
                   />
                 </div>
               </div>
+
+              <div className="space-y-3">
+                <Label>Profile Photo</Label>
+                <div className="flex items-center gap-4">
+                  <div className="h-20 w-20 rounded-full border bg-gray-50 overflow-hidden flex items-center justify-center">
+                    {photoUrl ? (
+                      <img src={photoUrl} alt="Staff photo" className="h-full w-full object-cover" />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">No Photo</span>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Input type="file" accept="image/*" onChange={handlePhotoChange} />
+                    <p className="text-xs text-muted-foreground">Upload JPG, PNG, or WebP.</p>
+                  </div>
+                </div>
+                {isUploadingPhoto && (
+                  <div className="text-xs text-muted-foreground flex items-center gap-2">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading photo...
+                  </div>
+                )}
+              </div>
+
+              {uploadError && (
+                <div className="text-xs text-destructive rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                  {uploadError}
+                </div>
+              )}
             </div>
           )}
 
@@ -490,14 +595,61 @@ export default function StaffForm({ defaultValues, onSubmit, onCancel, isLoading
 
           {/* STEP 6: Documents */}
           {currentStep === 6 && (
-            <div className="text-center py-10 space-y-4">
-                <div className="border-2 border-dashed rounded-lg p-10 hover:bg-gray-50 transition cursor-pointer">
-                    <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-4" />
-                    <p className="text-sm font-medium">Click or drag files here to upload documents</p>
-                    <p className="text-xs text-muted-foreground mt-2">Resume, ID Proof, Certificates etc.</p>
+            <div className="space-y-4">
+                <div className="border-2 border-dashed rounded-lg p-6 hover:bg-gray-50 transition">
+                    <div className="text-center space-y-3">
+                      <Upload className="h-10 w-10 mx-auto text-muted-foreground" />
+                      <p className="text-sm font-medium">Upload resume, ID proof, certificates, and related files</p>
+                      <Input type="file" multiple onChange={handleDocumentsChange} />
+                    </div>
                 </div>
-                <div className="flex justify-between items-center text-sm p-4 bg-yellow-50 text-yellow-800 rounded-md border border-yellow-200">
-                    <span>Note: Document upload integration will be connected to the backend storage service.</span>
+
+                {isUploadingDocuments && (
+                  <div className="text-xs text-muted-foreground flex items-center gap-2">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Uploading documents...
+                  </div>
+                )}
+
+                {uploadError && (
+                  <div className="text-xs text-destructive rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                    {uploadError}
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {documentFields.length === 0 ? (
+                    <div className="text-sm text-muted-foreground border rounded-md p-3">
+                      No documents uploaded yet.
+                    </div>
+                  ) : (
+                    documentFields.map((field, index) => (
+                      <div key={field.id} className="grid grid-cols-1 md:grid-cols-[1fr_180px_auto] gap-2 items-center border rounded-md p-3">
+                        <Input {...register(`documents.${index}.name`)} />
+                        <Controller
+                          control={control}
+                          name={`documents.${index}.type`}
+                          render={({ field: docField }) => (
+                            <Select onValueChange={docField.onChange} value={docField.value}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Document type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="resume">Resume</SelectItem>
+                                <SelectItem value="id_proof">ID Proof</SelectItem>
+                                <SelectItem value="address_proof">Address Proof</SelectItem>
+                                <SelectItem value="qualification">Qualification</SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeDocument(index)}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                        <Input type="hidden" {...register(`documents.${index}.url`)} />
+                      </div>
+                    ))
+                  )}
                 </div>
             </div>
           )}

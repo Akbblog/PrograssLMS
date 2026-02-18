@@ -71,6 +71,9 @@ const teacherSchema = new mongoose.Schema(
     program: {
       type: String,
     },
+    personalInfo: {
+      photo: { type: String, default: "" },
+    },
     avatar: { type: String, default: "" },
     phone: { type: String, default: "" },
     address: {
@@ -131,6 +134,16 @@ const teacherSchema = new mongoose.Schema(
       enum: ["active", "inactive", "suspended", "withdrawn"],
       default: "active",
     },
+    documents: [{
+      type: {
+        type: String,
+        enum: ["resume", "id_proof", "address_proof", "qualification", "other"],
+        default: "other",
+      },
+      name: { type: String, default: "" },
+      url: { type: String, default: "" },
+      uploadedAt: { type: Date, default: Date.now },
+    }],
   },
   {
     timestamps: true,

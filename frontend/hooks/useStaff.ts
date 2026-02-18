@@ -1,6 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import adminAPI from '../lib/api/endpoints';
 
+const getBackendErrorMessage = (error: any, fallback: string) => {
+  return (
+    error?.message ||
+    error?.response?.data?.message ||
+    error?.data?.message ||
+    error?.error ||
+    fallback
+  );
+};
+
 export function useStaff(params: { page?: number; search?: string } = { page: 1 }) {
   return useQuery(['staff', params], () => adminAPI.get('/hr/staff', { params }).then((r) => r.data));
 }
@@ -11,7 +21,14 @@ export function useStaffMember(id?: string, enabled = !!id) {
 
 export function useCreateStaff() {
   const qc = useQueryClient();
-  const m = useMutation<any, Error, any>((payload: any) => adminAPI.post('/hr/staff', payload).then((r) => r.data), {
+  const m = useMutation<any, Error, any>(async (payload: any) => {
+    try {
+      const response: any = await adminAPI.post('/hr/staff', payload);
+      return response?.data ?? response;
+    } catch (error: any) {
+      throw new Error(getBackendErrorMessage(error, 'Failed to create staff'));
+    }
+  }, {
     onSuccess() { qc.invalidateQueries(['staff']); }
   });
 

@@ -12,7 +12,7 @@ const staffProfileSchema = new mongoose.Schema({
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
     gender: { type: String, enum: ['male', 'female', 'other'], required: true },
-    photo: String, 
+    photo: { type: String, default: '' }, 
     nationalId: { type: String, required: true },
     maritalStatus: { type: String, enum: ['single', 'married', 'divorced', 'widowed'] }
   },
@@ -54,8 +54,8 @@ const staffProfileSchema = new mongoose.Schema({
 
   documents: [{
     type: { type: String, enum: ['resume', 'id_proof', 'address_proof', 'qualification', 'other'] },
-    name: String,
-    url: String,
+    name: { type: String, default: '' },
+    url: { type: String, default: '' },
     uploadedAt: { type: Date, default: Date.now }
   }],
 

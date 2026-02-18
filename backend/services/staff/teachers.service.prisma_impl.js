@@ -11,6 +11,8 @@ const teacherSafeSelect = {
   lastName: true,
   phone: true,
   avatar: true,
+  personalInfoPhoto: true,
+  documents: true,
   role: true,
   schoolId: true,
   createdAt: true,

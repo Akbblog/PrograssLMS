@@ -404,6 +404,15 @@ export const roleAPI = {
 
 // HR API
 export const hrAPI = {
+  uploadFile: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post('/uploads', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
   // Staff
   getStaff: (params?: any) => api.get('/hr/staff', { params }),
   getStaffById: (id: string) => api.get(`/hr/staff/${id}`),

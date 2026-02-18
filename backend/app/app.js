@@ -62,11 +62,14 @@ app.use(limiter);
 const path = require('path');
 const fs = require('fs');
 const uploadsDir = path.join(__dirname, '..', 'uploads');
-if (fs.existsSync(uploadsDir)) {
-  app.use('/uploads', express.static(uploadsDir));
-} else {
-  console.warn('[APP] Uploads directory not found; skipping static /uploads route');
+if (!fs.existsSync(uploadsDir)) {
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  } catch (err) {
+    console.warn('[APP] Failed to ensure uploads directory:', err.message);
+  }
 }
+app.use('/uploads', express.static(uploadsDir));
 
 try {
   // --- Route Initialization ---

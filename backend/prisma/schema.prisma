@@ -57,10 +57,33 @@ model Teacher {
   lastName  String?  @db.VarChar(255)
   phone     String?  @db.VarChar(50)
   avatar    String?  @db.Text
+  personalInfoPhoto String? @db.Text
+  documents Json?
   role      String   @default("teacher") @db.VarChar(50)
   schoolId  String   @db.VarChar(36)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model StaffProfile {
+  id               String   @id @default(uuid()) @db.VarChar(36)
+  schoolId         String   @db.VarChar(36)
+  userId           String?  @db.VarChar(36)
+  employeeId       String   @db.VarChar(100)
+  personalInfo     Json?
+  personalInfoPhoto String? @db.Text
+  contactInfo      Json?
+  employmentInfo   Json?
+  qualifications   Json?
+  documents        Json?
+  bankDetails      Json?
+  salary           Json?
+  status           String   @default("active") @db.VarChar(50)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([schoolId, employeeId])
+  @@index([schoolId, status])
 }
 
 model ClassLevel {
